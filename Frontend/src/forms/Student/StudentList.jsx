@@ -1,0 +1,183 @@
+import React, { useState } from 'react';
+import { Box, TextField, IconButton, Typography, Button } from '@mui/material';
+import SearchIcon from '@mui/icons-material/Search';
+import axios from 'axios';
+import jsPDF from 'jspdf';
+
+const StudentList = () => {
+  const [studentId, setStudentId] = useState('');
+  const [studentData, setStudentData] = useState(null);
+
+  const fetchStudentById = async (id) => {
+    try {
+      const token = localStorage.getItem('adminToken'); // Assuming the token is stored in localStorage
+      const response = await axios.get(`http://localhost:3000/api/students/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      const data = response.data.data;
+      data.date_of_birth = new Date(data.date_of_birth).toLocaleDateString('en-GB');
+      data.date_of_admission = new Date(data.date_of_admission).toLocaleDateString('en-GB');
+      return data;
+    } catch (error) {
+      console.error('Error fetching student data:', error);
+      alert('Error fetching student data. Please try again.');
+      return null;
+    }
+  };
+
+  const fetchAllStudents = async () => {
+    try {
+      const token = localStorage.getItem('adminToken'); // Assuming the token is stored in localStorage
+      const response = await axios.get('http://localhost:3000/api/students', {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      return response.data.data;
+    } catch (error) {
+      console.error('Error fetching all students:', error);
+      alert('Error fetching all students. Please try again.');
+      return [];
+    }
+  };
+
+  const handleSearch = async () => {
+    const data = await fetchStudentById(studentId);
+    setStudentData(data);
+  };
+
+  const handleDownloadReport = async () => {
+    const students = await fetchAllStudents();
+    const doc = new jsPDF();
+    let yPosition = 20; // Starting y position
+    const pageHeight = doc.internal.pageSize.height;
+    
+    doc.setFontSize(18);
+    doc.text('All Students Report', 14, yPosition);
+    yPosition += 10;
+    
+    doc.setFontSize(12);
+    
+    students.forEach((student, index) => {
+      if (yPosition > pageHeight - 40) {
+        doc.addPage();
+        yPosition = 20;
+      }
+      
+      doc.setFont(undefined, 'bold');
+      doc.text(`Student ${index + 1}:`, 14, yPosition);
+      doc.setFont(undefined, 'normal');
+      yPosition += 8;
+      
+      const studentData = [
+        `Student ID: ${student.student_id || 'N/A'}`,
+        `Name: ${student.name || 'N/A'}`,
+        `Gender: ${student.gender || 'N/A'}`,
+        `Age: ${student.age || 'N/A'}`,
+        `Education Level: ${student.education_level || 'N/A'}`,
+        `School: ${student.school || 'N/A'}`,
+        `Status: ${student.status || 'N/A'}`,
+        `Date of Birth: ${student.date_of_birth ? new Date(student.date_of_birth).toLocaleDateString('en-GB') : 'N/A'}`,
+        `Date of Admission: ${student.date_of_admission ? new Date(student.date_of_admission).toLocaleDateString('en-GB') : 'N/A'}`
+      ];
+      
+      if (student.education_level === 'secondary') {
+        studentData.push(`Class: ${student.class || 'N/A'}`);
+      } else {
+        studentData.push(`Year: ${student.year || 'N/A'}`);
+      }
+      
+      if (student.education_level === 'graduation') {
+        studentData.push(`Degree: ${student.degree || 'N/A'}`);
+        studentData.push(`Specialization: ${student.specialization || 'N/A'}`);
+      }
+      
+      studentData.push(
+        `Religion: ${student.religion || 'N/A'}`,
+        `Nationality: ${student.nationality || 'N/A'}`,
+        `Address: ${student.address || 'N/A'}`,
+        `Parent ID: ${student.parent_id || 'N/A'}`,
+        `School ID: ${student.school_id || 'N/A'}`
+      );
+      
+      studentData.forEach(line => {
+        if (yPosition > pageHeight - 20) {
+          doc.addPage();
+          yPosition = 20;
+        }
+        
+        const textLines = doc.splitTextToSize(line, 180);
+        doc.text(textLines, 20, yPosition);
+        yPosition += 7 * textLines.length; // Increase y-position based on number of lines
+      });
+      
+      yPosition += 10;
+      
+      if (index < students.length - 1) {
+        if (yPosition > pageHeight - 20) {
+          doc.addPage();
+          yPosition = 20;
+        } else {
+          doc.setDrawColor(200, 200, 200); // Light gray
+          doc.line(14, yPosition - 5, 196, yPosition - 5);
+          yPosition += 5;
+        }
+      }
+    });
+    
+    doc.save('students_report.pdf');
+  };
+
+  return (
+    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+      <Typography variant="h3" component="h1" gutterBottom>
+        Get Students Profile
+      </Typography>
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+        <TextField
+          label="Student ID"
+          value={studentId}
+          onChange={(e) => setStudentId(e.target.value)}
+          required
+        />
+        <IconButton onClick={handleSearch}>
+          <SearchIcon />
+        </IconButton>
+        <Button variant="contained" color="primary" onClick={handleDownloadReport} sx={{ marginLeft: 'auto' }}>
+          Download All Students Report
+        </Button>
+      </Box>
+
+      {studentData && (
+        <Box sx={{ mt: 2 }}>
+          <Typography variant="h6">Student Details</Typography>
+          <Typography>Name: {studentData.name}</Typography>
+          <Typography>Gender: {studentData.gender}</Typography>
+          <Typography>Age: {studentData.age}</Typography>
+          <Typography>Education Level: {studentData.education_level}</Typography>
+          <Typography>School: {studentData.school}</Typography>
+          <Typography>Status: {studentData.status}</Typography>
+          <Typography>Date of Birth: {studentData.date_of_birth}</Typography>
+          <Typography>Date of Admission: {studentData.date_of_admission}</Typography>
+          {studentData.education_level === 'secondary' && <Typography>Class: {studentData.class}</Typography>}
+          {studentData.education_level !== 'secondary' && <Typography>Year: {studentData.year}</Typography>}
+          {studentData.education_level === 'graduation' && (
+            <>
+              <Typography>Degree: {studentData.degree}</Typography>
+              <Typography>Specialization: {studentData.specialization}</Typography>
+            </>
+          )}
+          <Typography>Religion: {studentData.religion}</Typography>
+          <Typography>Nationality: {studentData.nationality}</Typography>
+          <Typography>Address: {studentData.address}</Typography>
+          <Typography>Parent ID: {studentData.parent_id}</Typography>
+          <Typography>School ID: {studentData.school_id}</Typography>
+        </Box>
+      )}
+    </Box>
+  );
+};
+
+export default StudentList;

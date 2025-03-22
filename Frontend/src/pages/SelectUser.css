@@ -1,0 +1,359 @@
+/* Base container styles */
+.select-user-container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+  
+  /* Navbar styles */
+  .navbar {
+    height: 100px;
+    width: 100%;
+    background-color: #0a0a5e;
+    display: flex;
+    align-items: center;
+  }
+  
+  /* Main content area */
+  .role-selection-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: calc(100vh - 100px);
+    background-color: #f0f2f5;
+  }
+  
+  /* Role grid layout - Square arrangement */
+  .role-grid {
+    position: relative;
+    width: 800px;
+    height: 600px;
+    max-width: 95vw;
+    max-height: 80vh;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    gap: 160px;
+    padding: 20px;
+  }
+  
+  /* Admin center role */
+  .admin-wrapper {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 20; /* Increased z-index to ensure it overlaps cards */
+  }
+  
+  .admin-role {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    background-color: #34495e;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3); /* Enhanced shadow */
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  
+  .admin-role h2 {
+    margin-top: 8px;
+    font-size: 1.4rem;
+  }
+
+  .admin-role .role-icon {
+    font-size: 28px;
+    margin-bottom: 5px;
+  }
+  
+  /* Role card wrappers for positioning */
+  .role-card-wrapper {
+    position: relative;
+  }
+  
+  .top-left {
+    grid-column: 1;
+    grid-row: 1;
+  }
+  
+  .top-right {
+    grid-column: 2;
+    grid-row: 1;
+  }
+  
+  .bottom-left {
+    grid-column: 1;
+    grid-row: 2;
+  }
+  
+  .bottom-right {
+    grid-column: 2;
+    grid-row: 2;
+  }
+  
+  /* Role cards */
+  .role-card {
+    width: 100%;
+    height: 100%;
+    border-radius: 12px;
+    background-color: white;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    overflow: hidden;
+  }
+  
+  /* Card content containers */
+  .card-content-1 {
+    padding: 20px;
+    height: 100%;
+    border-left: 5px solid var(--role-color);
+    border-top: 5px solid var(--role-color);
+    position: relative;
+  }
+
+  .card-content-2 {
+    padding: 20px;
+    height: 100%;
+    border-right: 5px solid var(--role-color);
+    border-top: 5px solid var(--role-color);
+    position: relative;
+  }
+
+  .card-content-3 {
+    padding: 20px;
+    height: 100%;
+    border-left: 5px solid var(--role-color);
+    border-top: 5px solid var(--role-color);
+    position: relative;
+  }
+
+  .card-content-4 {
+    padding: 20px;
+    height: 100%;
+    border-right: 5px solid var(--role-color);
+    border-top: 5px solid var(--role-color);
+    position: relative;
+  }
+  
+  /* Role titles */
+  .role-card h3 {
+    color: #333;
+    padding-top: 12px;
+    margin-bottom: 8px;
+    font-size: 1.3rem;
+  }
+  
+  /* Role descriptions */
+  .role-card p {
+    color: #666;
+    font-size: 0.9rem;
+  }
+  
+  /* Icon corner */
+  .role-icon-corner {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 50px;
+    height: 50px;
+    border-radius: 0 0 15px 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 20px;
+  }
+
+  .role-icon-corner-diff {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 50px;
+    height: 50px;
+    border-radius: 0 0 0 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 20px;
+  }
+  
+  /* Connection lines - Positioned for each card to connect to admin */
+  .connection-line {
+    position: absolute;
+    background-color: var(--line-color, #ddd);
+    opacity: 0.5;
+    z-index: 15; /* Below admin but above cards */
+    transition: all 0.3s ease;
+  }
+  
+  /* Position each connection line to match the image */
+  .top-left .connection-line {
+    width: 3px; /* Slightly thicker line */
+    height: 80px;
+    bottom: -20px;
+    right: -20px;
+    transform: rotate(-45deg);
+    transform-origin: bottom right;
+  }
+  
+  .top-right .connection-line {
+    width: 3px;
+    height: 80px;
+    bottom: -20px;
+    left: -20px;
+    transform: rotate(45deg);
+    transform-origin: bottom left;
+  }
+  
+  .bottom-left .connection-line {
+    width: 3px;
+    height: 80px;
+    top: -20px;
+    right: -20px;
+    transform: rotate(45deg);
+    transform-origin: top right;
+  }
+  
+  .bottom-right .connection-line {
+    width: 3px;
+    height: 80px;
+    top: -20px;
+    left: -20px;
+    transform: rotate(-45deg);
+    transform-origin: top left;
+  }
+  
+  /* Make the glow effect more prominent */
+  .connection-active {
+    opacity: 1;
+    height: 5px;
+    box-shadow: 0 0 15px var(--line-color, rgba(0, 0, 0, 0.2));
+    filter: brightness(1.3);
+  }
+  
+  /* Hover effects */
+  .role-hovered {
+    transform: scale(1.05);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    z-index: 5;
+  }
+  
+  .admin-role.role-hovered {
+    transform: scale(1.2);
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.25);
+  }
+  
+  /* Responsive adjustments */
+  @media (max-width: 900px) {
+    .role-grid {
+      width: 700px;
+      height: 500px;
+      gap: 15px;
+    }
+  
+    .admin-role {
+      width: 120px;
+      height: 120px;
+    }
+  
+    .admin-role h2 {
+      font-size: 1.2rem;
+    }
+  
+    .connection-line {
+      height: 60px !important;
+    }
+  }
+  
+  @media (max-width: 650px) {
+    .role-grid {
+      width: 450px;
+      height: 400px;
+      gap: 10px;
+    }
+  
+    .admin-role {
+      width: 100px;
+      height: 100px;
+    }
+  
+    .admin-role h2 {
+      font-size: 1rem;
+    }
+  
+    .role-card h3 {
+      font-size: 1.1rem;
+    }
+  
+    .role-card p {
+      font-size: 0.8rem;
+    }
+  
+    .connection-line {
+      height: 50px !important;
+    }
+  
+    .role-icon-corner {
+      width: 40px;
+      height: 40px;
+      font-size: 16px;
+    }
+  }
+  
+  /* Mobile view adjustments */
+  /* @media (max-width: 480px) {
+    .role-grid {
+      width: 300px;
+      height: 300px;
+      gap: 8px;
+    }
+  
+    .admin-role {
+      width: 80px;
+      height: 80px;
+    }
+  
+    .admin-role .role-icon {
+      font-size: 20px;
+    }
+  
+    .admin-role h2 {
+      font-size: 0.9rem;
+      margin-top: 4px;
+    }
+  
+    .role-card h3 {
+      font-size: 0.9rem;
+      margin-bottom: 4px;
+    }
+  
+    .role-card p {
+      font-size: 0.7rem;
+    }
+  
+    .connection-line {
+      height: 40px !important;
+    }
+  
+    .card-content {
+      padding: 12px;
+    }
+  
+    .role-icon-corner {
+      width: 30px;
+      height: 30px;
+      font-size: 14px;
+    }
+  } */
