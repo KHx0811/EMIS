@@ -71,24 +71,37 @@ export const login = async (req, res) => {
       });
     } else if (loginType === "parent") {
       const { email, dateOfBirth } = req.body;
-      const user = await Parent.findOne({
-        email: email,
-        date_of_birth: dateOfBirth,
-      });
-      if (!user) {
+      
+      const parent = await Parent.findOne({ email: email });
+      
+      if (!parent) {
         return res.status(400).json({
           status: "error",
-          message: "Invalid email or date of birth",
+          message: "Parent not found with this email",
           data: null,
         });
       }
-      const token = jwt.sign({ role: "parent", id: user._id }, jwt_secret, {
-        expiresIn: "1h",
-      });
-      return res.status(200).json({
-        status: "success",
-        message: "user logged in successfully",
-        data: token,
+      
+      const storedDOB = parent.date_of_birth;
+      
+      const formattedStoredDOB = `${storedDOB.getDate().toString().padStart(2, '0')}${(storedDOB.getMonth() + 1).toString().padStart(2, '0')}${storedDOB.getFullYear()}`;
+      
+      // Compare with the user input
+      if (formattedStoredDOB === dateOfBirth) {
+        const token = jwt.sign({ role: "parent", id: parent._id }, jwt_secret, {
+          expiresIn: "1h",
+        });
+        return res.status(200).json({
+          status: "success",
+          message: "Parent logged in successfully",
+          data: token,
+        });
+      }
+      
+      return res.status(400).json({
+        status: "error",
+        message: "Invalid date of birth",
+        data: null,
       });
     } else if (loginType === "teacher") {
       const { schoolId, email, password } = req.body;

@@ -4,14 +4,13 @@ import SearchIcon from '@mui/icons-material/Search';
 import axios from 'axios';
 import jsPDF from 'jspdf';
 import { useNavigate } from 'react-router-dom';
-// import { inputStyle, labelStyle, formControlStyle } from './formStyles';
 
-const StudentList = () => {
+const TeacherDetails = () => {
   const navigate = useNavigate();
-  const [studentId, setStudentId] = useState('');
-  const [studentData, setStudentData] = useState(null);
+  const [teacherId, setTeacherId] = useState('');
+  const [teacherData, setTeacherData] = useState(null);
 
-  const fetchStudentById = async (id) => {
+  const fetchTeacherById = async (id) => {
     try {
       const token = localStorage.getItem('adminToken');
       if (!token) {
@@ -19,29 +18,28 @@ const StudentList = () => {
         navigate('/login/admin');
         return null;
       }
-      const response = await axios.get(`http://localhost:3000/api/students/${id}`, {
+      const response = await axios.get(`http://localhost:3000/api/teachers/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
       });
       const data = response.data.data;
       data.date_of_birth = new Date(data.date_of_birth).toLocaleDateString('en-GB');
-      data.date_of_admission = new Date(data.date_of_admission).toLocaleDateString('en-GB');
       return data;
     } catch (error) {
-      console.error('Error fetching student data:', error);
+      console.error('Error fetching teacher data:', error);
       if (error.response && (error.response.status === 401 || error.response.status === 403)) {
         alert('Your session has expired. Please login again.');
         localStorage.removeItem('adminToken');
         navigate('/login/admin');
       } else {
-        alert('Error fetching student data. Please try again.');
+        alert('Error fetching teacher data. Please try again.');
       }
       return null;
     }
   };
 
-  const fetchAllStudents = async () => {
+  const fetchAllTeachers = async () => {
     try {
       const token = localStorage.getItem('adminToken');
       if (!token) {
@@ -49,28 +47,28 @@ const StudentList = () => {
         navigate('/login/admin');
         return [];
       }
-      const response = await axios.get('http://localhost:3000/api/students', {
+      const response = await axios.get('http://localhost:3000/api/teachers', {
         headers: {
           Authorization: `Bearer ${token}`
         }
       });
       return response.data.data;
     } catch (error) {
-      console.error('Error fetching all students:', error);
+      console.error('Error fetching all teachers:', error);
       if (error.response && (error.response.status === 401 || error.response.status === 403)) {
         alert('Your session has expired. Please login again.');
         localStorage.removeItem('adminToken');
         navigate('/login/admin');
       } else {
-        alert('Error fetching all students. Please try again.');
+        alert('Error fetching all teachers. Please try again.');
       }
       return [];
     }
   };
 
   const handleSearch = async () => {
-    const data = await fetchStudentById(studentId);
-    setStudentData(data);
+    const data = await fetchTeacherById(teacherId);
+    setTeacherData(data);
   };
 
   const handleKeyPress = (e) => {
@@ -80,60 +78,43 @@ const StudentList = () => {
   };
 
   const handleDownloadReport = async () => {
-    const students = await fetchAllStudents();
+    const teachers = await fetchAllTeachers();
     const doc = new jsPDF();
     let yPosition = 20;
     const pageHeight = doc.internal.pageSize.height;
 
     doc.setFontSize(18);
-    doc.text('All Students Report', 14, yPosition);
+    doc.text('All Teachers Report', 14, yPosition);
     yPosition += 10;
 
     doc.setFontSize(12);
 
-    students.forEach((student, index) => {
+    teachers.forEach((teacher, index) => {
       if (yPosition > pageHeight - 40) {
         doc.addPage();
         yPosition = 20;
       }
 
       doc.setFont(undefined, 'bold');
-      doc.text(`Student ${index + 1}:`, 14, yPosition);
+      doc.text(`Teacher ${index + 1}:`, 14, yPosition);
       doc.setFont(undefined, 'normal');
       yPosition += 8;
 
-      const studentData = [
-        `Student ID: ${student.student_id || 'N/A'}`,
-        `Name: ${student.name || 'N/A'}`,
-        `Gender: ${student.gender || 'N/A'}`,
-        `Age: ${student.age || 'N/A'}`,
-        `Education Level: ${student.education_level || 'N/A'}`,
-        `School: ${student.school || 'N/A'}`,
-        `Status: ${student.status || 'N/A'}`,
-        `Date of Birth: ${student.date_of_birth ? new Date(student.date_of_birth).toLocaleDateString('en-GB') : 'N/A'}`,
-        `Date of Admission: ${student.date_of_admission ? new Date(student.date_of_admission).toLocaleDateString('en-GB') : 'N/A'}`
+      const teacherData = [
+        `Teacher ID: ${teacher.teacher_id || 'N/A'}`,
+        `Name: ${teacher.name || 'N/A'}`,
+        `Gender: ${teacher.gender || 'N/A'}`,
+        `Age: ${teacher.age || 'N/A'}`,
+        `School ID: ${teacher.school_id || 'N/A'}`,
+        `Religion: ${teacher.religion || 'N/A'}`,
+        `Date of Birth: ${teacher.date_of_birth ? new Date(teacher.date_of_birth).toLocaleDateString('en-GB') : 'N/A'}`,
+        `Nationality: ${teacher.nationality || 'N/A'}`,
+        `Qualification: ${teacher.qualification || 'N/A'}`,
+        `Email: ${teacher.email || 'N/A'}`,
+        `Phone Number: ${teacher.phonenumber || 'N/A'}`
       ];
 
-      if (student.education_level === 'secondary') {
-        studentData.push(`Class: ${student.class || 'N/A'}`);
-      } else {
-        studentData.push(`Year: ${student.year || 'N/A'}`);
-      }
-
-      if (student.education_level === 'graduation') {
-        studentData.push(`Degree: ${student.degree || 'N/A'}`);
-        studentData.push(`Specialization: ${student.specialization || 'N/A'}`);
-      }
-
-      studentData.push(
-        `Religion: ${student.religion || 'N/A'}`,
-        `Nationality: ${student.nationality || 'N/A'}`,
-        `Address: ${student.address || 'N/A'}`,
-        `Parent ID: ${student.parent_id || 'N/A'}`,
-        `School ID: ${student.school_id || 'N/A'}`
-      );
-
-      studentData.forEach(line => {
+      teacherData.forEach(line => {
         if (yPosition > pageHeight - 20) {
           doc.addPage();
           yPosition = 20;
@@ -146,7 +127,7 @@ const StudentList = () => {
 
       yPosition += 10;
 
-      if (index < students.length - 1) {
+      if (index < teachers.length - 1) {
         if (yPosition > pageHeight - 20) {
           doc.addPage();
           yPosition = 20;
@@ -158,7 +139,7 @@ const StudentList = () => {
       }
     });
 
-    doc.save('students_report.pdf');
+    doc.save('teachers_report.pdf');
   };
 
   return (
@@ -182,20 +163,19 @@ const StudentList = () => {
           paddingBottom: '16px'
         }}
       >
-        Get Students Profile
+        Get Teacher Profile
       </Typography>
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
         <TextField
-          label="Student ID"
-          value={studentId}
-          onChange={(e) => setStudentId(e.target.value)}
+          label="Teacher ID"
+          value={teacherId}
+          onChange={(e) => setTeacherId(e.target.value)}
           onKeyPress={handleKeyPress}
           required
           halfWidth
           size='Small'
           variant='filled'
           sx={{ textDecoration: 'none', borderColor: 'none', }}
-
         />
         <IconButton
           onClick={handleSearch}
@@ -226,38 +206,27 @@ const StudentList = () => {
             marginLeft: 'auto'
           }}
         >
-          Download All Students Report
+          Download All Teachers Report
         </Button>
       </Box>
 
-      {studentData && (
+      {teacherData && (
         <Box sx={{ mt: 2, height: '100vh', color: '#f1f5f9' }}>
-          <Typography variant="h6">Student Details</Typography>
-          <Typography>Name              : {studentData.name}</Typography>
-          <Typography>Gender            : {studentData.gender}</Typography>
-          <Typography>Age               : {studentData.age}</Typography>
-          <Typography>Education Level   : {studentData.education_level}</Typography>
-          <Typography>School            : {studentData.school}</Typography>
-          <Typography>Status            : {studentData.status}</Typography>
-          <Typography>Date of Birth     : {studentData.date_of_birth}</Typography>
-          <Typography>Date of Admission : {studentData.date_of_admission}</Typography>
-          {studentData.education_level === 'secondary' && <Typography>Class             : {studentData.class}</Typography>}
-          {studentData.education_level !== 'secondary' && <Typography>Year              : {studentData.year}</Typography>}
-          {studentData.education_level === 'graduation' && (
-            <>
-              <Typography>Degree            : {studentData.degree}</Typography>
-              <Typography>Specialization    : {studentData.specialization}</Typography>
-            </>
-          )}
-          <Typography>Religion          : {studentData.religion}</Typography>
-          <Typography>Nationality       : {studentData.nationality}</Typography>
-          <Typography>Address           : {studentData.address}</Typography>
-          <Typography>Parent ID         : {studentData.parent_id}</Typography>
-          <Typography>School ID         : {studentData.school_id}</Typography>
+          <Typography variant="h6">Teacher Details</Typography>
+          <Typography>Name              : {teacherData.name}</Typography>
+          <Typography>Gender            : {teacherData.gender}</Typography>
+          <Typography>Age               : {teacherData.age}</Typography>
+          <Typography>School ID         : {teacherData.school_id}</Typography>
+          <Typography>Religion          : {teacherData.religion}</Typography>
+          <Typography>Date of Birth     : {teacherData.date_of_birth}</Typography>
+          <Typography>Nationality       : {teacherData.nationality}</Typography>
+          <Typography>Qualification     : {teacherData.qualification}</Typography>
+          <Typography>Email             : {teacherData.email}</Typography>
+          <Typography>Phone Number      : {teacherData.phonenumber}</Typography>
         </Box>
       )}
     </Box>
   );
 };
 
-export default StudentList;
+export default TeacherDetails;

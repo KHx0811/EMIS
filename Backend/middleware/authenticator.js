@@ -10,7 +10,6 @@ const { jwt_secret } = config;
 export const verifyToken = (req, res, next) => {
   try {
     const authHeader = req.headers.authorization;
-    console.log('Auth Header:', authHeader);
     if (!authHeader) {
       return res.status(401).json({
         status: "error",
@@ -29,11 +28,9 @@ export const verifyToken = (req, res, next) => {
     }
 
     const token = parts[1];
-    console.log('Extracted token:', token);
 
     jwt.verify(token, jwt_secret, (err, decoded) => {
       if (err) {
-        console.log('JWT verification error:', err);
       if (err) {
         if (err.name === 'TokenExpiredError') {
           return res.status(401).json({
@@ -49,7 +46,6 @@ export const verifyToken = (req, res, next) => {
         });
       }
     }
-    console.log('Decoded token payload:', decoded);
 
       req.user = decoded;
       next();
@@ -84,8 +80,6 @@ export const verifyTokenStatus = async (req, res) => {
 
 // Role-based middleware
 export const isAdmin = (req, res, next) => {
-  console.log('User from token:', req.user);
-  console.log('User role:', req.user.role);
   if (req.user.role !== 'admin') {
     return res.status(403).json({
       status: "error",

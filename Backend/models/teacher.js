@@ -1,6 +1,10 @@
 import { Schema, model } from "mongoose";
 
 const teacherSchema = new Schema({
+  teacher_id:{
+    type: String,
+    required: true,
+  },
   name: {
     type: String,
     required: true,

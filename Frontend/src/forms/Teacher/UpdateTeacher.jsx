@@ -3,43 +3,36 @@ import { Box, Button, FormControl, FormLabel, Radio, RadioGroup, FormControlLabe
 import SearchIcon from '@mui/icons-material/Search';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { inputStyle, labelStyle, formControlStyle, selectStyle } from './formStyles';
+import { inputStyle, labelStyle, selectStyle, formControlStyle } from '../Student/formStyles';
 
-const UpdateStudent = () => {
+const UpdateTeacher = () => {
   const navigate = useNavigate();
-  const [studentId, setStudentId] = useState('');
-  const [studentData, setStudentData] = useState(null);
+  const [teacherId, setTeacherId] = useState('');
+  const [teacherData, setTeacherData] = useState(null);
   const [formData, setFormData] = useState({
     name: '',
     gender: '',
     age: '',
-    education_level: '',
-    school: '',
-    status: '',
-    date_of_birth: '',
-    date_of_admission: '',
-    class: '',
-    year: '',
-    degree: '',
-    specialization: '',
-    religion: '',
-    nationality: '',
-    address: '',
-    parent_id: '',
     school_id: '',
+    religion: '',
+    date_of_birth: '',
+    nationality: '',
+    qualification: '',
+    email: '',
+    phonenumber: '',
   });
   const [error, setError] = useState('');
 
-  const fetchStudentById = async (id) => {
+  const fetchTeacherById = async (id) => {
     try {
-      const token = localStorage.getItem('adminToken'); 
+      const token = localStorage.getItem('adminToken');
       if (!token) {
         alert('You are not logged in. Please login to continue.');
         navigate('/login/admin');
         return null;
       }
       
-      const response = await axios.get(`http://localhost:3000/api/students/${id}`, {
+      const response = await axios.get(`http://localhost:3000/api/teachers/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -53,26 +46,20 @@ const UpdateStudent = () => {
           data.date_of_birth = '';
         }
         
-        if (data.date_of_admission) {
-          data.date_of_admission = new Date(data.date_of_admission).toISOString().split('T')[0];
-        } else {
-          data.date_of_admission = '';
-        }
-        
         return data;
       } else {
-        setError('No data found for this student ID');
+        setError('No data found for this teacher ID');
         return null;
       }
     } catch (error) {
-      console.error('Error fetching student data:', error);
+      console.error('Error fetching teacher data:', error);
       if (error.response) {
         if (error.response.status === 401 || error.response.status === 403) {
           alert('Your session has expired. Please login again.');
           localStorage.removeItem('adminToken');
           navigate('/login/admin');
         } else {
-          setError(`Error: ${error.response.data?.message || 'Failed to fetch student data'}`);
+          setError(`Error: ${error.response.data?.message || 'Failed to fetch teacher data'}`);
         }
       } else if (error.request) {
         setError('Network error. Please check your connection.');
@@ -84,25 +71,24 @@ const UpdateStudent = () => {
   };
 
   const handleSearch = async () => {
-    if (!studentId.trim()) {
-      setError('Please enter a Student ID');
+    if (!teacherId.trim()) {
+      setError('Please enter a Teacher ID');
       return;
     }
     
     setError('');
     try {
-      const data = await fetchStudentById(studentId);
+      const data = await fetchTeacherById(teacherId);
       if (data) {
-        setStudentData(data);
+        setTeacherData(data);
         setFormData({
           ...data,
           age: data.age?.toString() || '',
-          class: data.class?.toString() || '',
         });
       }
     } catch (error) {
       console.error('Error in handleSearch:', error);
-      setError('An error occurred while searching for the student. Please try again.');
+      setError('An error occurred while searching for the teacher. Please try again.');
     }
   };
 
@@ -140,34 +126,25 @@ const UpdateStudent = () => {
           return;
         }
       }
-      
-      if (dataToSubmit.date_of_admission) {
-        try {
-          dataToSubmit.date_of_admission = new Date(dataToSubmit.date_of_admission).toISOString();
-        } catch (e) {
-          setError('Invalid date of admission format');
-          return;
-        }
-      }
 
-      const response = await axios.put(`http://localhost:3000/api/students/${studentId}`, dataToSubmit, {
+      const response = await axios.put(`http://localhost:3000/api/teachers/${teacherId}`, dataToSubmit, {
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json'
         }
       });
       
-      console.log('Student updated successfully:', response.data);
-      alert('Student updated successfully');
+      console.log('Teacher updated successfully:', response.data);
+      alert('Teacher updated successfully');
     } catch (error) {
-      console.error('Error updating student:', error);
+      console.error('Error updating teacher:', error);
       if (error.response) {
         if (error.response.status === 401 || error.response.status === 403) {
           alert('Your session has expired. Please login again.');
           localStorage.removeItem('adminToken');
           navigate('/login/admin');
         } else {
-          setError(`Error: ${error.response.data?.message || 'Failed to update student'}`);
+          setError(`Error: ${error.response.data?.message || 'Failed to update teacher'}`);
         }
       } else if (error.request) {
         setError('Network error. Please check your connection.');
@@ -197,16 +174,16 @@ const UpdateStudent = () => {
           paddingBottom: '16px',
         }}
       >
-        Update Student Profile
+        Update Teacher Profile
       </Typography>
 
       <Box sx={{ marginBottom: '24px' }}>
-        <label style={labelStyle} htmlFor="student_id_search">Student ID *</label>
+        <label style={labelStyle} htmlFor="teacher_id_search">Teacher ID *</label>
         <Box sx={{ display: 'flex', gap: '10px' }}>
           <input
-            id="student_id_search"
-            value={studentId}
-            onChange={(e) => setStudentId(e.target.value)}
+            id="teacher_id_search"
+            value={teacherId}
+            onChange={(e) => setTeacherId(e.target.value)}
             onKeyPress={handleKeyPress}
             required
             style={{
@@ -214,7 +191,7 @@ const UpdateStudent = () => {
               marginBottom: 0,
               flexGrow: 1
             }}
-            placeholder="Enter Student ID"
+            placeholder="Enter Teacher ID"
           />
           <IconButton 
             onClick={handleSearch}
@@ -245,7 +222,7 @@ const UpdateStudent = () => {
         </Box>
       )}
 
-      {studentData && (
+      {teacherData && (
         <Box 
           component="form" 
           onSubmit={handleSubmit} 
@@ -298,51 +275,12 @@ const UpdateStudent = () => {
             />
           </Box>
 
-          <FormControl component="fieldset" sx={formControlStyle}>
-            <FormLabel component="legend" sx={{ color: '#f1f5f9' }}>Education Level *</FormLabel>
-            <RadioGroup row name="education_level" value={formData.education_level || ''} onChange={handleChange}>
-              <FormControlLabel value="secondary" control={<Radio sx={{ color: '#f1f5f9' }} />} label="Secondary" />
-              <FormControlLabel value="graduation" control={<Radio sx={{ color: '#f1f5f9' }} />} label="Graduation" />
-              <FormControlLabel value="post_graduation" control={<Radio sx={{ color: '#f1f5f9' }} />} label="Post Graduation" />
-            </RadioGroup>
-          </FormControl>
-
-          {formData.education_level === 'graduation' && (
-            <>
-              <Box sx={{ marginBottom: '16px' }}>
-                <label style={labelStyle} htmlFor="degree">Degree *</label>
-                <input
-                  id="degree"
-                  name="degree"
-                  value={formData.degree || ''}
-                  onChange={handleChange}
-                  required
-                  style={inputStyle}
-                />
-              </Box>
-
-              <Box sx={{ marginBottom: '16px' }}>
-                <label style={labelStyle} htmlFor="specialization">Specialization *</label>
-                <input
-                  id="specialization"
-                  name="specialization"
-                  value={formData.specialization || ''}
-                  onChange={handleChange}
-                  required
-                  style={inputStyle}
-                />
-              </Box>
-            </>
-          )}
-
           <Box sx={{ marginBottom: '16px' }}>
-            <label style={labelStyle} htmlFor="school">
-              {formData.education_level === 'secondary' ? 'School *' : 'College *'}
-            </label>
+            <label style={labelStyle} htmlFor="school_id">School ID *</label>
             <input
-              id="school"
-              name="school"
-              value={formData.school || ''}
+              id="school_id"
+              name="school_id"
+              value={formData.school_id || ''}
               onChange={handleChange}
               required
               style={inputStyle}
@@ -350,10 +288,12 @@ const UpdateStudent = () => {
           </Box>
 
           <FormControl component="fieldset" sx={formControlStyle}>
-            <FormLabel component="legend" sx={{ color: '#f1f5f9' }}>Status *</FormLabel>
-            <RadioGroup row name="status" value={formData.status || ''} onChange={handleChange}>
-              <FormControlLabel value="active" control={<Radio sx={{ color: '#f1f5f9' }} />} label="Active" />
-              <FormControlLabel value="dropout" control={<Radio sx={{ color: '#f1f5f9' }} />} label="Dropout" />
+            <FormLabel component="legend" sx={{ color: '#f1f5f9' }}>Religion *</FormLabel>
+            <RadioGroup row name="religion" value={formData.religion || ''} onChange={handleChange}>
+              <FormControlLabel value="hindu" control={<Radio sx={{ color: '#f1f5f9' }} />} label="Hindu" />
+              <FormControlLabel value="christian" control={<Radio sx={{ color: '#f1f5f9' }} />} label="Christian" />
+              <FormControlLabel value="muslim" control={<Radio sx={{ color: '#f1f5f9' }} />} label="Muslim" />
+              <FormControlLabel value="others" control={<Radio sx={{ color: '#f1f5f9' }} />} label="Others" />
             </RadioGroup>
           </FormControl>
 
@@ -370,72 +310,8 @@ const UpdateStudent = () => {
             />
           </Box>
 
-          <Box sx={{ marginBottom: '16px' }}>
-            <label style={labelStyle} htmlFor="date_of_admission">Date of Admission *</label>
-            <input
-              id="date_of_admission"
-              name="date_of_admission"
-              type="date"
-              value={formData.date_of_admission || ''}
-              onChange={handleChange}
-              required
-              style={inputStyle}
-            />
-          </Box>
-
-          {formData.education_level === 'secondary' && (
-            <Box sx={{ marginBottom: '16px' }}>
-              <label style={labelStyle} htmlFor="class">Class *</label>
-              <select
-                id="class"
-                name="class"
-                value={formData.class || ''}
-                onChange={handleChange}
-                required
-                style={selectStyle}
-              >
-                <option value="" disabled>Select Class</option>
-                {Array.from({ length: 12 }, (_, i) => (
-                  <option key={i + 1} value={(i + 1).toString()}>{i + 1}</option>
-                ))}
-              </select>
-            </Box>
-          )}
-
-          {(formData.education_level === 'graduation' || formData.education_level === 'post_graduation') && (
-            <Box sx={{ marginBottom: '16px' }}>
-              <label style={labelStyle} htmlFor="year">Year *</label>
-              <select
-                id="year"
-                name="year"
-                value={formData.year || ''}
-                onChange={handleChange}
-                required
-                style={selectStyle}
-              >
-                <option value="" disabled>Select Year</option>
-                {(formData.education_level === 'graduation' 
-                  ? ['First Year', 'Second Year', 'Third Year', 'Fourth Year']
-                  : ['First Year', 'Second Year']
-                ).map((year, index) => (
-                  <option key={index} value={year}>{year}</option>
-                ))}
-              </select>
-            </Box>
-          )}
-
           <FormControl component="fieldset" sx={formControlStyle}>
-            <FormLabel component="legend" sx={{ color: '#f1f5f9' }}>Religion</FormLabel>
-            <RadioGroup row name="religion" value={formData.religion || ''} onChange={handleChange}>
-              <FormControlLabel value="hindu" control={<Radio sx={{ color: '#f1f5f9' }} />} label="Hindu" />
-              <FormControlLabel value="christian" control={<Radio sx={{ color: '#f1f5f9' }} />} label="Christian" />
-              <FormControlLabel value="muslim" control={<Radio sx={{ color: '#f1f5f9' }} />} label="Muslim" />
-              <FormControlLabel value="others" control={<Radio sx={{ color: '#f1f5f9' }} />} label="Others" />
-            </RadioGroup>
-          </FormControl>
-
-          <FormControl component="fieldset" sx={formControlStyle}>
-            <FormLabel component="legend" sx={{ color: '#f1f5f9' }}>Nationality</FormLabel>
+            <FormLabel component="legend" sx={{ color: '#f1f5f9' }}>Nationality *</FormLabel>
             <RadioGroup row name="nationality" value={formData.nationality || ''} onChange={handleChange}>
               <FormControlLabel value="indian" control={<Radio sx={{ color: '#f1f5f9' }} />} label="Indian" />
               <FormControlLabel value="nri" control={<Radio sx={{ color: '#f1f5f9' }} />} label="NRI" />
@@ -443,23 +319,11 @@ const UpdateStudent = () => {
           </FormControl>
 
           <Box sx={{ marginBottom: '16px' }}>
-            <label style={labelStyle} htmlFor="address">Address *</label>
-            <textarea
-              id="address"
-              name="address"
-              value={formData.address || ''}
-              onChange={handleChange}
-              required
-              style={{...inputStyle, minHeight: '80px', resize: 'vertical'}}
-            />
-          </Box>
-
-          <Box sx={{ marginBottom: '16px' }}>
-            <label style={labelStyle} htmlFor="parent_id">Parent ID *</label>
+            <label style={labelStyle} htmlFor="qualification">Qualification *</label>
             <input
-              id="parent_id"
-              name="parent_id"
-              value={formData.parent_id || ''}
+              id="qualification"
+              name="qualification"
+              value={formData.qualification || ''}
               onChange={handleChange}
               required
               style={inputStyle}
@@ -467,11 +331,24 @@ const UpdateStudent = () => {
           </Box>
 
           <Box sx={{ marginBottom: '16px' }}>
-            <label style={labelStyle} htmlFor="school_id">School ID *</label>
+            <label style={labelStyle} htmlFor="email">Email *</label>
             <input
-              id="school_id"
-              name="school_id"
-              value={formData.school_id || ''}
+              id="email"
+              name="email"
+              type="email"
+              value={formData.email || ''}
+              onChange={handleChange}
+              required
+              style={inputStyle}
+            />
+          </Box>
+
+          <Box sx={{ marginBottom: '16px' }}>
+            <label style={labelStyle} htmlFor="phonenumber">Phone Number *</label>
+            <input
+              id="phonenumber"
+              name="phonenumber"
+              value={formData.phonenumber || ''}
               onChange={handleChange}
               required
               style={inputStyle}
@@ -491,7 +368,7 @@ const UpdateStudent = () => {
                 }
               }}
             >
-              Update Student Profile
+              Update Teacher Profile
             </Button>
           </Box>
         </Box>
@@ -500,4 +377,4 @@ const UpdateStudent = () => {
   );
 };
 
-export default UpdateStudent;
+export default UpdateTeacher;

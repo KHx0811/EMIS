@@ -2,7 +2,7 @@ import { Schema, model } from "mongoose";
 import bcrypt from "bcrypt";
 
 const districtSchema = new Schema({
-  name: {
+  district_name: {
     type: String,
     required: true,
   },

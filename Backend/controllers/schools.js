@@ -1,9 +1,10 @@
 import School from "../models/schools.js";
+import District from "../models/districts.js"; // Import District model
 import bcrypt from "bcrypt";
 
 export const getAllSchools = async (req, res) => {
   try {
-    if (req.role !== "admin" && req.role !== "districthead") {
+    if (req.user.role !== "admin") {
       return res.status(401).json({
         status: "error",
         message: "Unauthorized",
@@ -27,17 +28,27 @@ export const getAllSchools = async (req, res) => {
 
 export const createSchool = async (req, res) => {
   try {
-    if (req.role == "admin") {
-      const { name, district_id, school_id, principal, date_of_establishment, email, password } = req.body;
+    if (req.user.role == "admin") {
+      const { school_name, district_id, school_id, principal_name, date_of_establishment, email, password } = req.body;
+      
+      const districtExists = await District.findOne({ district_id });
+      
+      if (!districtExists) {
+        return res.status(404).json({
+          status: "error",
+          message: "District not found",
+          code: "DISTRICT_NOT_FOUND",
+          data: null,
+        });
+      }
 
-      // Hash the password before saving
       const hashedPassword = await bcrypt.hash(password, 10);
 
       const school = new School({
-        name,
-        district_id,
+        school_name,
         school_id,
-        principal,
+        district_id,
+        principal_name,
         date_of_establishment,
         email,
         password: hashedPassword,
@@ -67,7 +78,7 @@ export const createSchool = async (req, res) => {
 
 export const deleteSchool = async (req, res) => {
   try {
-    if (req.role == "admin") {
+    if (req.user.role == "admin") {
       const schoolId = req.params.school_id;
       const school = await School.findOne({ school_id: schoolId });
       if (!school) {
@@ -101,7 +112,7 @@ export const deleteSchool = async (req, res) => {
 
 export const updateSchool = async (req, res) => {
   try {
-    if (req.role == "admin") {
+    if (req.user.role == "admin") {
       const schoolId = req.params.school_id;
       const school = await School.findOne({ school_id: schoolId });
       if (!school) {
@@ -135,7 +146,7 @@ export const updateSchool = async (req, res) => {
 
 export const getSchoolById = async (req, res) => {
   try {
-    if (req.role == "admin") {
+    if (req.user.role == "admin") {
       const schoolId = req.params.school_id;
       const school = await School.findOne({ school_id: schoolId });
       if (!school) {

@@ -22,9 +22,13 @@ const ParentLogin = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+    let formattedValue = value;
+    if (name === 'dateOfBirth') {
+      formattedValue = value.replace(/\D/g, ''); // Remove non-numeric characters
+    }
     setFormData({
       ...formData,
-      [name]: value
+      [name]: formattedValue
     });
     checkFormValidity();
   };
@@ -85,7 +89,7 @@ const ParentLogin = () => {
                 type="text"
                 id="dateOfBirth"
                 name="dateOfBirth"
-                placeholder="DD/MM/YYYY"
+                placeholder="DDMMYYYY"
                 required
                 onChange={handleChange}
               />

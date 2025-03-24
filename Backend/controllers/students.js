@@ -2,7 +2,7 @@ import Student from "../models/students.js";
 
 export const getAllStudents = async (req, res) => {
   try {
-    if (req.role !== "admin" && req.role !== "school" && req.role !== "teacher" && req.role !== "parent" && req.role !== "districthead") {
+    if (req.user.role !== "admin" && req.user.role !== "school" && req.user.role !== "teacher" && req.user.role !== "parent" && req.user.role !== "districthead") {
       return res.status(401).json({
         status: "error",
         message: "Unauthorized",
@@ -27,7 +27,7 @@ export const getAllStudents = async (req, res) => {
 
 export const createStudent = async (req, res) => {
   try {
-    if (req.role === "admin") {
+    if (req.user.role === "admin") {
       const student = new Student(req.body);
       await student.save();
       return res.status(201).json({
@@ -53,7 +53,7 @@ export const createStudent = async (req, res) => {
 
 export const deleteStudent = async (req, res) => {
   try {
-    if (req.role === "admin" || req.role === "school") {
+    if (req.user.role === "admin" || req.user.role === "school") {
       const studentId = req.params.id;
       const student = await Student.findOne({ student_id: studentId });
 
@@ -65,7 +65,7 @@ export const deleteStudent = async (req, res) => {
         });
       }
 
-      if (req.role === "school" && student.school_id !== req.user._id) {
+      if (req.user.role === "school" && student.school_id !== req.user._id) {
         return res.status(401).json({
           status: "error",
           message: "unauthorized",
@@ -97,7 +97,7 @@ export const deleteStudent = async (req, res) => {
 
 export const updateStudent = async (req, res) => {
   try {
-    if (req.role === "admin" || req.role === "school") {
+    if (req.user.role === "admin" || req.user.role === "school") {
       const studentId = req.params.id;
       const student = await Student.findOne({ student_id: studentId });
       if (!student) {
@@ -107,7 +107,7 @@ export const updateStudent = async (req, res) => {
           data: null,
         });
       }
-      if (req.role === "school" && student.school_id !== req.user._id) {
+      if (req.user.role === "school" && student.school_id !== req.user._id) {
         return res.status(401).json({
           status: "error",
           message: "unauthorized",
@@ -140,7 +140,7 @@ export const updateStudent = async (req, res) => {
 
 export const getStudentById = async (req, res) => {
   try {
-    if (req.role === "admin" || req.role === "school" || req.role === "parent") {
+    if (req.user.role === "admin" || req.user.role === "school" || req.user.role === "parent") {
       const studentId = req.params.id;
       const student = await Student.findOne({ student_id: studentId });
       if (!student) {
@@ -151,8 +151,8 @@ export const getStudentById = async (req, res) => {
         });
       }
       if (
-        (req.role === "school" && student.school_id !== req.user._id) ||
-        (req.role === "parent" && student.parent_id !== req.user._id)
+        (req.user.role === "school" && student.school_id !== req.user._id) ||
+        (req.user.role === "parent" && student.parent_id !== req.user._id)
       ) {
         return res.status(401).json({
           status: "error",

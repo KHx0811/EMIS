@@ -1,8 +1,12 @@
 import React, { useState } from 'react';
-import { Box, TextField, Button, MenuItem, RadioGroup, FormControlLabel, Radio, FormControl, FormLabel, Select, InputLabel, Typography } from '@mui/material';
+import { Box, Button, FormControl, FormLabel, MenuItem, Radio, RadioGroup, FormControlLabel, Select, Typography } from '@mui/material';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+import { inputStyle,labelStyle, formControlStyle, selectStyle } from './formStyles';
 
 const CreateStudentForm = ({ onSubmit = () => {} }) => {
+  const navigate = useNavigate();
+  
   const [formData, setFormData] = useState({
     student_id: '',
     name: '',
@@ -42,7 +46,6 @@ const CreateStudentForm = ({ onSubmit = () => {} }) => {
         return;
       }
 
-      // Format the date fields
       const formattedData = {
         ...formData,
         date_of_birth: new Date(formData.date_of_birth).toISOString(),
@@ -75,97 +78,283 @@ const CreateStudentForm = ({ onSubmit = () => {} }) => {
   };
 
   return (
-    <Box component="form" onSubmit={handleSubmit} sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-      <Typography variant="h3" component="h1" gutterBottom>
-          Create Student Form
+    <Box 
+      component="form" 
+      onSubmit={handleSubmit} 
+      sx={{ 
+        display: 'flex', 
+        flexDirection: 'column',
+        backgroundColor: '#0f172a',
+        padding: '24px',
+        borderRadius: '8px'
+      }}
+    >
+      <Typography 
+        variant="h3" 
+        component="h1" 
+        gutterBottom
+        sx={{ 
+          color: '#f1f5f9',
+          marginBottom: '24px',
+          borderBottom: '1px solid #475569',
+          paddingBottom: '16px'
+        }}
+      >
+        Create Student Form
       </Typography>
-      <TextField label="Student ID" name="student_id" value={formData.student_id} onChange={handleChange} required />
-      <TextField label="Name" name="name" value={formData.name} onChange={handleChange} required />
-      <TextField label="Gender" name="gender" value={formData.gender} onChange={handleChange} select required>
-        <MenuItem value="male">Male</MenuItem>
-        <MenuItem value="female">Female</MenuItem>
-      </TextField>
-      <TextField label="Age" name="age" value={formData.age} onChange={handleChange} type="number" required />
-      <FormControl component="fieldset">
-        <FormLabel component="legend">Education Level</FormLabel>
+
+      <Box sx={{ marginBottom: '16px' }}>
+        <label style={labelStyle} htmlFor="student_id">Student ID *</label>
+        <input
+          id="student_id"
+          name="student_id"
+          value={formData.student_id}
+          onChange={handleChange}
+          required
+          style={inputStyle}
+        />
+      </Box>
+
+      <Box sx={{ marginBottom: '16px' }}>
+        <label style={labelStyle} htmlFor="name">Name *</label>
+        <input
+          id="name"
+          name="name"
+          value={formData.name}
+          onChange={handleChange}
+          required
+          style={inputStyle}
+        />
+      </Box>
+
+      <Box sx={{ marginBottom: '16px' }}>
+        <label style={labelStyle} htmlFor="gender">Gender *</label>
+        <Select
+          id="gender"
+          name="gender"
+          value={formData.gender}
+          onChange={handleChange}
+          required
+          sx={selectStyle}
+          displayEmpty
+        >
+          <MenuItem value="" disabled>Select Gender</MenuItem>
+          <MenuItem value="male">Male</MenuItem>
+          <MenuItem value="female">Female</MenuItem>
+        </Select>
+      </Box>
+
+      <Box sx={{ marginBottom: '16px' }}>
+        <label style={labelStyle} htmlFor="age">Age *</label>
+        <input
+          id="age"
+          name="age"
+          type="number"
+          value={formData.age}
+          onChange={handleChange}
+          required
+          style={inputStyle}
+        />
+      </Box>
+
+      <FormControl component="fieldset" sx={formControlStyle}>
+        <FormLabel component="legend" sx={{ color: '#f1f5f9' }}>Education Level *</FormLabel>
         <RadioGroup row name="education_level" value={formData.education_level} onChange={handleChange}>
-          <FormControlLabel value="secondary" control={<Radio />} label="Secondary" />
-          <FormControlLabel value="graduation" control={<Radio />} label="Graduation" />
-          <FormControlLabel value="post_graduation" control={<Radio />} label="Post Graduation" />
+          <FormControlLabel value="secondary" control={<Radio sx={{ color: '#f1f5f9' }} />} label="Secondary" />
+          <FormControlLabel value="graduation" control={<Radio sx={{ color: '#f1f5f9' }} />} label="Graduation" />
+          <FormControlLabel value="post_graduation" control={<Radio sx={{ color: '#f1f5f9' }} />} label="Post Graduation" />
         </RadioGroup>
       </FormControl>
+
       {formData.education_level === 'graduation' && (
         <>
-          <TextField label="Degree" name="degree" value={formData.degree} onChange={handleChange} required />
-          <TextField label="Specialization" name="specialization" value={formData.specialization} onChange={handleChange} required />
+          <Box sx={{ marginBottom: '16px' }}>
+            <label style={labelStyle} htmlFor="degree">Degree *</label>
+            <input
+              id="degree"
+              name="degree"
+              value={formData.degree}
+              onChange={handleChange}
+              required
+              style={inputStyle}
+            />
+          </Box>
+
+          <Box sx={{ marginBottom: '16px' }}>
+            <label style={labelStyle} htmlFor="specialization">Specialization *</label>
+            <input
+              id="specialization"
+              name="specialization"
+              value={formData.specialization}
+              onChange={handleChange}
+              required
+              style={inputStyle}
+            />
+          </Box>
         </>
       )}
-      <TextField
-        label={formData.education_level === 'secondary' ? 'School' : 'College'}
-        name="school"
-        value={formData.school}
-        onChange={handleChange}
-        required
-      />
-      <FormControl component="fieldset">
-        <FormLabel component="legend">Status</FormLabel>
+
+      <Box sx={{ marginBottom: '16px' }}>
+        <label style={labelStyle} htmlFor="school">
+          {formData.education_level === 'secondary' ? 'School *' : 'College *'}
+        </label>
+        <input
+          id="school"
+          name="school"
+          value={formData.school}
+          onChange={handleChange}
+          required
+          style={inputStyle}
+        />
+      </Box>
+
+      <FormControl component="fieldset" sx={formControlStyle}>
+        <FormLabel component="legend" sx={{ color: '#f1f5f9' }}>Status *</FormLabel>
         <RadioGroup row name="status" value={formData.status} onChange={handleChange}>
-          <FormControlLabel value="active" control={<Radio />} label="Active" />
-          <FormControlLabel value="dropout" control={<Radio />} label="Dropout" />
+          <FormControlLabel value="active" control={<Radio sx={{ color: '#f1f5f9' }} />} label="Active" />
+          <FormControlLabel value="dropout" control={<Radio sx={{ color: '#f1f5f9' }} />} label="Dropout" />
         </RadioGroup>
       </FormControl>
-      <TextField label="Date of Birth" name="date_of_birth" value={formData.date_of_birth} onChange={handleChange} type="date" InputLabelProps={{ shrink: true }} required />
-      <TextField label="Date of Admission" name="date_of_admission" value={formData.date_of_admission} onChange={handleChange} type="date" InputLabelProps={{ shrink: true }} required />
+
+      <Box sx={{ marginBottom: '16px' }}>
+        <label style={labelStyle} htmlFor="date_of_birth">Date of Birth *</label>
+        <input
+          id="date_of_birth"
+          name="date_of_birth"
+          type="date"
+          value={formData.date_of_birth}
+          onChange={handleChange}
+          required
+          style={inputStyle}
+        />
+      </Box>
+
+      <Box sx={{ marginBottom: '16px' }}>
+        <label style={labelStyle} htmlFor="date_of_admission">Date of Admission *</label>
+        <input
+          id="date_of_admission"
+          name="date_of_admission"
+          type="date"
+          value={formData.date_of_admission}
+          onChange={handleChange}
+          required
+          style={inputStyle}
+        />
+      </Box>
+
       {formData.education_level === 'secondary' && (
-        <FormControl fullWidth>
-          <InputLabel>Class</InputLabel>
-          <Select label="Class" name="class" value={formData.class} onChange={handleChange} required>
+        <Box sx={{ marginBottom: '16px' }}>
+          <label style={labelStyle} htmlFor="class">Class *</label>
+          <Select
+            id="class"
+            name="class"
+            value={formData.class}
+            onChange={handleChange}
+            required
+            sx={selectStyle}
+            displayEmpty
+          >
+            <MenuItem value="" disabled>Select Class</MenuItem>
             {Array.from({ length: 12 }, (_, i) => (
               <MenuItem key={i + 1} value={i + 1}>{i + 1}</MenuItem>
             ))}
           </Select>
-        </FormControl>
+        </Box>
       )}
-      {formData.education_level === 'graduation' && (
-        <FormControl fullWidth>
-          <InputLabel>Year</InputLabel>
-          <Select label="Year" name="year" value={formData.year} onChange={handleChange} required>
-            {['First Year', 'Second Year', 'Third Year', 'Fourth Year'].map((year, index) => (
+
+      {(formData.education_level === 'graduation' || formData.education_level === 'post_graduation') && (
+        <Box sx={{ marginBottom: '16px' }}>
+          <label style={labelStyle} htmlFor="year">Year *</label>
+          <Select
+            id="year"
+            name="year"
+            value={formData.year}
+            onChange={handleChange}
+            required
+            sx={selectStyle}
+            displayEmpty
+          >
+            <MenuItem value="" disabled>Select Year</MenuItem>
+            {(formData.education_level === 'graduation' 
+              ? ['First Year', 'Second Year', 'Third Year', 'Fourth Year']
+              : ['First Year', 'Second Year']
+            ).map((year, index) => (
               <MenuItem key={index} value={year}>{year}</MenuItem>
             ))}
           </Select>
-        </FormControl>
+        </Box>
       )}
-      {formData.education_level === 'post_graduation' && (
-        <FormControl fullWidth>
-          <InputLabel>Year</InputLabel>
-          <Select label="Year" name="year" value={formData.year} onChange={handleChange} required>
-            {['First Year', 'Second Year'].map((year, index) => (
-              <MenuItem key={index} value={year}>{year}</MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-      )}
-      <FormControl component="fieldset">
-        <FormLabel component="legend">Religion</FormLabel>
+
+      <FormControl component="fieldset" sx={formControlStyle}>
+        <FormLabel component="legend" sx={{ color: '#f1f5f9' }}>Religion</FormLabel>
         <RadioGroup row name="religion" value={formData.religion} onChange={handleChange}>
-          <FormControlLabel value="hindu" control={<Radio />} label="Hindu" />
-          <FormControlLabel value="christian" control={<Radio />} label="Christian" />
-          <FormControlLabel value="muslim" control={<Radio />} label="Muslim" />
-          <FormControlLabel value="others" control={<Radio />} label="Others" />
+          <FormControlLabel value="hindu" control={<Radio sx={{ color: '#f1f5f9' }} />} label="Hindu" />
+          <FormControlLabel value="christian" control={<Radio sx={{ color: '#f1f5f9' }} />} label="Christian" />
+          <FormControlLabel value="muslim" control={<Radio sx={{ color: '#f1f5f9' }} />} label="Muslim" />
+          <FormControlLabel value="others" control={<Radio sx={{ color: '#f1f5f9' }} />} label="Others" />
         </RadioGroup>
       </FormControl>
-      <FormControl component="fieldset">
-        <FormLabel component="legend">Nationality</FormLabel>
+
+      <FormControl component="fieldset" sx={formControlStyle}>
+        <FormLabel component="legend" sx={{ color: '#f1f5f9' }}>Nationality</FormLabel>
         <RadioGroup row name="nationality" value={formData.nationality} onChange={handleChange}>
-          <FormControlLabel value="indian" control={<Radio />} label="Indian" />
-          <FormControlLabel value="nri" control={<Radio />} label="NRI" />
+          <FormControlLabel value="indian" control={<Radio sx={{ color: '#f1f5f9' }} />} label="Indian" />
+          <FormControlLabel value="nri" control={<Radio sx={{ color: '#f1f5f9' }} />} label="NRI" />
         </RadioGroup>
       </FormControl>
-      <TextField label="Address" name="address" value={formData.address} onChange={handleChange} required />
-      <TextField label="Parent ID" name="parent_id" value={formData.parent_id} onChange={handleChange} required />
-      <TextField label="School ID" name="school_id" value={formData.school_id} onChange={handleChange} required />
-      <Button type="submit" variant="contained" color="primary">Submit</Button>
+
+      <Box sx={{ marginBottom: '16px' }}>
+        <label style={labelStyle} htmlFor="address">Address *</label>
+        <textarea
+          id="address"
+          name="address"
+          value={formData.address}
+          onChange={handleChange}
+          required
+          style={{...inputStyle, minHeight: '80px', resize: 'vertical'}}
+        />
+      </Box>
+
+      <Box sx={{ marginBottom: '16px' }}>
+        <label style={labelStyle} htmlFor="parent_id">Parent ID *</label>
+        <input
+          id="parent_id"
+          name="parent_id"
+          value={formData.parent_id}
+          onChange={handleChange}
+          required
+          style={inputStyle}
+        />
+      </Box>
+
+      <Box sx={{ marginBottom: '16px' }}>
+        <label style={labelStyle} htmlFor="school_id">School ID *</label>
+        <input
+          id="school_id"
+          name="school_id"
+          value={formData.school_id}
+          onChange={handleChange}
+          required
+          style={inputStyle}
+        />
+      </Box>
+
+      <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: '16px' }}>
+        <Button 
+          type="submit" 
+          variant="contained" 
+          sx={{ 
+            backgroundColor: '#3b82f6', // Button background color
+            color: '#f1f5f9', // Button text color
+            padding: '8px 16px',
+            '&:hover': {
+              backgroundColor: '#2563eb', // Button hover background color
+            }
+          }}
+        >
+          Create Student Profile
+        </Button>
+      </Box>
     </Box>
   );
 };

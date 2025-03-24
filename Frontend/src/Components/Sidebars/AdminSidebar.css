@@ -1,0 +1,25 @@
+.ps-sidebar-container,
+[data-testid="ps-sidebar-container-test-id"],
+.ps-menu-root,
+.ps-submenu-content,
+.ps-menu-button {
+  background-color: #141b2d !important;
+}
+
+.admin-sidebar-wrapper,
+.admin-sidebar-wrapper * {
+  background-color: #141b2d !important;
+}
+
+.ps-submenu-content {
+  background-color: #1F2A40 !important;
+}
+
+.css-dip3t8,
+div[class^="css-"] {
+  background-color: #141b2d !important;
+}
+
+.MuiBox-root {
+  background-color: #141b2d !important;
+}

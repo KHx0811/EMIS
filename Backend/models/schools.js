@@ -1,10 +1,6 @@
 import { Schema, model } from "mongoose";
 const schoolSchema = new Schema({
-  name: {
-    type: String,
-    required: true,
-  },
-  district_id: {
+  school_name: {
     type: String,
     required: true,
   },
@@ -12,7 +8,11 @@ const schoolSchema = new Schema({
     type: String,
     required: true,
   },
-  principal: {
+  district_id: {
+    type: String,
+    required: true,
+  },
+  principal_name: {
     type: String,
     required: true,
   },

@@ -38,6 +38,7 @@ const App = () => {
         <Route path='/dashboard/principal' element={<PrincipalDashboard />} />
         <Route path='/dashboard/districthead' element={<DistrictDashboard />} />
         <Route path='/dashboard/admin' element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
+        <Route path='/dashboard/admin/:section' element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
       </Routes>
     </div>
   )

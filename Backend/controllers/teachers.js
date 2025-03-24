@@ -1,9 +1,10 @@
 import Teacher from "../models/teacher.js";
+import School from "../models/schools.js";
 import bcrypt from "bcrypt";
 
 export const getAllTeachers = async (req, res) => {
   try {
-    if (req.role !== "admin" && req.role !== "school" && req.role !== "districthead") {
+    if (req.user.role !== "admin") {
       return res.status(401).json({
         status: "error",
         message: "Unauthorized",
@@ -27,13 +28,32 @@ export const getAllTeachers = async (req, res) => {
 
 export const createTeacher = async (req, res) => {
   try {
-    if (req.role == "admin" || req.body.school_id == req.user._id) {
-      const { name, gender, age, school_id, religion, date_of_birth, nationality, qualification, email, phonenumber, password } = req.body;
+    if (req.user.role == "admin") {
+      const { teacher_id,name, gender, age, school_id, religion, date_of_birth, nationality, qualification, email, phonenumber, password } = req.body;
 
-      // Hash the password before saving
+      if (!teacher_id || !name || !gender || !age || !school_id || !religion || !date_of_birth || !nationality || !qualification || !email || !phonenumber || !password) {
+        return res.status(400).json({
+          status: "error",
+          message: "All fields are required",
+          data: null,
+        });
+      }
+
+      const schoolExists = await School.findOne({ school_id });
+
+      if(!schoolExists) {
+        return res.status(404).json({
+          status: "error",
+          message: "School not found",
+          code: "SCHOOL_NOT_FOUND",
+          data: null,
+        });
+      }
+
       const hashedPassword = await bcrypt.hash(password, 10);
 
       const teacher = new Teacher({
+        teacher_id,
         name,
         gender,
         age,
@@ -71,9 +91,9 @@ export const createTeacher = async (req, res) => {
 
 export const updateTeacher = async (req, res) => {
   try {
-    if (req.role == "admin" || req.role == "school") {
-      const teacherId = req.params.id;
-      const teacher = await Teacher.findById(teacherId);
+    if (req.user.role == "admin") {
+      const teacherId = req.params.teacher_id;
+      const teacher = await Teacher.findOne({teacher_id : teacherId});
       if (!teacher) {
         return res.status(404).json({
           status: "error",
@@ -81,7 +101,7 @@ export const updateTeacher = async (req, res) => {
           data: null,
         });
       }
-      if (req.role == "school" && teacher.school_id != req.user._id) {
+      if (req.user.role == "school" && teacher.school_id != req.user._id) {
         return res.status(401).json({
           status: "error",
           message: "Unauthorized",
@@ -112,9 +132,9 @@ export const updateTeacher = async (req, res) => {
 
 export const deleteTeacher = async (req, res) => {
   try {
-    if (req.role == "admin" || req.role == "school") {
-      const teacherId = req.params.id;
-      const teacher = await Teacher.findById(teacherId);
+    if (req.user.role == "admin") {
+      const teacherId = req.params.teacher_id;
+      const teacher = await Teacher.findOne({teacher_id : teacherId});
       if (!teacher) {
         return res.status(404).json({
           status: "error",
@@ -122,14 +142,14 @@ export const deleteTeacher = async (req, res) => {
           data: null,
         });
       }
-      if (req.role == "school" && teacher.school_id != req.user._id) {
+      if (req.user.role == "school" && teacher.school_id != req.user._id) {
         return res.status(401).json({
           status: "error",
           message: "Unauthorized",
           data: null,
         });
       }
-      await Teacher.findByIdAndDelete(teacherId);
+      await Teacher.findOneAndDelete({teacher_id : teacherId},req.body);
       return res.status(200).json({
         status: "success",
         message: "Teacher deleted successfully",
@@ -153,9 +173,9 @@ export const deleteTeacher = async (req, res) => {
 
 export const getTeacherById = async (req, res) => {
   try {
-    if (req.role == "admin" || req.role == "school") {
-      const teacherId = req.params.id;
-      const teacher = await Teacher.findById(teacherId);
+    if (req.user.role == "admin" || req.user.role == "school") {
+      const teacherId = req.params.teacher_id;
+      const teacher = await Teacher.findOne({teacher_id : teacherId});
       if (!teacher) {
         return res.status(404).json({
           status: "error",
@@ -163,7 +183,7 @@ export const getTeacherById = async (req, res) => {
           data: null,
         });
       }
-      if (req.role == "school" && teacher.school_id != req.user._id) {
+      if (req.user.role == "school" && teacher.school_id != req.user._id) {
         return res.status(401).json({
           status: "error",
           message: "Unauthorized",

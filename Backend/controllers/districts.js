@@ -3,7 +3,7 @@ import bcrypt from "bcrypt";
 
 export const getAllDistricts = async (req, res) => {
   try {
-    if (req.role !== "admin") {
+    if (req.user.role !== "admin") {
       return res.status(401).json({
         status: "error",
         message: "Unauthorized",
@@ -27,14 +27,13 @@ export const getAllDistricts = async (req, res) => {
 
 export const createDistrict = async (req, res) => {
   try {
-    if (req.role == "admin") {
-      const { name, state, email, password, district_id } = req.body;
+    if (req.user.role == "admin") {
+      const { district_name, state, email, password, district_id } = req.body;
 
-      // Hash the password before saving
       const hashedPassword = await bcrypt.hash(password, 10);
 
       const district = new District({
-        name,
+        district_name,
         state,
         email,
         password: hashedPassword,
@@ -65,7 +64,7 @@ export const createDistrict = async (req, res) => {
 
 export const deleteDistrict = async (req, res) => {
   try {
-    if (req.role == "admin") {
+    if (req.user.role == "admin") {
       const districtId = req.params.district_id;
       const district = await District.findOne({ district_id: districtId });
       if (!district) {
@@ -99,7 +98,7 @@ export const deleteDistrict = async (req, res) => {
 
 export const updateDistrict = async (req, res) => {
   try {
-    if (req.role == "admin") {
+    if (req.user.role == "admin") {
       const districtId = req.params.district_id;
       const district = await District.findOne({ district_id: districtId });
       if (!district) {
@@ -133,7 +132,7 @@ export const updateDistrict = async (req, res) => {
 
 export const getDistrictById = async (req, res) => {
   try {
-    if (req.role == "admin") {
+    if (req.user.role == "admin") {
       const districtId = req.params.district_id;
       const district = await District.findOne({ district_id: districtId });
       if (!district) {

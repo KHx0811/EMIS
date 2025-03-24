@@ -4,9 +4,21 @@ const parentSchema = new Schema({
     type: String,
     required: true,
   },
+  parent_id:{
+    type: String,
+    required: true
+  },
+  student_id:{
+    type: String,
+    required: true
+  },
   gender: {
     type: String,
     required: true,
+  },
+  relation:{
+    type: String,
+    required: true
   },
   age: {
     type: Number,
