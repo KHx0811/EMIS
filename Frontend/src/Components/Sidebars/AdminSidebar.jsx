@@ -4,6 +4,8 @@ import { LogOut } from 'lucide-react';
 import { Box, Typography } from '@mui/material';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { ResizableBox } from 'react-resizable';
+import 'react-resizable/css/styles.css';
 import './AdminSidebar.css';
 
 const AdminSidebar = ({ onMenuItemClick, currentMenuItem }) => {
@@ -92,9 +94,16 @@ const AdminSidebar = ({ onMenuItemClick, currentMenuItem }) => {
   }, []);
 
   return (
-    <Box
+    <ResizableBox
+      width={220}
+      height={Infinity}
+      minConstraints={[220, Infinity]}
+      maxConstraints={[window.innerWidth * 0.5, Infinity]}
+      axis="x"
+      handle={<span className="custom-handle custom-handle-x" />}
+      resizeHandles={['e']}
       className="admin-sidebar-wrapper"
-      sx={{
+      style={{
         position: 'relative',
         height: '100vh',
         backgroundColor: '#141b2d !important',
@@ -124,7 +133,7 @@ const AdminSidebar = ({ onMenuItemClick, currentMenuItem }) => {
             backgroundColor: '#141b2d !important'
           }
         }}
-        width="220px"
+        width="100%"
       >
         <Box 
           sx={{
@@ -379,7 +388,7 @@ const AdminSidebar = ({ onMenuItemClick, currentMenuItem }) => {
           Logout
         </button>
       </Box>
-    </Box>
+    </ResizableBox>
   );
 };
 

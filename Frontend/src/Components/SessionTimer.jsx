@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Typography } from '@mui/material';
 
-const SessionTimer = ({ theme, colors }) => {
+const SessionTimer = ({ tokenKey }) => {
   const [timeRemaining, setTimeRemaining] = useState(0);
   const [isWarning, setIsWarning] = useState(false);
 
   useEffect(() => {
     const calculateTimeRemaining = () => {
-      const token = localStorage.getItem('adminToken');
+      const token = localStorage.getItem(tokenKey);
       if (!token) return 0;
       
       try {
@@ -41,7 +41,7 @@ const SessionTimer = ({ theme, colors }) => {
     }, 1000);
     
     return () => clearInterval(intervalId);
-  }, []);
+  }, [tokenKey]);
 
   const minutes = Math.floor(timeRemaining / 60);
   const seconds = timeRemaining % 60;

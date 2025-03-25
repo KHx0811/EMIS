@@ -1,50 +1,46 @@
 import React, { useState, useEffect } from 'react';
-import { Sidebar, Menu, MenuItem } from 'react-pro-sidebar';
-import { LogOut, User, Calendar, FileText, Activity, MessageSquare, FilePlus } from 'lucide-react';
+import { Sidebar, Menu, MenuItem, SubMenu } from 'react-pro-sidebar';
+import { LogOut, User, Search, Calendar, FileText, Activity, MessageSquare, FilePlus, DollarSign, BarChart2 } from 'lucide-react';
 import { Box, Typography } from '@mui/material';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { ResizableBox } from 'react-resizable';
-import 'react-resizable/css/styles.css';
 import './AdminSidebar.css';
 
-const TeacherSidebar = ({ onMenuItemClick, currentMenuItem }) => {
+const DistrictSidebar = ({ onMenuItemClick, currentMenuItem }) => {
   const navigate = useNavigate();
   const [openSubmenu, setOpenSubmenu] = useState(null);
-  const [teacherName, setTeacherName] = useState('Teacher');
+  const [districtName, setDistrictName] = useState('District Head');
 
   useEffect(() => {
     if (currentMenuItem) {
       if (currentMenuItem.includes('Profile')) {
         setOpenSubmenu('Profile');
-      } else if (currentMenuItem.includes('Attendance')) {
-        setOpenSubmenu('Attendance');
-      } else if (currentMenuItem.includes('Marks')) {
-        setOpenSubmenu('Marks');
-      } else if (currentMenuItem.includes('Assignments')) {
-        setOpenSubmenu('Assignments');
-      } else if (currentMenuItem.includes('Activities')) {
-        setOpenSubmenu('Activities');
-      } else if (currentMenuItem.includes('Events')) {
-        setOpenSubmenu('School Events');
-      } else if (currentMenuItem.includes('Parent Interaction')) {
-        setOpenSubmenu('Parent Interaction');
-      } else if (currentMenuItem.includes('Leave')) {
-        setOpenSubmenu('Leave');
+      } else if (currentMenuItem.includes('SchoolSearch')) {
+        setOpenSubmenu('School Search');
+      } else if (currentMenuItem.includes('Budgets')) {
+        setOpenSubmenu('Budgets');
+      } else if (currentMenuItem.includes('Invitations')) {
+        setOpenSubmenu('Invitations');
+      } else if (currentMenuItem.includes('Meetings')) {
+        setOpenSubmenu('Meetings');
+      } else if (currentMenuItem.includes('SchoolProgress')) {
+        setOpenSubmenu('School Progress');
+      } else if (currentMenuItem.includes('Exams')) {
+        setOpenSubmenu('Exams');
       }
     }
   }, [currentMenuItem]);
 
   const fetchUserDetails = async () => {
     try {
-      const storedName = localStorage.getItem('teacherName');
+      const storedUsername = localStorage.getItem('districtUsername');
       
-      if (storedName) {
-        setTeacherName(storedName);
+      if (storedUsername) {
+        setDistrictName(storedUsername);
         return;
       }
       
-      const token = localStorage.getItem('teacherToken');
+      const token = localStorage.getItem('districtToken');
       if (!token) return;
       
       const response = await axios.get('http://localhost:3000/api/users/details', {
@@ -53,9 +49,9 @@ const TeacherSidebar = ({ onMenuItemClick, currentMenuItem }) => {
         }
       });
       
-      if (response.data && response.data.data && response.data.data.name) {
-        setTeacherName(response.data.data.name);
-        localStorage.setItem('teacherUsername', response.data.data.name);
+      if (response.data && response.data.data && response.data.data.username) {
+        setDistrictName(response.data.data.username);
+        localStorage.setItem('districtUsername', response.data.data.username);
       }
     } catch (error) {
       console.error('Error fetching user details:', error);
@@ -65,16 +61,16 @@ const TeacherSidebar = ({ onMenuItemClick, currentMenuItem }) => {
 
   const tryExtractUsernameFromToken = () => {
     try {
-      const token = localStorage.getItem('teacherToken');
+      const token = localStorage.getItem('districtToken');
       if (!token) return;
       
       const tokenParts = token.split('.');
       if (tokenParts.length !== 3) return;
       
       const payload = JSON.parse(atob(tokenParts[1]));
-      if (payload.name) {
-        setTeacherName(payload.name);
-        localStorage.setItem('teacherUsername', payload.name);
+      if (payload.username) {
+        setDistrictName(payload.username);
+        localStorage.setItem('districtUsername', payload.username);
       }
     } catch (e) {
       console.error('Error extracting username from token:', e);
@@ -86,9 +82,9 @@ const TeacherSidebar = ({ onMenuItemClick, currentMenuItem }) => {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('teacherToken');
-    localStorage.removeItem('teacherUsername');
-    navigate('/login/teacher');
+    localStorage.removeItem('districtToken');
+    localStorage.removeItem('districtUsername');
+    navigate('/login/district');
   };
 
   const handleDashboardClick = () => {
@@ -100,16 +96,9 @@ const TeacherSidebar = ({ onMenuItemClick, currentMenuItem }) => {
   }, []);
 
   return (
-    <ResizableBox
-      width={220}
-      height={Infinity}
-      minConstraints={[220, Infinity]}
-      maxConstraints={[window.innerWidth * 0.5, Infinity]}
-      axis="x"
-      handle={<span className="custom-handle custom-handle-x" />}
-      resizeHandles={['e']}
-      className="teacher-sidebar-wrapper"
-      style={{
+    <Box
+      className="district-sidebar-wrapper"
+      sx={{
         position: 'relative',
         height: '100vh',
         backgroundColor: '#141b2d !important',
@@ -126,20 +115,8 @@ const TeacherSidebar = ({ onMenuItemClick, currentMenuItem }) => {
           backgroundColor: '#141b2d !important',
           position: 'relative',
           color: '#ffffff',
-          '& .ps-sidebar-container': {
-            backgroundColor: '#141b2d !important'
-          },
-          '& .ps-menu-root': {
-            backgroundColor: '#141b2d !important'
-          },
-          '& [data-testid="ps-sidebar-container-test-id"]': {
-            backgroundColor: '#141b2d !important'
-          },
-          '& .MuiBox-root': {
-            backgroundColor: '#141b2d !important'
-          }
         }}
-        width="100%"
+        width="220px"
       >
         <Box 
           sx={{
@@ -160,10 +137,10 @@ const TeacherSidebar = ({ onMenuItemClick, currentMenuItem }) => {
             onClick={handleDashboardClick}
           >
             <Typography variant="h6" sx={{ color: '#ffffff', margin: '8px 0 0 0', fontSize: '1.2rem', fontWeight: 'bold' }}>
-              {teacherName}
+              {districtName}
             </Typography>
             <Typography variant="body2" sx={{ color: '#00deb6', margin: '2px 0 0 0', fontSize: '0.85rem', opacity: 0.9 }}>
-              Teacher
+              District Head
             </Typography>
           </Box>
         </Box>
@@ -192,6 +169,13 @@ const TeacherSidebar = ({ onMenuItemClick, currentMenuItem }) => {
               backgroundColor: '#141b2d !important',
             }}
           >
+            <MenuItem 
+              onClick={handleDashboardClick} 
+              active={currentMenuItem === 'dashboard'}
+              icon={<User size={18} />}
+            >
+              Dashboard
+            </MenuItem>
 
             <MenuItem 
               onClick={() => onMenuItemClick('profile')}
@@ -202,59 +186,51 @@ const TeacherSidebar = ({ onMenuItemClick, currentMenuItem }) => {
             </MenuItem>
 
             <MenuItem 
-              onClick={() => onMenuItemClick('attendance')}
-              active={currentMenuItem === 'attendance'}
-              icon={<Calendar size={18} />}
+              onClick={() => onMenuItemClick('schoolSearch')}
+              active={currentMenuItem === 'schoolSearch'}
+              icon={<Search size={18} />}
             >
-              Upload Attendance
+              School Search
             </MenuItem>
 
             <MenuItem 
-              onClick={() => onMenuItemClick('marks')}
-              active={currentMenuItem === 'marks'}
-              icon={<FileText size={18} />}
+              onClick={() => onMenuItemClick('budgets')}
+              active={currentMenuItem === 'budgets'}
+              icon={<DollarSign size={18} />}
             >
-              Upload Marks
+              Budgets
             </MenuItem>
 
             <MenuItem 
-              onClick={() => onMenuItemClick('assignments')}
-              active={currentMenuItem === 'assignments'}
+              onClick={() => onMenuItemClick('invitations')}
+              active={currentMenuItem === 'invitations'}
               icon={<FilePlus size={18} />}
             >
-              Assignments
+              Invitations
             </MenuItem>
 
             <MenuItem 
-              onClick={() => onMenuItemClick('activities')}
-              active={currentMenuItem === 'activities'}
-              icon={<Activity size={18} />}
-            >
-              Activities
-            </MenuItem>
-
-            <MenuItem 
-              onClick={() => onMenuItemClick('events')}
-              active={currentMenuItem === 'events'}
-              icon={<Calendar size={18} />}
-            >
-              School Events
-            </MenuItem>
-
-            <MenuItem 
-              onClick={() => onMenuItemClick('parentInteraction')}
-              active={currentMenuItem === 'parentInteraction'}
+              onClick={() => onMenuItemClick('meetings')}
+              active={currentMenuItem === 'meetings'}
               icon={<MessageSquare size={18} />}
             >
-              Parent Interaction
+              Meetings
             </MenuItem>
 
             <MenuItem 
-              onClick={() => onMenuItemClick('leave')}
-              active={currentMenuItem === 'leave'}
-              icon={<Calendar size={18} />}
+              onClick={() => onMenuItemClick('schoolProgress')}
+              active={currentMenuItem === 'schoolProgress'}
+              icon={<Activity size={18} />}
             >
-              Apply Leave
+              School Progress
+            </MenuItem>
+
+            <MenuItem 
+              onClick={() => onMenuItemClick('exams')}
+              active={currentMenuItem === 'exams'}
+              icon={<FileText size={18} />}
+            >
+              Exams
             </MenuItem>
           </Menu>
         </Box>
@@ -291,8 +267,8 @@ const TeacherSidebar = ({ onMenuItemClick, currentMenuItem }) => {
           Logout
         </button>
       </Box>
-    </ResizableBox>
+    </Box>
   );
 };
 
-export default TeacherSidebar;
+export default DistrictSidebar;

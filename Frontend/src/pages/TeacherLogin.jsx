@@ -36,9 +36,15 @@ const TeacherLogin = () => {
     if (validateCaptcha(captchaValue)) {
       try {
         const response = await axios.post('http://localhost:3000/api/auth/login', formData);
-        console.log('Login successful:', response.data);
-        alert('Teacher Login Successful');
-        navigate('/dashboard/teacher');
+        if (response.data.status === 'success') {
+          localStorage.setItem('teacherToken', response.data.data);
+          console.log('Login successful:', response.data);
+          alert('Teacher Login Successful');
+          navigate('/dashboard/teacher');
+        } else {
+          console.error('Login failed:', response.data.message);
+          alert('Login failed. Please try again.');
+        }
       } catch (error) {
         console.error('Error during login:', error);
         alert('Login failed. Please try again.');

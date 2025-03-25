@@ -6,30 +6,30 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import AdminSidebar from '../../Components/Sidebars/AdminSidebar';
 import SessionTimer from '../../Components/SessionTimer';
 
-import CreateStudentForm from '@/forms/Student/CreateStudentForm';
-import UpdateStudent from '@/forms/Student/UpdateStudent';
-import StudentList from '@/forms/Student/StudentList';
-import DeleteStudent from '@/forms/Student/DeleteStudent';
+import CreateStudentForm from '@/forms/Admin/Student/CreateStudentForm';
+import UpdateStudent from '@/forms/Admin/Student/UpdateStudent';
+import StudentList from '@/forms/Admin/Student/StudentList';
+import DeleteStudent from '@/forms/Admin/Student/DeleteStudent';
 
-import CreateParent from '@/forms/Parent/CreateParent';
-import UpdateParent from '@/forms/Parent/UpdateParent';
-import ParentDetails from '@/forms/Parent/ParentDetails';
-import DeleteParent from '@/forms/Parent/DeleteParent';
+import CreateParent from '@/forms/Admin/Parent/CreateParent';
+import UpdateParent from '@/forms/Admin/Parent/UpdateParent';
+import ParentDetails from '@/forms/Admin/Parent/ParentDetails';
+import DeleteParent from '@/forms/Admin/Parent/DeleteParent';
 
-import CreateTeacher from '@/forms/Teacher/CreateTeacher';
-import UpdateTeacher from '@/forms/Teacher/UpdateTeacher';
-import TeacherDetails from '@/forms/Teacher/TeacherDetails';
-import DeleteTeacher from '@/forms/Teacher/DeleteTeacher';
+import CreateTeacher from '@/forms/Admin/Teacher/CreateTeacher';
+import UpdateTeacher from '@/forms/Admin/Teacher/UpdateTeacher';
+import TeacherDetails from '@/forms/Admin/Teacher/TeacherDetails';
+import DeleteTeacher from '@/forms/Admin/Teacher/DeleteTeacher';
 
-import CreateSchool from '@/forms/School/CreateSchool';
-import UpdateSchool from '@/forms/School/UpdateSchool';
-import SchoolDetails from '@/forms/School/SchoolDetails';
-import DeleteSchool from '@/forms/School/DeleteSchool';
+import CreateSchool from '@/forms/Admin/School/CreateSchool';
+import UpdateSchool from '@/forms/Admin/School/UpdateSchool';
+import SchoolDetails from '@/forms/Admin/School/SchoolDetails';
+import DeleteSchool from '@/forms/Admin/School/DeleteSchool';
 
-import CreateDistrict from '@/forms/District/CreateDistrict';
-import UpdateDistrict from '@/forms/District/UpdateDistrict';
-import DistrictDetails from '@/forms/District/DistrictDetails';
-import DeleteDistrict from '@/forms/District/DeleteDistrict';
+import CreateDistrict from '@/forms/Admin/District/CreateDistrict';
+import UpdateDistrict from '@/forms/Admin/District/UpdateDistrict';
+import DistrictDetails from '@/forms/Admin/District/DistrictDetails';
+import DeleteDistrict from '@/forms/Admin/District/DeleteDistrict';
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
@@ -370,7 +370,7 @@ const AdminDashboard = () => {
             Admin Dashboard
           </h1>
           
-          <SessionTimer />
+          <SessionTimer tokenKey="adminToken"/>
         </Box>
 
         {renderContent()}

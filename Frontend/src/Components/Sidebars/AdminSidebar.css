@@ -23,3 +23,17 @@ div[class^="css-"] {
 .MuiBox-root {
   background-color: #141b2d !important;
 }
+
+.custom-handle {
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 10px;
+  cursor: col-resize;
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.custom-handle:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
