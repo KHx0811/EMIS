@@ -5,7 +5,7 @@ import {
   updateStudent,
   getStudentById,
 } from "../controllers/students.js";
-import { verifyToken,isAdmin } from "../middleware/authenticator.js";
+import { verifyToken,isAdmin,isTeacher } from "../middleware/authenticator.js";
 import express from "express";
 
 const router = express.Router();

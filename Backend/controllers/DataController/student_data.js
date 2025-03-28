@@ -1,131 +1,95 @@
-import Student from '../models/student';
-import StudentData from '../models/DataModels/student_data';
+import Student from '../../models/students.js';
+import StudentData from '../../models/DataModels/student_data.js';
 import mongoose from 'mongoose';
 
-export const studentControllers = {
-  uploadMarks: async (req, res) => {
-    try {
-      const { studentId, subject, value, maxMarks, type } = req.body;
-      
-      const student = await StudentData.findById(studentId);
-      if (!student) {
-        return res.status(404).json({ message: 'Student not found' });
-      }
+export const uploadMarks = async (req, res) => {
+  try {
+    const { studentId, subject, value, maxMarks, type } = req.body;
 
-      student.marks.push({
-        subject,
-        value,
-        maxMarks,
-        type: type || 'Monthly',
-        date: new Date()
-      });
-
-      await student.save();
-      
-      res.status(200).json({ 
-        message: 'Marks uploaded successfully', 
-        data: student.marks 
-      });
-    } catch (error) {
-      res.status(500).json({ message: 'Server error', error: error.message });
+    // Search for student in the Student database
+    const student = await Student.findOne({ student_id: studentId });
+    if (!student) {
+      return res.status(404).json({ message: 'Student not found' });
     }
-  },
 
-  uploadAttendance: async (req, res) => {
-    try {
-      const { studentId, month, totalDays, presentDays } = req.body;
-      
-      const student = await StudentData.findById(studentId);
-      if (!student) {
-        return res.status(404).json({ message: 'Student not found' });
-      }
-
-      const attendancePercentage = (presentDays / totalDays) * 100;
-      const attendanceStatus = attendancePercentage >= 75 ? 'Good' : 'Poor';
-
-      const existingAttendance = student.attendance.find(a => a.month === month);
-      
-      if (existingAttendance) {
-        existingAttendance.totalDays = totalDays;
-        existingAttendance.presentDays = presentDays;
-        existingAttendance.status = attendanceStatus;
-        existingAttendance.value = attendancePercentage;
-      } else {
-        student.attendance.push({
-          month,
-          totalDays,
-          presentDays,
-          status: attendanceStatus,
-          value: attendancePercentage
-        });
-      }
-
-      await student.save();
-      
-      res.status(200).json({ 
-        message: 'Attendance uploaded successfully', 
-        data: student.attendance 
-      });
-    } catch (error) {
-      res.status(500).json({ message: 'Server error', error: error.message });
+    const studentData = await StudentData.findById(student._id);
+    if (!studentData) {
+      return res.status(404).json({ message: 'Student data not found' });
     }
-  },
 
-  createAssignment: async (req, res) => {
-    try {
-      const { studentId, title, description, subject, dueDate, maxMarks, teacherId } = req.body;
-      
-      const student = await StudentData.findById(studentId);
-      if (!student) {
-        return res.status(404).json({ message: 'Student not found' });
-      }
+    studentData.marks.push({
+      subject,
+      value,
+      maxMarks,
+      type: type || 'Monthly',
+      date: new Date()
+    });
 
-      student.assignments.push({
-        title,
-        description,
-        subject,
-        dueDate: new Date(dueDate),
-        maxMarks,
-        teacherId,
-        status: 'Pending'
-      });
+    await studentData.save();
 
-      await student.save();
-      
-      res.status(201).json({ 
-        message: 'Assignment created successfully', 
-        data: student.assignments 
-      });
-    } catch (error) {
-      res.status(500).json({ message: 'Server error', error: error.message });
+    res.status(200).json({
+      message: 'Marks uploaded successfully',
+      data: studentData.marks
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};
+
+export const uploadAttendance = async (req, res) => {
+  try {
+    const { studentId, date, status } = req.body;
+
+    const student = await Student.findOne({ student_id: studentId });
+    if (!student) {
+      return res.status(404).json({ message: 'Student not found' });
     }
-  },
 
-  addActivity: async (req, res) => {
-    try {
-      const { studentId, name, type, description, achievement } = req.body;
-      
-      const student = await StudentData.findById(studentId);
-      if (!student) {
-        return res.status(404).json({ message: 'Student not found' });
-      }
-
-      student.activities.push({
-        name,
-        type,
-        description,
-        achievement,
-        date: new Date()
-      });
-
-      await student.save();
-      
-      res.status(201).json({ 
-        message: 'Activity added successfully', 
-        data: student.activities 
-      });
-    } catch (error) {
-      res.status(500).json({ message: 'Server error', error: error.message });
+    const studentData = await StudentData.findById(student._id);
+    if (!studentData) {
+      return res.status(404).json({ message: 'Student data not found' });
     }
+
+    studentData.attendance.push({
+      date: new Date(date),
+      status
+    });
+
+    await studentData.save();
+
+    res.status(200).json({
+      message: 'Attendance uploaded successfully',
+      data: studentData.attendance
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};
+
+export const searchStudentById = async (req, res) => {
+  try {
+    const { studentId } = req.params;
+    console.log('Searching for student:', studentId); // Add logging
+
+    const student = await Student.findOne({ student_id: studentId });
+    if (!student) {
+      return res.status(404).json({ message: 'Student not found' });
+    }
+
+    const studentData = await StudentData.findById(student._id);
+    if (!studentData) {
+      return res.status(404).json({ message: 'Student data not found' });
+    }
+
+    res.status(200).json({
+      message: 'Student retrieved successfully',
+      data: studentData
+    });
+  } catch (error) {
+    console.error('Error in searchStudentById:', error); // Add detailed logging
+    res.status(500).json({
+      message: 'Server error',
+      error: error.message
+    });
   }
 };

@@ -17,48 +17,46 @@ const TeacherSidebar = ({ onMenuItemClick, currentMenuItem }) => {
     if (currentMenuItem) {
       if (currentMenuItem.includes('Profile')) {
         setOpenSubmenu('Profile');
+      } else if (currentMenuItem.includes('Search Student')) {
+        setOpenSubmenu('Search Student');
       } else if (currentMenuItem.includes('Attendance')) {
         setOpenSubmenu('Attendance');
       } else if (currentMenuItem.includes('Marks')) {
         setOpenSubmenu('Marks');
       } else if (currentMenuItem.includes('Assignments')) {
         setOpenSubmenu('Assignments');
-      } else if (currentMenuItem.includes('Activities')) {
-        setOpenSubmenu('Activities');
       } else if (currentMenuItem.includes('Events')) {
         setOpenSubmenu('School Events');
       } else if (currentMenuItem.includes('Parent Interaction')) {
         setOpenSubmenu('Parent Interaction');
       } else if (currentMenuItem.includes('Leave')) {
         setOpenSubmenu('Leave');
+      } else if (currentMenuItem.includes('Contact Admin')) {
+        setOpenSubmenu('Contact Admin');
       }
     }
   }, [currentMenuItem]);
 
   const fetchUserDetails = async () => {
-    try {
-      const storedName = localStorage.getItem('teacherName');
-      
-      if (storedName) {
-        setTeacherName(storedName);
+    try {      
+      const token = localStorage.getItem('teacherToken');
+      if (!token) {
+        console.error('No token found');
         return;
       }
       
-      const token = localStorage.getItem('teacherToken');
-      if (!token) return;
-      
-      const response = await axios.get('http://localhost:3000/api/users/details', {
+      const response = await axios.get('http://localhost:3000/api/teachers/details', {
         headers: {
           Authorization: `Bearer ${token}`
         }
       });
       
-      if (response.data && response.data.data && response.data.data.name) {
+      if (response.data && response.data.data) {
         setTeacherName(response.data.data.name);
-        localStorage.setItem('teacherUsername', response.data.data.name);
+        localStorage.setItem('teacherName', response.data.data.name);
       }
     } catch (error) {
-      console.error('Error fetching user details:', error);
+      console.error('Error fetching user details:', error.response ? error.response.data : error.message);
       tryExtractUsernameFromToken();
     }
   };
@@ -200,6 +198,13 @@ const TeacherSidebar = ({ onMenuItemClick, currentMenuItem }) => {
             >
               Profile
             </MenuItem>
+            <MenuItem 
+              onClick={() => onMenuItemClick('search student')}
+              active={currentMenuItem === 'search student'}
+              icon={<Activity size={18} />}
+            >
+              Search Student
+            </MenuItem>
 
             <MenuItem 
               onClick={() => onMenuItemClick('attendance')}
@@ -226,14 +231,6 @@ const TeacherSidebar = ({ onMenuItemClick, currentMenuItem }) => {
             </MenuItem>
 
             <MenuItem 
-              onClick={() => onMenuItemClick('activities')}
-              active={currentMenuItem === 'activities'}
-              icon={<Activity size={18} />}
-            >
-              Activities
-            </MenuItem>
-
-            <MenuItem 
               onClick={() => onMenuItemClick('events')}
               active={currentMenuItem === 'events'}
               icon={<Calendar size={18} />}
@@ -255,6 +252,13 @@ const TeacherSidebar = ({ onMenuItemClick, currentMenuItem }) => {
               icon={<Calendar size={18} />}
             >
               Apply Leave
+            </MenuItem>
+            <MenuItem 
+              onClick={() => onMenuItemClick('Contact Admin')}
+              active={currentMenuItem === 'Contact Admin'}
+              icon={<FileText size={18} />}
+            >
+              Contact Admin
             </MenuItem>
           </Menu>
         </Box>

@@ -4,6 +4,14 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import ParentSidebar from '../../Components/Sidebars/ParentSidebar';
 import { BookOpen, Bell, Calendar, CreditCard } from 'lucide-react';
+import Attendence from '@/forms/Parent/Attendence';
+import Marks from '@/forms/Parent/Marks';
+import Teachers from '@/forms/Parent/Teachers';
+import Feedues from '@/forms/Parent/Feedues';
+import SchoolEvents from '@/forms/Parent/SchoolEvents';
+import PTMeetings from '@/forms/Parent/PTMeetings';
+import Activities from '@/forms/Parent/Activities';
+import SessionTimer from '@/Components/SessionTimer';
 
 const ParentDashboard = () => {
   const navigate = useNavigate();
@@ -15,100 +23,177 @@ const ParentDashboard = () => {
   };
 
   const [selectedMenuItem, setSelectedMenuItem] = useState(getSelectedMenuItem());
-  const [notifications, setNotifications] = useState([]);
-  const [children, setChildren] = useState([
-    { _id: '1', name: 'John Doe' },
-    { _id: '2', name: 'Jane Doe' }
-  ]);
+
+  const globalStyles = {
+    '& .form-field': {
+      marginBottom: '24px',
+      position: 'relative',
+    },
+    '& input, & select, & textarea': {
+      backgroundColor: '#1F2A40',
+      color: '#e0e0e0',
+      border: '1px solid #3d3d3d',
+      padding: '12px 16px',
+      borderRadius: '4px',
+      width: '100%',
+      fontSize: '0.9rem',
+      height: '48px',
+      '&:focus': {
+        borderColor: '#00deb6',
+        outline: 'none',
+      },
+      '&::placeholder': {
+        color: '#a3a3a3',
+      }
+    },
+    '& .MuiInputBase-root': {
+      backgroundColor: '#1F2A40',
+    },
+    '& .MuiOutlinedInput-notchedOutline': {
+      borderColor: '#3d3d3d',
+    },
+    '& .MuiInputBase-input': {
+      color: '#e0e0e0',
+    },
+    '& .MuiInputLabel-root': {
+      color: '#e0e0e0',
+      '&.Mui-focused': {
+        color: '#00deb6',
+      }
+    },
+    '& .MuiFormLabel-root': {
+      color: '#e0e0e0',
+    },
+    '& .MuiRadio-root': {
+      color: '#a3a3a3',
+      '&.Mui-checked': {
+        color: '#00deb6',
+      }
+    },
+    '& .MuiSelect-select': {
+      backgroundColor: '#1F2A40',
+      color: '#e0e0e0',
+    },
+    '& .MuiMenuItem-root': {
+      backgroundColor: '#141b2d',
+      color: '#e0e0e0',
+      '&:hover': {
+        backgroundColor: '#1F2A40',
+      },
+      '&.Mui-selected': {
+        backgroundColor: 'rgba(0, 222, 182, 0.2)',
+      }
+    },
+    '& .MuiFormControlLabel-label': {
+      color: '#e0e0e0',
+    },
+    '& .MuiButton-contained': {
+      backgroundColor: '#00deb6',
+      color: '#0f1322',
+      '&:hover': {
+        backgroundColor: '#00b696',
+      }
+    }
+  };
+
+  const getToken = () => {
+    const token = localStorage.getItem('parentToken');
+    if (!token) {
+      navigate('/login/parent');
+      return null;
+    }
+    return token;
+  };
+
+  const checkTokenExpiration = () => {
+    const token = localStorage.getItem('parentToken');
+    if (!token) return;
+    
+    const tokenParts = token.split('.');
+    if (tokenParts.length !== 3) {
+      console.error('Invalid token format');
+      return;
+    }
+    
+    try {
+      const payload = JSON.parse(atob(tokenParts[1]));
+      const currentTime = Math.floor(Date.now() / 1000);
+      if (payload.exp && payload.exp < currentTime) {
+        console.error('Token has expired at:', new Date(payload.exp * 1000));
+        console.log('Current time:', new Date(currentTime * 1000));
+        localStorage.removeItem('parentToken');
+        localStorage.removeItem('parentUsername');
+        navigate('/login/parent');
+      }
+    } catch (e) {
+      console.error('Error decoding token:', e);
+    }
+  };
+
+  useEffect(() => {
+      checkTokenExpiration();
+      const token = localStorage.getItem('parentToken');
+      if (!token) {
+        navigate('/login/parent');
+        return;
+      }
+      
+      const verifyToken = async () => {
+        try {
+          await axios.get('http://localhost:3000/api/auth/verify', {
+            headers: {
+              Authorization: `Bearer ${token}`
+            }
+          });
+          console.log('Token verified successfully');
+        } catch (error) {
+          console.error('Token verification failed:', error);
+          localStorage.removeItem('parentToken');
+          localStorage.removeItem('parentUsername');
+          navigate('/login/parent');
+        }
+      };
+      
+      verifyToken();
+      
+      setSelectedMenuItem(getSelectedMenuItem());
+    }, [location.pathname]);
 
   const handleMenuItemClick = (menuItem) => {
     setSelectedMenuItem(menuItem);
     navigate(`/dashboard/parent/${menuItem}`);
   };
 
-  const fetchNotifications = async () => {
-    try {
-      const token = localStorage.getItem('parentToken');
-      const response = await axios.get('http://localhost:3000/api/parents/notifications', {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
-      setNotifications(response.data.data);
-    } catch (error) {
-      console.error('Error fetching notifications:', error);
-    }
-  };
-
-  useEffect(() => {
-    fetchNotifications();
-  }, []);
 
   const renderContent = () => {
     switch (selectedMenuItem) {
-      case 'dashboard':
+      case 'profile':
         return (
-          <Box>
+          <Box sx={globalStyles}>
             <Typography variant="h4" sx={{ color: '#e0e0e0', mb: 3 }}>
               Welcome to the Parent Dashboard
             </Typography>
-            <Grid container spacing={3}>
-              <Grid item xs={12} md={6}>
-                <Card sx={{ backgroundColor: '#1F2A40', color: '#e0e0e0' }}>
-                  <CardContent>
-                    <Typography variant="h5">Child 1</Typography>
-                    <Typography variant="body2">Details about Child 1</Typography>
-                  </CardContent>
-                </Card>
-              </Grid>
-              <Grid item xs={12} md={6}>
-                <Card sx={{ backgroundColor: '#1F2A40', color: '#e0e0e0' }}>
-                  <CardContent>
-                    <Typography variant="h5">Child 2</Typography>
-                    <Typography variant="body2">Details about Child 2</Typography>
-                  </CardContent>
-                </Card>
-              </Grid>
-            </Grid>
-          </Box>
-        );
-      case 'fees':
-        return (
-          <Box>
-            <Typography variant="h4" sx={{ color: '#e0e0e0', mb: 3 }}>
-              Fee Management
-            </Typography>
             <Typography variant="body1" sx={{ color: '#e0e0e0' }}>
-              Details about fee management.
+              Details about the principal's profile.
             </Typography>
           </Box>
         );
-      case 'meetings':
-        return (
-          <Box>
-            <Typography variant="h4" sx={{ color: '#e0e0e0', mb: 3 }}>
-              Parent-Teacher Meetings
-            </Typography>
-            <Typography variant="body1" sx={{ color: '#e0e0e0' }}>
-              Details about parent-teacher meetings.
-            </Typography>
-          </Box>
-        );
-      case 'notifications':
-        return (
-          <Box>
-            <Typography variant="h4" sx={{ color: '#e0e0e0', mb: 3 }}>
-              Notifications
-            </Typography>
-            {notifications.map((notification, index) => (
-              <Card key={index} sx={{ backgroundColor: '#1F2A40', color: '#e0e0e0', mb: 2 }}>
-                <CardContent>
-                  <Typography variant="body1">{notification.message}</Typography>
-                </CardContent>
-              </Card>
-            ))}
-          </Box>
-        );
+        case 'attendence':
+          return <Box sx={globalStyles}><Attendence /></Box>;
+        case 'marks':
+          return <Box sx={globalStyles}><Marks /></Box>;
+        case 'teachers':
+          return <Box sx={globalStyles}><Teachers /></Box>;
+        case 'feedues':
+          return <Box sx={globalStyles}><Feedues /></Box>;
+        case 'events':
+          return <Box sx={globalStyles}><SchoolEvents /></Box>;
+        case 'PT meetings':
+          return <Box sx={globalStyles}><PTMeetings /></Box>;
+        case 'activities':
+          return <Box sx={globalStyles}><Activities /></Box>;
+        case 'contactAdmin':
+          return <Box sx={globalStyles}><ContactAdmin /></Box>
       default:
         return (
           <Box>
@@ -126,7 +211,6 @@ const ParentDashboard = () => {
       <ParentSidebar 
         onMenuItemClick={handleMenuItemClick} 
         currentMenuItem={selectedMenuItem} 
-        children={children}
       />
       
       <Box
@@ -152,6 +236,7 @@ const ParentDashboard = () => {
           <Typography variant="h4" sx={{ color: '#e0e0e0' }}>
             Parent Dashboard
           </Typography>
+          <SessionTimer tokenKey="parentToken" />
         </Box>
 
         {renderContent()}

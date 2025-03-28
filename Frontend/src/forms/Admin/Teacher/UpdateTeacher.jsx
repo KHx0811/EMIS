@@ -31,40 +31,32 @@ const UpdateTeacher = () => {
         navigate('/login/admin');
         return null;
       }
-      
       const response = await axios.get(`http://localhost:3000/api/teachers/${id}`, {
         headers: {
-          Authorization: `Bearer ${token}`
-        }
+          Authorization: `Bearer ${token}`,
+        },
       });
-      
-      if (response.data && response.data.data) {
-        const data = response.data.data;
-        if (data.date_of_birth) {
-          data.date_of_birth = new Date(data.date_of_birth).toISOString().split('T')[0];
-        } else {
-          data.date_of_birth = '';
-        }
-        
-        return data;
-      } else {
-        setError('No data found for this teacher ID');
+      const data = response.data.data;
+      if (!data) {
+        setTeacherData(null);
+        alert('Teacher not found. Please check the ID and try again.');
         return null;
       }
+      if (data.date_of_birth) {
+        data.date_of_birth = new Date(data.date_of_birth).toISOString().split('T')[0];
+      }
+      return data;
     } catch (error) {
       console.error('Error fetching teacher data:', error);
-      if (error.response) {
-        if (error.response.status === 401 || error.response.status === 403) {
-          alert('Your session has expired. Please login again.');
-          localStorage.removeItem('adminToken');
-          navigate('/login/admin');
-        } else {
-          setError(`Error: ${error.response.data?.message || 'Failed to fetch teacher data'}`);
-        }
-      } else if (error.request) {
-        setError('Network error. Please check your connection.');
+      if (error.response && error.response.status === 404) {
+        setTeacherData(null);
+        alert('Teacher not found. Please check the ID and try again.');
+      } else if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+        alert('Your session has expired. Please login again.');
+        localStorage.removeItem('adminToken');
+        navigate('/login/admin');
       } else {
-        setError('An unexpected error occurred. Please try again.');
+        alert('Error fetching teacher data. Please try again.');
       }
       return null;
     }

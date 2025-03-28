@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Sidebar, Menu, MenuItem, SubMenu } from 'react-pro-sidebar';
-import { LogOut, User, Search, Calendar, FileText, Activity, MessageSquare, FilePlus, DollarSign, BarChart2 } from 'lucide-react';
+import { Sidebar, Menu, MenuItem } from 'react-pro-sidebar';
+import { LogOut, User, Search, Calendar, DollarSign, BarChart2, Activity, FileText } from 'lucide-react';
 import { Box, Typography } from '@mui/material';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import './AdminSidebar.css';
+import axios from 'axios';
+import { ResizableBox } from 'react-resizable';
 
 const PrincipalSidebar = ({ onMenuItemClick, currentMenuItem }) => {
   const navigate = useNavigate();
@@ -13,24 +13,24 @@ const PrincipalSidebar = ({ onMenuItemClick, currentMenuItem }) => {
 
   useEffect(() => {
     if (currentMenuItem) {
-      if (currentMenuItem.includes('Profile')) {
-        setOpenSubmenu('Profile');
-      } else if (currentMenuItem.includes('StudentSearch')) {
+      if (currentMenuItem.includes('Student Search')) {
         setOpenSubmenu('Student Search');
-      } else if (currentMenuItem.includes('TeacherSearch')) {
+      } else if (currentMenuItem.includes('Teacher Search')) {
         setOpenSubmenu('Teacher Search');
       } else if (currentMenuItem.includes('SchoolFees')) {
-        setOpenSubmenu('School Fees');
-      } else if (currentMenuItem.includes('BudgetAllocation')) {
+        setOpenSubmenu('SchoolFees');
+      } else if (currentMenuItem.includes('Budget Allocation')) {
         setOpenSubmenu('Budget Allocation');
       } else if (currentMenuItem.includes('Events')) {
         setOpenSubmenu('Events');
       } else if (currentMenuItem.includes('Meetings')) {
         setOpenSubmenu('Meetings');
-      } else if (currentMenuItem.includes('LeaveApprovals')) {
+      } else if (currentMenuItem.includes('Leave Approvals')) {
         setOpenSubmenu('Leave Approvals');
-      } else if (currentMenuItem.includes('StudentProgress')) {
+      } else if (currentMenuItem.includes('Student Progress')) {
         setOpenSubmenu('Student Progress');
+      } else if (currentMenuItem.includes('Contact Admin')) {
+        setOpenSubmenu('Contact Admin');
       }
     }
   }, [currentMenuItem]);
@@ -38,24 +38,21 @@ const PrincipalSidebar = ({ onMenuItemClick, currentMenuItem }) => {
   const fetchUserDetails = async () => {
     try {
       const storedUsername = localStorage.getItem('principalUsername');
-      
       if (storedUsername) {
         setPrincipalName(storedUsername);
         return;
       }
-      
+
       const token = localStorage.getItem('principalToken');
       if (!token) return;
-      
+
       const response = await axios.get('http://localhost:3000/api/users/details', {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
+        headers: { Authorization: `Bearer ${token}` },
       });
-      
-      if (response.data && response.data.data && response.data.data.username) {
-        setPrincipalName(response.data.data.username);
-        localStorage.setItem('principalUsername', response.data.data.username);
+
+      if (response.data && response.data.data && response.data.data.name) {
+        setTeacherName(response.data.data.name);
+        localStorage.setItem('principalUsername', response.data.data.name);
       }
     } catch (error) {
       console.error('Error fetching user details:', error);
@@ -72,9 +69,9 @@ const PrincipalSidebar = ({ onMenuItemClick, currentMenuItem }) => {
       if (tokenParts.length !== 3) return;
       
       const payload = JSON.parse(atob(tokenParts[1]));
-      if (payload.username) {
-        setPrincipalName(payload.username);
-        localStorage.setItem('principalUsername', payload.username);
+      if (payload.name) {
+        setPrincipalName(payload.name);
+        localStorage.setItem('PrincipalUsername', payload.name);
       }
     } catch (e) {
       console.error('Error extracting username from token:', e);
@@ -100,15 +97,22 @@ const PrincipalSidebar = ({ onMenuItemClick, currentMenuItem }) => {
   }, []);
 
   return (
-    <Box
+    <ResizableBox
+      width={220}
+      height={Infinity}
+      minConstraints={[220, Infinity]}
+      maxConstraints={[window.innerWidth * 0.5, Infinity]}
+      axis="x"
+      handle={<span className="custom-handle custom-handle-x" />}
+      resizeHandles={['e']}
       className="principal-sidebar-wrapper"
-      sx={{
+      style={{
         position: 'relative',
         height: '100vh',
         backgroundColor: '#141b2d !important',
         boxShadow: '2px 0px 10px rgba(15, 19, 34, 0.6)',
         '& *': {
-          backgroundColor: 'inherit'
+          backgroundColor: 'inherit',
         },
       }}
     >
@@ -119,26 +123,37 @@ const PrincipalSidebar = ({ onMenuItemClick, currentMenuItem }) => {
           backgroundColor: '#141b2d !important',
           position: 'relative',
           color: '#ffffff',
+          '& .ps-sidebar-container': {
+            backgroundColor: '#141b2d !important',
+          },
+          '& .ps-menu-root': {
+            backgroundColor: '#141b2d !important',
+          },
+          '& [data-testid="ps-sidebar-container-test-id"]': {
+            backgroundColor: '#141b2d !important',
+          },
+          '& .MuiBox-root': {
+            backgroundColor: '#141b2d !important',
+          },
         }}
-        width="220px"
+        width="100%"
       >
-        <Box 
+        <Box
           sx={{
             padding: '20px 15px',
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
             borderBottom: '1px solid rgba(255,255,255,0.1)',
-            backgroundColor: '#141b2d !important'
+            backgroundColor: '#141b2d !important',
           }}
         >
-          <Box 
-            sx={{ 
-              textAlign: 'center', 
+          <Box
+            sx={{
+              textAlign: 'center',
               backgroundColor: '#141b2d !important',
-              cursor: 'pointer'
+              cursor: 'pointer',
             }}
-            onClick={handleDashboardClick}
           >
             <Typography variant="h6" sx={{ color: '#ffffff', margin: '8px 0 0 0', fontSize: '1.2rem', fontWeight: 'bold' }}>
               {principalName}
@@ -160,92 +175,83 @@ const PrincipalSidebar = ({ onMenuItemClick, currentMenuItem }) => {
                 '&:hover': {
                   backgroundColor: 'rgba(0, 222, 182, 0.1)',
                   color: '#00deb6',
-                }
+                },
               }),
               icon: {
-                color: '#00deb6'
+                color: '#00deb6',
               },
               subMenuContent: {
-                backgroundColor: '#141b2d !important'
-              }
+                backgroundColor: '#141b2d !important',
+              },
             }}
             rootStyles={{
               backgroundColor: '#141b2d !important',
             }}
           >
-            <MenuItem 
-              onClick={handleDashboardClick} 
+            <MenuItem
+              onClick={() => onMenuItemClick('dashboard')}
               active={currentMenuItem === 'dashboard'}
               icon={<User size={18} />}
             >
               Dashboard
             </MenuItem>
-
-            <MenuItem 
+            <MenuItem
               onClick={() => onMenuItemClick('profile')}
               active={currentMenuItem === 'profile'}
               icon={<User size={18} />}
             >
               Profile
             </MenuItem>
-
-            <MenuItem 
+            <MenuItem
               onClick={() => onMenuItemClick('studentSearch')}
               active={currentMenuItem === 'studentSearch'}
               icon={<Search size={18} />}
             >
               Student Search
             </MenuItem>
-
-            <MenuItem 
+            <MenuItem
               onClick={() => onMenuItemClick('teacherSearch')}
               active={currentMenuItem === 'teacherSearch'}
               icon={<Search size={18} />}
             >
               Teacher Search
             </MenuItem>
-
-            <MenuItem 
+            <MenuItem
               onClick={() => onMenuItemClick('schoolFees')}
               active={currentMenuItem === 'schoolFees'}
               icon={<DollarSign size={18} />}
             >
               School Fees
             </MenuItem>
-
-            <MenuItem 
+            <MenuItem
               onClick={() => onMenuItemClick('budgetAllocation')}
               active={currentMenuItem === 'budgetAllocation'}
               icon={<BarChart2 size={18} />}
             >
               Budget Allocation
             </MenuItem>
-
-            <MenuItem 
+            <MenuItem
               onClick={() => onMenuItemClick('events')}
               active={currentMenuItem === 'events'}
               icon={<Calendar size={18} />}
             >
               Events
             </MenuItem>
-
-            <MenuItem 
+            <MenuItem
               onClick={() => onMenuItemClick('meetings')}
               active={currentMenuItem === 'meetings'}
-              icon={<MessageSquare size={18} />}
+              icon={<Activity size={18} />}
             >
               Meetings
             </MenuItem>
-
-            <MenuItem 
+            <MenuItem
               onClick={() => onMenuItemClick('leaveApprovals')}
               active={currentMenuItem === 'leaveApprovals'}
               icon={<FileText size={18} />}
             >
               Leave Approvals
             </MenuItem>
-
-            <MenuItem 
+            <MenuItem
               onClick={() => onMenuItemClick('studentProgress')}
               active={currentMenuItem === 'studentProgress'}
               icon={<Activity size={18} />}
@@ -280,14 +286,14 @@ const PrincipalSidebar = ({ onMenuItemClick, currentMenuItem }) => {
             color: '#00deb6',
             border: 'none',
             cursor: 'pointer',
-            fontWeight: 'bold'
+            fontWeight: 'bold',
           }}
         >
           <LogOut size={18} style={{ marginRight: '8px' }} />
           Logout
         </button>
       </Box>
-    </Box>
+    </ResizableBox>
   );
 };
 

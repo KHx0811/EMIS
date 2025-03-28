@@ -7,11 +7,12 @@ import SessionTimer from '../../Components/SessionTimer';
 
 import Attendance from '@/forms/Teacher/Attendance';
 import Assignments from '@/forms/Teacher/Assignments';
-import Activities from '@/forms/Teacher/Activities';
 import Events from '@/forms/Teacher/Events';
 import ParentInteraction from '@/forms/Teacher/ParentInteraction';
 import Leave from '@/forms/Teacher/Leave';
 import Marks from '@/forms/Teacher/Marks';
+import ContactAdmin from '@/forms/Teacher/ContactAdmin';
+import SearchStudent from '@/forms/Teacher/searchstudent';
 
 const TeacherDashboard = () => {
   const navigate = useNavigate();
@@ -129,6 +130,10 @@ const TeacherDashboard = () => {
             </Typography>
           </Box>
         );
+      case 'search student':
+      return (
+        <Box sx={globalStyles}><SearchStudent /></Box>
+      );
       case 'attendance':
         return (
           <Box sx={globalStyles}><Attendance /></Box>
@@ -141,10 +146,6 @@ const TeacherDashboard = () => {
         return (
           <Box sx={globalStyles}><Assignments /></Box>
         );
-      case 'activities':
-        return (
-          <Box sx={globalStyles}><Activities /></Box>
-        );
       case 'events':
         return (
           <Box sx={globalStyles}><Events /></Box>
@@ -156,6 +157,12 @@ const TeacherDashboard = () => {
       case 'leave':
         return (
           <Box sx={globalStyles}><Leave /></Box>
+        );
+      case 'Contact Admin':
+        return (
+          <Box sx={globalStyles}>
+            <ContactAdmin />
+          </Box>
         );
       default:
         return (

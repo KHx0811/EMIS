@@ -36,9 +36,15 @@ const DistrictLogin = () => {
     if (validateCaptcha(captchaValue)) {
       try {
         const response = await axios.post('http://localhost:3000/api/auth/login', formData);
-        console.log('Login successful:', response.data);
-        alert('District Head Login Successful');
-        navigate('/dashboard/districthead');
+        if(response.data.status === 'success') {
+          localStorage.setItem('districtToken', response.data.data);
+          console.log('Login successful:', response.data);
+          alert('District Head Login Successful');
+          navigate('/dashboard/districthead');
+        }else {
+          console.error('Login failed:', response.data.message);
+          alert('Login failed. Please try again.');
+        }
       } catch (error) {
         console.error('Error during login:', error);
         alert('Login failed. Please try again.');

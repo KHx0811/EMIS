@@ -3,6 +3,13 @@ import { Box, CssBaseline, Typography } from '@mui/material';
 import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import DistrictSidebar from '../../Components/Sidebars/DistrictSidebar';
+import SchoolSearch from '@/forms/District/SchoolSearch';
+import Budgets from '@/forms/District/Budgets';
+import Invitations from '@/forms/District/Invitations';
+import Meetings from '@/forms/District/Meetings';
+import SchoolProgress from '@/forms/District/SchoolProgress';
+import Exams from '@/forms/District/Exams';
+import SessionTimer from '@/Components/SessionTimer';
 
 const DistrictDashboard = () => {
   const navigate = useNavigate();
@@ -17,14 +24,144 @@ const DistrictDashboard = () => {
 
   const handleMenuItemClick = (menuItem) => {
     setSelectedMenuItem(menuItem);
-    navigate(`/dashboard/district/${menuItem}`);
+    navigate(`/dashboard/districthead/${menuItem}`);
   };
+
+  const globalStyles = {
+    '& .form-field': {
+      marginBottom: '24px',
+      position: 'relative',
+    },
+    '& input, & select, & textarea': {
+      backgroundColor: '#1F2A40',
+      color: '#e0e0e0',
+      border: '1px solid #3d3d3d',
+      padding: '12px 16px',
+      borderRadius: '4px',
+      width: '100%',
+      fontSize: '0.9rem',
+      height: '48px',
+      '&:focus': {
+        borderColor: '#00deb6',
+        outline: 'none',
+      },
+      '&::placeholder': {
+        color: '#a3a3a3',
+      }
+    },
+    '& .MuiInputBase-root': {
+      backgroundColor: '#1F2A40',
+    },
+    '& .MuiOutlinedInput-notchedOutline': {
+      borderColor: '#3d3d3d',
+    },
+    '& .MuiInputBase-input': {
+      color: '#e0e0e0',
+    },
+    '& .MuiInputLabel-root': {
+      color: '#e0e0e0',
+      '&.Mui-focused': {
+        color: '#00deb6',
+      }
+    },
+    '& .MuiFormLabel-root': {
+      color: '#e0e0e0',
+    },
+    '& .MuiRadio-root': {
+      color: '#a3a3a3',
+      '&.Mui-checked': {
+        color: '#00deb6',
+      }
+    },
+    '& .MuiSelect-select': {
+      backgroundColor: '#1F2A40',
+      color: '#e0e0e0',
+    },
+    '& .MuiMenuItem-root': {
+      backgroundColor: '#141b2d',
+      color: '#e0e0e0',
+      '&:hover': {
+        backgroundColor: '#1F2A40',
+      },
+      '&.Mui-selected': {
+        backgroundColor: 'rgba(0, 222, 182, 0.2)',
+      }
+    },
+    '& .MuiFormControlLabel-label': {
+      color: '#e0e0e0',
+    },
+    '& .MuiButton-contained': {
+      backgroundColor: '#00deb6',
+      color: '#0f1322',
+      '&:hover': {
+        backgroundColor: '#00b696',
+      }
+    }
+  };
+
+  const getToken = () => {
+    const token = localStorage.getItem('districtToken');
+    if (!token) {
+      navigate('/login/districthead');
+      return null;
+    }
+    return token;
+  };
+
+
+  const checkTokenExpiration = () => {
+    const token = localStorage.getItem('districtToken');
+    if (!token) return;
+
+    const tokenParts = token.split('.');
+    if (tokenParts.length !== 3) {
+      console.error('Invalid token format');
+      return;
+    }
+
+    try {
+      const payload = JSON.parse(atob(tokenParts[1]));
+      const currentTime = Math.floor(Date.now() / 1000);
+      if (payload.exp && payload.exp < currentTime) {
+        console.error('Token has expired');
+        localStorage.removeItem('districtToken');
+        navigate('/login/districthead');
+      }
+    } catch (e) {
+      console.error('Error decoding token:', e);
+    }
+  };
+
+  useEffect(() => {
+    checkTokenExpiration();
+    const token = localStorage.getItem('districtToken');
+    if (!token) {
+      navigate('/login/districthead');
+      return;
+    }
+
+    const verifyToken = async () => {
+      try {
+        await axios.get('http://localhost:3000/api/auth/verify', {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+      } catch (error) {
+        console.error('Token verification failed:', error);
+        localStorage.removeItem('districtToken');
+        navigate('/login/districthead');
+      }
+    };
+
+    verifyToken();
+    setSelectedMenuItem(getSelectedMenuItem());
+  }, [location.pathname]);
+
 
   const renderContent = () => {
     switch (selectedMenuItem) {
       case 'profile':
         return (
-          <Box>
+          <Box sx={globalStyles}>
             <Typography variant="h4" sx={{ color: '#e0e0e0', mb: 3 }}>
               Profile
             </Typography>
@@ -35,69 +172,27 @@ const DistrictDashboard = () => {
         );
       case 'schoolSearch':
         return (
-          <Box>
-            <Typography variant="h4" sx={{ color: '#e0e0e0', mb: 3 }}>
-              School Search
-            </Typography>
-            <Typography variant="body1" sx={{ color: '#e0e0e0' }}>
-              Details about school search.
-            </Typography>
-          </Box>
+          <Box sx={globalStyles}><SchoolSearch /></Box>
         );
       case 'budgets':
         return (
-          <Box>
-            <Typography variant="h4" sx={{ color: '#e0e0e0', mb: 3 }}>
-              Budgets
-            </Typography>
-            <Typography variant="body1" sx={{ color: '#e0e0e0' }}>
-              Details about budgets.
-            </Typography>
-          </Box>
+          <Box sx={globalStyles}><Budgets /></Box>
         );
       case 'invitations':
         return (
-          <Box>
-            <Typography variant="h4" sx={{ color: '#e0e0e0', mb: 3 }}>
-              Invitations
-            </Typography>
-            <Typography variant="body1" sx={{ color: '#e0e0e0' }}>
-              Details about invitations.
-            </Typography>
-          </Box>
+          <Box sx={globalStyles}><Invitations /></Box>
         );
       case 'meetings':
         return (
-          <Box>
-            <Typography variant="h4" sx={{ color: '#e0e0e0', mb: 3 }}>
-              Meetings
-            </Typography>
-            <Typography variant="body1" sx={{ color: '#e0e0e0' }}>
-              Details about meetings.
-            </Typography>
-          </Box>
+          <Box sx={globalStyles}><Meetings /></Box>
         );
       case 'schoolProgress':
         return (
-          <Box>
-            <Typography variant="h4" sx={{ color: '#e0e0e0', mb: 3 }}>
-              School Progress
-            </Typography>
-            <Typography variant="body1" sx={{ color: '#e0e0e0' }}>
-              Details about school progress.
-            </Typography>
-          </Box>
+          <Box sx={globalStyles}><SchoolProgress /></Box>
         );
       case 'exams':
         return (
-          <Box>
-            <Typography variant="h4" sx={{ color: '#e0e0e0', mb: 3 }}>
-              Exams
-            </Typography>
-            <Typography variant="body1" sx={{ color: '#e0e0e0' }}>
-              Details about exams.
-            </Typography>
-          </Box>
+          <Box sx={globalStyles}><Exams /></Box>
         );
       default:
         return (
@@ -141,6 +236,7 @@ const DistrictDashboard = () => {
           <Typography variant="h4" sx={{ color: '#e0e0e0' }}>
             District Dashboard
           </Typography>
+          <SessionTimer tokenKey="districtToken" />
         </Box>
 
         {renderContent()}

@@ -29,10 +29,9 @@ export const getAllSchools = async (req, res) => {
 export const createSchool = async (req, res) => {
   try {
     if (req.user.role == "admin") {
-      const { school_name, district_id, school_id, principal_name, date_of_establishment, email, password } = req.body;
-      
+      const { school_name, district_id, principal_name, date_of_establishment, email, password } = req.body;
+
       const districtExists = await District.findOne({ district_id });
-      
       if (!districtExists) {
         return res.status(404).json({
           status: "error",
@@ -42,11 +41,25 @@ export const createSchool = async (req, res) => {
         });
       }
 
+
+      const randomNumber = Math.floor(100 + Math.random() * 900); // Generate a 4-digit random number
+      const schoolId = `${school_name.slice(0, 4).toUpperCase()}${'0'}${district_id.slice(0,1)}${'0'}${randomNumber}`;
+      
+
+      const existingSchool = await School.findOne({ school_id: schoolId });
+      if (existingSchool) {
+        return res.status(400).json({
+          status: "error",
+          message: "Generated school ID already exists. Please try again.",
+          data: null,
+        });
+      }
+
       const hashedPassword = await bcrypt.hash(password, 10);
 
       const school = new School({
         school_name,
-        school_id,
+        school_id: schoolId,
         district_id,
         principal_name,
         date_of_establishment,
@@ -57,7 +70,7 @@ export const createSchool = async (req, res) => {
       await school.save();
       return res.status(201).json({
         status: "success",
-        message: "school created successfully",
+        message: "School created successfully",
         data: school,
       });
     } else {

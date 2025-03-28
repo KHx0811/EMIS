@@ -5,8 +5,9 @@ import {
   deleteTeacher,
   updateTeacher,
   getTeacherById,
+  getTeacherName,
 } from "../controllers/teachers.js";
-import { isAdmin, verifyToken } from "../middleware/authenticator.js";
+import { isAdmin, isTeacher, verifyToken } from "../middleware/authenticator.js";
 
 const router = express.Router();
 
@@ -15,5 +16,6 @@ router.post("/", verifyToken, isAdmin, createTeacher);
 router.delete("/:id", verifyToken, isAdmin, deleteTeacher);
 router.put("/:id", verifyToken, isAdmin, updateTeacher);
 router.get("/:id", verifyToken, isAdmin, getTeacherById);
+router.get("/details", verifyToken, isTeacher, getTeacherName);
 
 export default router;

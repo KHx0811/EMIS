@@ -1,4 +1,5 @@
 import Student from "../models/students.js";
+import School from "../models/schools.js";
 
 export const getAllStudents = async (req, res) => {
   try {
@@ -28,11 +29,51 @@ export const getAllStudents = async (req, res) => {
 export const createStudent = async (req, res) => {
   try {
     if (req.user.role === "admin") {
-      const student = new Student(req.body);
+      const studentName = req.body.name || '';
+      const schoolName = req.body.school || '';
+      const schoolId = req.body.school_id;
+
+      const existingSchool = await School.findOne({ school_id: schoolId });
+      if (!existingSchool) {
+        return res.status(404).json({
+          status: "error",
+          message: "School with the provided ID does not exist",
+          data: null,
+        });
+      }
+
+      const schoolPrefix = schoolName.substring(0, 2).toUpperCase();
+      const studName = studentName.substring(0, 3).toUpperCase();
+
+      let studentId;
+      let parentId;
+      let isUnique = false;
+
+      while (!isUnique) {
+        const randomNumber = Math.floor(10000 + Math.random() * 90000);
+        studentId = `${schoolPrefix}${studName}${randomNumber}`;
+        const existingStudent = await Student.findOne({ student_id: studentId });
+        if (!existingStudent) {
+          isUnique = true;
+        }
+      }
+
+      // Generate parent_id
+      const randomParentNumber = Math.floor(100 + Math.random() * 900);
+      parentId = `${studName}0P${randomParentNumber}`;
+
+      const studentData = {
+        ...req.body,
+        student_id: studentId,
+        parent_id: parentId,
+      };
+
+      const student = new Student(studentData);
       await student.save();
+
       return res.status(201).json({
         status: "success",
-        message: "student created successfully",
+        message: "Student created successfully",
         data: student,
       });
     } else {
@@ -45,7 +86,7 @@ export const createStudent = async (req, res) => {
   } catch (error) {
     return res.status(500).json({
       status: "error",
-      message: "internal server error",
+      message: "Internal server error",
       data: error.message,
     });
   }
@@ -140,7 +181,7 @@ export const updateStudent = async (req, res) => {
 
 export const getStudentById = async (req, res) => {
   try {
-    if (req.user.role === "admin" || req.user.role === "school" || req.user.role === "parent") {
+    if (req.user.role === "admin" || req.user.role === "school" || req.user.role === "parent" || req.user.role === "teacher") {
       const studentId = req.params.id;
       const student = await Student.findOne({ student_id: studentId });
       if (!student) {

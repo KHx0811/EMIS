@@ -27,6 +27,8 @@ const DistrictSidebar = ({ onMenuItemClick, currentMenuItem }) => {
         setOpenSubmenu('School Progress');
       } else if (currentMenuItem.includes('Exams')) {
         setOpenSubmenu('Exams');
+      } else if (currentMenuItem.includes('Contact Admin')) {
+        setOpenSubmenu('Contact Admin');
       }
     }
   }, [currentMenuItem]);
@@ -231,6 +233,13 @@ const DistrictSidebar = ({ onMenuItemClick, currentMenuItem }) => {
               icon={<FileText size={18} />}
             >
               Exams
+            </MenuItem>
+            <MenuItem 
+              onClick={() => onMenuItemClick('Contact Admin')}
+              active={currentMenuItem === 'Contact Admin'}
+              icon={<FileText size={18} />}
+            >
+              Contact Admin 
             </MenuItem>
           </Menu>
         </Box>

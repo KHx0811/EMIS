@@ -17,6 +17,7 @@ import DistrictDashboard from './pages/Dashboards/DistrictDashboard'
 import AdminDashboard from './pages/Dashboards/AdminDashboard'
 import AdminSignup from './pages/AdminSignup'
 import ProtectedRoute from './Components/ProtectedRoute'
+import Chatbot from './pages/Chatbot'
 
 const App = () => {
   return (
@@ -36,11 +37,16 @@ const App = () => {
         <Route path='/dashboard/teacher' element={<TeacherDashboard />} />
         <Route path='/dashboard/teacher/:section' element={<TeacherDashboard />} />
         <Route path='/dashboard/parent' element={<ParentDashboard />} />
+        <Route path='/dashboard/parent/:section' element={<ParentDashboard />} />
         <Route path='/dashboard/principal' element={<PrincipalDashboard />} />
+        <Route path='/dashboard/principal/:section' element={<PrincipalDashboard />} />
         <Route path='/dashboard/districthead' element={<DistrictDashboard />} />
+        <Route path='/dashboard/districthead/:section' element={<DistrictDashboard />} />
         <Route path='/dashboard/admin' element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
         <Route path='/dashboard/admin/:section' element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
+        
       </Routes>
+      <Chatbot />
     </div>
   )
 }

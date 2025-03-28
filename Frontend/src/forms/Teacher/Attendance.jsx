@@ -5,11 +5,11 @@ import { useNavigate } from 'react-router-dom';
 
 const Attendance = ({ onSubmit = () => {} }) => {
   const navigate = useNavigate();
-  
+
   const [formData, setFormData] = useState({
-    class: '',
+    studentId: '',
     date: '',
-    attendance: []
+    status: '' // Present or Absent
   });
 
   const handleChange = (e) => {
@@ -72,21 +72,16 @@ const Attendance = ({ onSubmit = () => {} }) => {
       </Typography>
 
       <Box sx={{ marginBottom: '16px' }}>
-        <label htmlFor="class" style={{ color: '#f1f5f9' }}>Class *</label>
-        <Select
-          id="class"
-          name="class"
-          value={formData.class}
+        <label htmlFor="studentId" style={{ color: '#f1f5f9' }}>Student ID *</label>
+        <input
+          id="studentId"
+          name="studentId"
+          type="text"
+          value={formData.studentId}
           onChange={handleChange}
           required
-          sx={{ backgroundColor: '#1F2A40', color: '#e0e0e0', width: '100%' }}
-          displayEmpty
-        >
-          <MenuItem value="" disabled>Select Class</MenuItem>
-          {Array.from({ length: 12 }, (_, i) => (
-            <MenuItem key={i + 1} value={i + 1}>{i + 1}</MenuItem>
-          ))}
-        </Select>
+          style={{ backgroundColor: '#1F2A40', color: '#e0e0e0', width: '100%', padding: '12px', borderRadius: '4px', border: '1px solid #3d3d3d' }}
+        />
       </Box>
 
       <Box sx={{ marginBottom: '16px' }}>
@@ -102,7 +97,22 @@ const Attendance = ({ onSubmit = () => {} }) => {
         />
       </Box>
 
-      {/* Add more fields for attendance details as needed */}
+      <Box sx={{ marginBottom: '16px' }}>
+        <label htmlFor="status" style={{ color: '#f1f5f9' }}>Status *</label>
+        <Select
+          id="status"
+          name="status"
+          value={formData.status}
+          onChange={handleChange}
+          required
+          sx={{ backgroundColor: '#1F2A40', color: '#e0e0e0', width: '100%' }}
+          displayEmpty
+        >
+          <MenuItem value="" disabled>Select Status</MenuItem>
+          <MenuItem value="Present">Present</MenuItem>
+          <MenuItem value="Absent">Absent</MenuItem>
+        </Select>
+      </Box>
 
       <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: '16px' }}>
         <Button 

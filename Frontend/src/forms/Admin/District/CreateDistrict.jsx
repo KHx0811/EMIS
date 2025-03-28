@@ -4,24 +4,33 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { inputStyle, labelStyle } from '../Student/formStyles';
 
-
 const CreateDistrict = ({ onSubmit = () => {} }) => {
   const navigate = useNavigate();
-  
   const [formData, setFormData] = useState({
     district_name: '',
     state: '',
     email: '',
     password: '',
-    district_id: '',
   });
+
+  const [generatedDistrictId, setGeneratedDistrictId] = useState('');
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({
       ...formData,
-      [name]: value
+      [name]: value,
     });
+  };
+
+  const handleClear = () => {
+    setFormData({
+      district_name: '',
+      state: '',
+      email: '',
+      password: '',
+    });
+    setGeneratedDistrictId(''); // Clear the generated district ID message
   };
 
   const handleSubmit = async (e) => {
@@ -37,12 +46,15 @@ const CreateDistrict = ({ onSubmit = () => {} }) => {
       const response = await axios.post('http://localhost:3000/api/districts', formData, {
         headers: {
           Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
+          'Content-Type': 'application/json',
+        },
       });
-      console.log('District created successfully:', response.data);
+
+      const createdDistrict = response.data.data;
+      console.log('District created successfully:', createdDistrict);
+      setGeneratedDistrictId(createdDistrict.district_id); // Store the generated district ID
       alert('District created successfully');
-      onSubmit(response.data);
+      onSubmit(createdDistrict);
     } catch (error) {
       console.error('Error creating district:', error);
       if (error.response) {
@@ -60,30 +72,42 @@ const CreateDistrict = ({ onSubmit = () => {} }) => {
   };
 
   return (
-    <Box 
-      component="form" 
-      onSubmit={handleSubmit} 
-      sx={{ 
-        display: 'flex', 
+    <Box
+      component="form"
+      onSubmit={handleSubmit}
+      sx={{
+        display: 'flex',
         flexDirection: 'column',
         backgroundColor: '#0f172a',
         padding: '24px',
-        borderRadius: '8px'
+        borderRadius: '8px',
       }}
     >
-      <Typography 
-        variant="h3" 
-        component="h1" 
+      <Typography
+        variant="h3"
+        component="h1"
         gutterBottom
-        sx={{ 
+        sx={{
           color: '#f1f5f9',
           marginBottom: '24px',
           borderBottom: '1px solid #475569',
-          paddingBottom: '16px'
+          paddingBottom: '16px',
         }}
       >
         Create District Form
       </Typography>
+
+      {generatedDistrictId && (
+        <Typography
+          variant="h6"
+          sx={{
+            color: '#22c55e',
+            marginBottom: '16px',
+          }}
+        >
+          District created successfully! Generated District ID: {generatedDistrictId}
+        </Typography>
+      )}
 
       <Box sx={{ marginBottom: '16px' }}>
         <label style={labelStyle} htmlFor="district_name">District Name *</label>
@@ -91,18 +115,6 @@ const CreateDistrict = ({ onSubmit = () => {} }) => {
           id="district_name"
           name="district_name"
           value={formData.district_name}
-          onChange={handleChange}
-          required
-          style={inputStyle}
-        />
-      </Box>
-
-      <Box sx={{ marginBottom: '16px' }}>
-        <label style={labelStyle} htmlFor="district_id">District ID *</label>
-        <input
-          id="district_id"
-          name="district_id"
-          value={formData.district_id}
           onChange={handleChange}
           required
           style={inputStyle}
@@ -147,20 +159,37 @@ const CreateDistrict = ({ onSubmit = () => {} }) => {
         />
       </Box>
 
-      <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: '16px' }}>
-        <Button 
-          type="submit" 
-          variant="contained" 
-          sx={{ 
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', marginTop: '16px' }}>
+        <Button
+          type="submit"
+          variant="contained"
+          sx={{
             backgroundColor: '#3b82f6',
             color: '#f1f5f9',
             padding: '8px 16px',
             '&:hover': {
               backgroundColor: '#2563eb',
-            }
+            },
           }}
         >
           Create District Profile
+        </Button>
+
+        <Button
+          type="button"
+          variant="outlined"
+          onClick={handleClear}
+          sx={{
+            borderColor: '#f87171',
+            color: '#f87171',
+            padding: '8px 16px',
+            '&:hover': {
+              borderColor: '#ef4444',
+              color: '#ef4444',
+            },
+          }}
+        >
+          Clear
         </Button>
       </Box>
     </Box>

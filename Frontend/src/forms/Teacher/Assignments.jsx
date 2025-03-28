@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { Box, Button, TextField, Typography } from '@mui/material';
+import { Box, Button, Typography } from '@mui/material';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { inputStyle, labelStyle, formControlStyle, selectStyle } from '../Admin/Student/formStyles';
+import { inputStyle, labelStyle } from '../Admin/Student/formStyles';
 
 const Assignments = () => {
   const navigate = useNavigate();
@@ -40,35 +40,42 @@ const Assignments = () => {
           'Content-Type': 'application/json'
         }
       });
-      console.log('Assignment created successfully:', response.data);
       alert('Assignment created successfully');
+      setFormData({
+        studentId: '',
+        title: '',
+        description: '',
+        subject: '',
+        dueDate: '',
+        maxMarks: '',
+        teacherId: ''
+      });
     } catch (error) {
-      console.error('Error creating assignment:', error);
       alert('Error creating assignment. Please try again.');
     }
   };
 
   return (
-    <Box 
-      component="form" 
-      onSubmit={handleSubmit} 
-      sx={{ 
-        display: 'flex', 
+    <Box
+      component="form"
+      onSubmit={handleSubmit}
+      sx={{
+        display: 'flex',
         flexDirection: 'column',
         backgroundColor: '#0f172a',
         padding: '24px',
-        borderRadius: '8px'
+        borderRadius: '8px',
       }}
     >
-      <Typography 
-        variant="h3" 
-        component="h1" 
+      <Typography
+        variant="h3"
+        component="h1"
         gutterBottom
-        sx={{ 
+        sx={{
           color: '#f1f5f9',
           marginBottom: '24px',
           borderBottom: '1px solid #475569',
-          paddingBottom: '16px'
+          paddingBottom: '16px',
         }}
       >
         Create Assignment
@@ -76,7 +83,7 @@ const Assignments = () => {
 
       <Box sx={{ marginBottom: '16px' }}>
         <label style={labelStyle} htmlFor="studentId">Student ID *</label>
-        <TextField
+        <input
           id="studentId"
           name="studentId"
           value={formData.studentId}
@@ -88,7 +95,7 @@ const Assignments = () => {
 
       <Box sx={{ marginBottom: '16px' }}>
         <label style={labelStyle} htmlFor="title">Title *</label>
-        <TextField
+        <input
           id="title"
           name="title"
           value={formData.title}
@@ -100,21 +107,19 @@ const Assignments = () => {
 
       <Box sx={{ marginBottom: '16px' }}>
         <label style={labelStyle} htmlFor="description">Description *</label>
-        <TextField
+        <textarea
           id="description"
           name="description"
           value={formData.description}
           onChange={handleChange}
           required
-          multiline
-          rows={4}
           style={{ ...inputStyle, minHeight: '80px', resize: 'vertical' }}
         />
       </Box>
 
       <Box sx={{ marginBottom: '16px' }}>
         <label style={labelStyle} htmlFor="subject">Subject *</label>
-        <TextField
+        <input
           id="subject"
           name="subject"
           value={formData.subject}
@@ -126,7 +131,7 @@ const Assignments = () => {
 
       <Box sx={{ marginBottom: '16px' }}>
         <label style={labelStyle} htmlFor="dueDate">Due Date *</label>
-        <TextField
+        <input
           id="dueDate"
           name="dueDate"
           type="date"
@@ -139,7 +144,7 @@ const Assignments = () => {
 
       <Box sx={{ marginBottom: '16px' }}>
         <label style={labelStyle} htmlFor="maxMarks">Max Marks *</label>
-        <TextField
+        <input
           id="maxMarks"
           name="maxMarks"
           type="number"
@@ -152,7 +157,7 @@ const Assignments = () => {
 
       <Box sx={{ marginBottom: '16px' }}>
         <label style={labelStyle} htmlFor="teacherId">Teacher ID *</label>
-        <TextField
+        <input
           id="teacherId"
           name="teacherId"
           value={formData.teacherId}
@@ -163,16 +168,16 @@ const Assignments = () => {
       </Box>
 
       <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: '16px' }}>
-        <Button 
-          type="submit" 
-          variant="contained" 
-          sx={{ 
+        <Button
+          type="submit"
+          variant="contained"
+          sx={{
             backgroundColor: '#3b82f6',
             color: '#f1f5f9',
             padding: '8px 16px',
             '&:hover': {
               backgroundColor: '#2563eb',
-            }
+            },
           }}
         >
           Create Assignment

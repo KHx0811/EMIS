@@ -27,8 +27,20 @@ export const getAllDistricts = async (req, res) => {
 
 export const createDistrict = async (req, res) => {
   try {
-    if (req.user.role == "admin") {
-      const { district_name, state, email, password, district_id } = req.body;
+    if (req.user.role === "admin") {
+      const { district_name, state, email, password } = req.body;
+
+      const randomNumber = Math.floor(1000 + Math.random() * 9000); // Generate a 4-digit random number
+      const districtId = `${district_name.slice(0, 4).toUpperCase()}${randomNumber}`;
+
+      const existingDistrict = await District.findOne({ district_id: districtId });
+      if (existingDistrict) {
+        return res.status(400).json({
+          status: "error",
+          message: "Generated district ID already exists. Please try again.",
+          data: null,
+        });
+      }
 
       const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -37,13 +49,13 @@ export const createDistrict = async (req, res) => {
         state,
         email,
         password: hashedPassword,
-        district_id,
+        district_id: districtId,
       });
 
       await district.save();
       return res.status(201).json({
         status: "success",
-        message: "district created successfully",
+        message: "District created successfully",
         data: district,
       });
     } else {

@@ -39,9 +39,16 @@ const ParentLogin = () => {
     if (validateCaptcha(captchaValue)) {
       try {
         const response = await axios.post('http://localhost:3000/api/auth/login', formData);
-        console.log('Login successful:', response.data);
-        alert('Parent Login Successful');
-        navigate('/dashboard/parent');
+        if(response.data.status === 'success') {
+          localStorage.setItem('parentToken', response.data.data);
+          console.log('Login successful:', response.data);
+          alert('Parent Login Successful');
+          navigate('/dashboard/parent');
+        } else {
+          console.error('Login failed:', response.data.message);
+          alert('Login failed. Please try again.');
+          
+        }
       } catch (error) {
         console.error('Error during login:', error);
         alert('Login failed. Please try again.');

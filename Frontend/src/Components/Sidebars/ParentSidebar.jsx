@@ -1,22 +1,24 @@
 import React, { useState, useEffect } from 'react';
 import { Sidebar, Menu, MenuItem, SubMenu } from 'react-pro-sidebar';
-import { LogOut, User, BookOpen, Calendar, CreditCard, Bell } from 'lucide-react';
+import { LogOut, User, BookOpen, Calendar, CreditCard, Bell, MessageSquare, FileText, Users, Phone } from 'lucide-react'; // Updated imports
 import { Box, Typography } from '@mui/material';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { ResizableBox } from 'react-resizable';
 import './AdminSidebar.css';
 
 const ParentSidebar = ({ onMenuItemClick, currentMenuItem }) => {
   const navigate = useNavigate();
   const [openSubmenu, setOpenSubmenu] = useState(null);
   const [parentName, setParentName] = useState('Parent');
-  const [children, setChildren] = useState([]);
 
   useEffect(() => {
       if (currentMenuItem) {
         if (currentMenuItem.includes('Profile')) {
           setOpenSubmenu('Profile');
-        } else if (currentMenuItem.includes('Atendence')) {
+        } else if (currentMenuItem.includes('Child Profile')) {
+          setOpenSubmenu('Child Profile');
+        } else if (currentMenuItem.includes('Attendence')) {
           setOpenSubmenu('Attendence');
         } else if (currentMenuItem.includes('Marks')) {
           setOpenSubmenu('Internal Marks');
@@ -30,6 +32,8 @@ const ParentSidebar = ({ onMenuItemClick, currentMenuItem }) => {
           setOpenSubmenu('School Events');
         } else if (currentMenuItem.includes('PT Meetings')) {
           setOpenSubmenu('Parent Teacher Meetings');
+        } else if (currentMenuItem.includes('Contact Admin')) {
+          setOpenSubmenu('Contact Admin');
         }
       }
     }, [currentMenuItem]);
@@ -95,10 +99,21 @@ const ParentSidebar = ({ onMenuItemClick, currentMenuItem }) => {
     onMenuItemClick('dashboard');
   };
 
+  useEffect(() => {
+    fetchParentDetails();
+  }, []);
+
   return (
-    <Box
+    <ResizableBox
+      width={220}
+      height={Infinity}
+      minConstraints={[220, Infinity]}
+      maxConstraints={[window.innerWidth * 0.5, Infinity]}
+      axis="x"
+      handle={<span className="custom-handle custom-handle-x" />}
+      resizeHandles={['e']}
       className="parent-sidebar-wrapper"
-      sx={{
+      style={{
         position: 'relative',
         height: '100vh',
         backgroundColor: '#141b2d !important',
@@ -115,8 +130,20 @@ const ParentSidebar = ({ onMenuItemClick, currentMenuItem }) => {
           backgroundColor: '#141b2d !important',
           position: 'relative',
           color: '#ffffff',
+          '& .ps-sidebar-container': {
+            backgroundColor: '#141b2d !important'
+          },
+          '& .ps-menu-root': {
+            backgroundColor: '#141b2d !important'
+          },
+          '& [data-testid="ps-sidebar-container-test-id"]': {
+            backgroundColor: '#141b2d !important'
+          },
+          '& .MuiBox-root': {
+            backgroundColor: '#141b2d !important'
+          }
         }}
-        width="220px"
+        width="100%"
       >
         <Box 
           sx={{
@@ -169,71 +196,76 @@ const ParentSidebar = ({ onMenuItemClick, currentMenuItem }) => {
               backgroundColor: '#141b2d !important',
             }}
           >
+
             <MenuItem 
-              onClick={handleDashboardClick} 
-              active={currentMenuItem === 'dashboard'}
+              onClick={() => onMenuItemClick('profile')}
+              active={currentMenuItem === 'profile'}
               icon={<User size={18} />}
             >
-              Dashboard
+              Profile
             </MenuItem>
-
-            {children.map((child) => (
-              <SubMenu
-                key={child._id}
-                label={child.name}
-                icon={<BookOpen size={18} />}
-                open={openSubmenu === child.name}
-                onClick={() => handleSubmenuClick(child.name)}
-              >
-                <MenuItem 
-                  onClick={() => onMenuItemClick(`childProfile:${child._id}`)}
-                  active={currentMenuItem === `childProfile:${child._id}`}
-                >
-                  Profile
-                </MenuItem>
-                <MenuItem 
-                  onClick={() => onMenuItemClick(`childMarks:${child._id}`)}
-                  active={currentMenuItem === `childMarks:${child._id}`}
-                >
-                  Academic Performance
-                </MenuItem>
-                <MenuItem 
-                  onClick={() => onMenuItemClick(`childAttendance:${child._id}`)}
-                  active={currentMenuItem === `childAttendance:${child._id}`}
-                >
-                  Attendance
-                </MenuItem>
-                <MenuItem 
-                  onClick={() => onMenuItemClick(`childEvents:${child._id}`)}
-                  active={currentMenuItem === `childEvents:${child._id}`}
-                >
-                  School Events
-                </MenuItem>
-              </SubMenu>
-            ))}
-
             <MenuItem 
-              onClick={() => onMenuItemClick('fees')}
-              active={currentMenuItem === 'fees'}
-              icon={<CreditCard size={18} />}
+              onClick={() => onMenuItemClick('childProfile')}
+              active={currentMenuItem === 'childProfile'}
+              icon={<BookOpen size={18} />}
             >
-              Fee Management
+              Child Profile
             </MenuItem>
-
             <MenuItem 
-              onClick={() => onMenuItemClick('meetings')}
-              active={currentMenuItem === 'meetings'}
+              onClick={() => onMenuItemClick('Attendance')}
+              active={currentMenuItem === 'Attendance'}
               icon={<Calendar size={18} />}
             >
-              Parent-Teacher Meetings
+              Attendance
             </MenuItem>
-
             <MenuItem 
-              onClick={() => onMenuItemClick('notifications')}
-              active={currentMenuItem === 'notifications'}
-              icon={<Bell size={18} />}
+              onClick={() => onMenuItemClick('Marks')}
+              active={currentMenuItem === 'Marks'}
+              icon={<FileText size={18} />}
             >
-              Notifications
+              Marks
+            </MenuItem>
+            <MenuItem 
+              onClick={() => onMenuItemClick('Teacher')}
+              active={currentMenuItem === 'Teachers'}
+              icon={<Users size={18} />}
+            >
+              Teachers
+            </MenuItem>
+            <MenuItem 
+              onClick={() => onMenuItemClick('Fees')}
+              active={currentMenuItem === 'Feedues'}
+              icon={<CreditCard size={18} />}
+            >
+              Feedues
+            </MenuItem>
+            <MenuItem 
+              onClick={() => onMenuItemClick('Activities')}
+              active={currentMenuItem === 'Activities'}
+              icon={<MessageSquare size={18} />}
+            >
+              Activities
+            </MenuItem>
+            <MenuItem 
+              onClick={() => onMenuItemClick('Events')}
+              active={currentMenuItem === 'Events'}
+              icon={<Calendar size={18} />}
+            >
+              School Events
+            </MenuItem>
+            <MenuItem 
+              onClick={() => onMenuItemClick('PT Meetings')}
+              active={currentMenuItem === 'PT Meetings'}
+              icon={<Users size={18} />}
+            >
+              PT Meetings
+            </MenuItem>
+            <MenuItem 
+              onClick={() => onMenuItemClick('contactAdmin')}
+              active={currentMenuItem === 'contactAdmin'}
+              icon={<Phone size={18} />}
+            >
+              Contact Admin
             </MenuItem>
           </Menu>
         </Box>
@@ -270,7 +302,7 @@ const ParentSidebar = ({ onMenuItemClick, currentMenuItem }) => {
           Logout
         </button>
       </Box>
-    </Box>
+    </ResizableBox>
   );
 };
 

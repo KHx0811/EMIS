@@ -2,13 +2,13 @@ import React, { useState } from 'react';
 import { Box, Button, FormControl, FormLabel, MenuItem, Radio, RadioGroup, FormControlLabel, Select, Typography } from '@mui/material';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { inputStyle,labelStyle, formControlStyle, selectStyle } from './formStyles';
+import { inputStyle, labelStyle, formControlStyle, selectStyle } from './formStyles';
 
 const CreateStudentForm = ({ onSubmit = () => {} }) => {
   const navigate = useNavigate();
-  
-  const [formData, setFormData] = useState({
-    student_id: '',
+  const [generatedStudentId, setGeneratedStudentId] = useState('');
+  const [ generatedParentId, setGeneratedParentId ] = useState('');
+  const initialFormData = {
     name: '',
     gender: '',
     age: '',
@@ -24,16 +24,23 @@ const CreateStudentForm = ({ onSubmit = () => {} }) => {
     religion: '',
     nationality: '',
     address: '',
-    parent_id: '',
     school_id: '',
-  });
+  };
+  const [formData, setFormData] = useState(initialFormData);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({
       ...formData,
-      [name]: value
+      [name]: value,
     });
+  };
+
+
+  const handleClear = () => {
+    setFormData(initialFormData);
+    setGeneratedStudentId('');
+    setGeneratedParentId('');
   };
 
   const handleSubmit = async (e) => {
@@ -49,18 +56,21 @@ const CreateStudentForm = ({ onSubmit = () => {} }) => {
       const formattedData = {
         ...formData,
         date_of_birth: new Date(formData.date_of_birth).toISOString(),
-        date_of_admission: new Date(formData.date_of_admission).toISOString()
+        date_of_admission: new Date(formData.date_of_admission).toISOString(),
       };
 
       const response = await axios.post('http://localhost:3000/api/students', formattedData, {
         headers: {
           Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
+          'Content-Type': 'application/json',
+        },
       });
-      console.log('Student created successfully:', response.data);
-      alert('Student created successfully');
-      onSubmit(response.data);
+
+      const createdStudent = response.data.data;
+      console.log('Student created successfully:', createdStudent);
+      setGeneratedStudentId(createdStudent.student_id);
+      setGeneratedParentId(createdStudent.parent_id);
+      onSubmit(createdStudent);
     } catch (error) {
       console.error('Error creating student:', error);
       if (error.response) {
@@ -78,42 +88,44 @@ const CreateStudentForm = ({ onSubmit = () => {} }) => {
   };
 
   return (
-    <Box 
-      component="form" 
-      onSubmit={handleSubmit} 
-      sx={{ 
-        display: 'flex', 
+    <Box
+      component="form"
+      onSubmit={handleSubmit}
+      sx={{
+        display: 'flex',
         flexDirection: 'column',
         backgroundColor: '#0f172a',
         padding: '24px',
-        borderRadius: '8px'
+        borderRadius: '8px',
       }}
     >
-      <Typography 
-        variant="h3" 
-        component="h1" 
+      <Typography
+        variant="h3"
+        component="h1"
         gutterBottom
-        sx={{ 
+        sx={{
           color: '#f1f5f9',
           marginBottom: '24px',
           borderBottom: '1px solid #475569',
-          paddingBottom: '16px'
+          paddingBottom: '16px',
         }}
       >
         Create Student Form
       </Typography>
 
-      <Box sx={{ marginBottom: '16px' }}>
-        <label style={labelStyle} htmlFor="student_id">Student ID *</label>
-        <input
-          id="student_id"
-          name="student_id"
-          value={formData.student_id}
-          onChange={handleChange}
-          required
-          style={inputStyle}
-        />
-      </Box>
+      {generatedStudentId &&(
+        <Typography
+          variant="h6"
+          sx={{
+            color: '#22c55e',
+            marginBottom: '16px',
+          }}
+        >
+          Student created successfully!<br />
+          Generated Student ID: {generatedStudentId}<br />
+          {generatedParentId && `Generated Parent ID: ${generatedParentId}`}
+        </Typography>
+      )}
 
       <Box sx={{ marginBottom: '16px' }}>
         <label style={labelStyle} htmlFor="name">Name *</label>
@@ -315,17 +327,6 @@ const CreateStudentForm = ({ onSubmit = () => {} }) => {
         />
       </Box>
 
-      <Box sx={{ marginBottom: '16px' }}>
-        <label style={labelStyle} htmlFor="parent_id">Parent ID *</label>
-        <input
-          id="parent_id"
-          name="parent_id"
-          value={formData.parent_id}
-          onChange={handleChange}
-          required
-          style={inputStyle}
-        />
-      </Box>
 
       <Box sx={{ marginBottom: '16px' }}>
         <label style={labelStyle} htmlFor="school_id">School ID *</label>
@@ -339,7 +340,7 @@ const CreateStudentForm = ({ onSubmit = () => {} }) => {
         />
       </Box>
 
-      <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: '16px' }}>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', marginTop: '16px' }}>
         <Button 
           type="submit" 
           variant="contained" 
@@ -353,6 +354,23 @@ const CreateStudentForm = ({ onSubmit = () => {} }) => {
           }}
         >
           Create Student Profile
+        </Button>
+
+        <Button 
+          type="button" 
+          variant="outlined" 
+          onClick={handleClear}
+          sx={{ 
+            borderColor: '#f87171', // Button border color
+            color: '#f87171', // Button text color
+            padding: '8px 16px',
+            '&:hover': {
+              borderColor: '#ef4444', // Button hover border color
+              color: '#ef4444', // Button hover text color
+            }
+          }}
+        >
+          Clear
         </Button>
       </Box>
     </Box>

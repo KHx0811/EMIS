@@ -1,11 +1,9 @@
 import React, { useState } from 'react';
 import { Box, Button, TextField, Typography, Select, MenuItem, FormControl, InputLabel } from '@mui/material';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
 import { inputStyle, labelStyle, formControlStyle, selectStyle } from '../Admin/Student/formStyles';
 
 const ParentInteraction = () => {
-  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     teacherId: '',
     studentId: '',
@@ -25,22 +23,14 @@ const ParentInteraction = () => {
     e.preventDefault();
     try {
       const token = localStorage.getItem('teacherToken');
-      if (!token) {
-        alert('You are not logged in. Please login to continue.');
-        navigate('/login/teacher');
-        return;
-      }
-
       const response = await axios.post('http://localhost:3000/api/teacher/record-parent-interaction', formData, {
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json'
         }
       });
-      console.log('Parent interaction recorded successfully:', response.data);
       alert('Parent interaction recorded successfully');
     } catch (error) {
-      console.error('Error recording parent interaction:', error);
       alert('Error recording parent interaction. Please try again.');
     }
   };
@@ -73,7 +63,7 @@ const ParentInteraction = () => {
 
       <Box sx={{ marginBottom: '16px' }}>
         <label style={labelStyle} htmlFor="teacherId">Teacher ID *</label>
-        <TextField
+        <input
           id="teacherId"
           name="teacherId"
           value={formData.teacherId}
@@ -85,7 +75,7 @@ const ParentInteraction = () => {
 
       <Box sx={{ marginBottom: '16px' }}>
         <label style={labelStyle} htmlFor="studentId">Student ID *</label>
-        <TextField
+        <input
           id="studentId"
           name="studentId"
           value={formData.studentId}
@@ -115,14 +105,12 @@ const ParentInteraction = () => {
 
       <Box sx={{ marginBottom: '16px' }}>
         <label style={labelStyle} htmlFor="content">Content *</label>
-        <TextField
+        <textarea
           id="content"
           name="content"
           value={formData.content}
           onChange={handleChange}
           required
-          multiline
-          rows={4}
           style={{ ...inputStyle, minHeight: '80px', resize: 'vertical' }}
         />
       </Box>

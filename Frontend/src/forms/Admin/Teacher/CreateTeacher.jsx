@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Box, Button, FormControl, FormLabel, MenuItem, Radio, RadioGroup, FormControlLabel, Select, Typography,Alert } from '@mui/material';
+import { Box, Button, Typography, Alert, MenuItem, Select, FormControl, FormLabel, RadioGroup, FormControlLabel, Radio } from '@mui/material';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { inputStyle, labelStyle, selectStyle, formControlStyle } from '../Student/formStyles';
@@ -7,9 +7,9 @@ import { inputStyle, labelStyle, selectStyle, formControlStyle } from '../Studen
 const CreateTeacher = ({ onSubmit = () => {} }) => {
   const navigate = useNavigate();
   const [error, setError] = useState('');
-  
+  const [generatedTeacherId, setGeneratedTeacherId] = useState(''); // State to store the generated teacher ID
+
   const [formData, setFormData] = useState({
-    teacher_id: '',
     name: '',
     gender: '',
     age: '',
@@ -23,21 +23,45 @@ const CreateTeacher = ({ onSubmit = () => {} }) => {
     password: '',
   });
 
-
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({
       ...formData,
-      [name]: value
+      [name]: value,
     });
     if (name === 'school_id') {
       setError('');
     }
   };
 
-  const navigateToCreateSchool = () => {
-    sessionStorage.setItem('teacherFormData', JSON.stringify(formData));
-    navigate('/dashboard/admin/createSchool');
+  const handleAgeChange = (e) => {
+    const value = e.target.value;
+    if (value >= 18 && value <= 65) {
+      setFormData({
+        ...formData,
+        age: value,
+      });
+    } else {
+      alert('Age must be between 18 and 65.');
+    }
+  };
+
+  const handleClear = () => {
+    setFormData({
+      name: '',
+      gender: '',
+      age: '',
+      school_id: '',
+      religion: '',
+      date_of_birth: '',
+      nationality: '',
+      qualification: '',
+      email: '',
+      phonenumber: '',
+      password: '',
+    });
+    setError('');
+    setGeneratedTeacherId(''); // Clear the generated teacher ID message
   };
 
   const handleSubmit = async (e) => {
@@ -49,21 +73,24 @@ const CreateTeacher = ({ onSubmit = () => {} }) => {
         navigate('/login/admin');
         return;
       }
-  
+
       const formattedData = {
         ...formData,
-        date_of_birth: new Date(formData.date_of_birth).toISOString()
+        date_of_birth: new Date(formData.date_of_birth).toISOString(),
       };
-  
+
       const response = await axios.post('http://localhost:3000/api/teachers', formattedData, {
         headers: {
           Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
+          'Content-Type': 'application/json',
+        },
       });
-      console.log('Teacher created successfully:', response.data);
+
+      const createdTeacher = response.data.data;
+      console.log('Teacher created successfully:', createdTeacher);
+      setGeneratedTeacherId(createdTeacher.teacher_id); // Store the generated teacher ID
       alert('Teacher created successfully');
-      onSubmit(response.data);
+      onSubmit(createdTeacher);
     } catch (error) {
       console.error('Error creating teacher:', error);
       if (error.response) {
@@ -71,10 +98,8 @@ const CreateTeacher = ({ onSubmit = () => {} }) => {
           alert('Your session has expired. Please login again.');
           localStorage.removeItem('adminToken');
           navigate('/login/admin');
-        } else if (error.response.status === 400) {
-          setError('Enter all fields to create teacher profile.');
         } else if (error.response.status === 404 && error.response.data.code === 'SCHOOL_NOT_FOUND') {
-          setError('The School ID does not exist. Would you like to create it first?');
+          setError('The School ID does not exist. Please verify or create it first.');
         } else {
           alert(`Error creating teacher: ${error.response.data.message || 'Please try again.'}`);
         }
@@ -84,69 +109,52 @@ const CreateTeacher = ({ onSubmit = () => {} }) => {
     }
   };
 
-  React.useEffect(() => {
-    const savedData = sessionStorage.getItem('teacherFormData');
-    if (savedData) {
-      setFormData(JSON.parse(savedData));
-    }
-  }, []);
-
   return (
-    <Box 
-      component="form" 
-      onSubmit={handleSubmit} 
-      sx={{ 
-        display: 'flex', 
+    <Box
+      component="form"
+      onSubmit={handleSubmit}
+      sx={{
+        display: 'flex',
         flexDirection: 'column',
         backgroundColor: '#0f172a',
         padding: '24px',
-        borderRadius: '8px'
+        borderRadius: '8px',
       }}
     >
-      <Typography 
-        variant="h3" 
-        component="h1" 
+      <Typography
+        variant="h3"
+        component="h1"
         gutterBottom
-        sx={{ 
+        sx={{
           color: '#f1f5f9',
           marginBottom: '24px',
           borderBottom: '1px solid #475569',
-          paddingBottom: '16px'
+          paddingBottom: '16px',
         }}
       >
         Create Teacher Form
       </Typography>
 
       {error && (
-        <Alert 
-          severity="warning" 
+        <Alert
+          severity="warning"
           sx={{ mb: 2, backgroundColor: '#422006', color: '#fef3c7', borderColor: '#d97706' }}
-          action={
-            <Button 
-              color="inherit" 
-              size="small" 
-              onClick={navigateToCreateSchool}
-              sx={{ fontWeight: 'bold' }}
-            >
-              Create School
-            </Button>
-          }
         >
           {error}
         </Alert>
       )}
-      
-      <Box sx={{ marginBottom: '16px' }}>
-        <label style={labelStyle} htmlFor="teacher_id">Teacher ID *</label>
-        <input
-          id="teacher_id"
-          name="teacher_id"
-          value={formData.teacher_id}
-          onChange={handleChange}
-          required
-          style={inputStyle}
-        />
-      </Box>
+
+      {generatedTeacherId && (
+        <Typography
+          variant="h6"
+          sx={{
+            color: '#22c55e',
+            marginBottom: '16px',
+          }}
+        >
+          Teacher created successfully! Generated Teacher ID: {generatedTeacherId}
+        </Typography>
+      )}
 
       <Box sx={{ marginBottom: '16px' }}>
         <label style={labelStyle} htmlFor="name">Name *</label>
@@ -160,22 +168,19 @@ const CreateTeacher = ({ onSubmit = () => {} }) => {
         />
       </Box>
 
-      <Box sx={{ marginBottom: '16px' }}>
-        <label style={labelStyle} htmlFor="gender">Gender *</label>
-        <Select
-          id="gender"
-          name="gender"
-          value={formData.gender}
-          onChange={handleChange}
-          required
-          sx={selectStyle}
-          displayEmpty
-        >
-          <MenuItem value="" disabled>Select Gender</MenuItem>
-          <MenuItem value="male">Male</MenuItem>
-          <MenuItem value="female">Female</MenuItem>
-        </Select>
-      </Box>
+      <Select
+        id="gender"
+        name="gender"
+        value={formData.gender}
+        onChange={(e) => handleChange({ target: { name: 'gender', value: e.target.value } })}
+        required
+        sx={selectStyle}
+        displayEmpty
+      >
+        <MenuItem key="select-gender" value="" disabled>Select Gender</MenuItem>
+        <MenuItem key="male" value="male">Male</MenuItem>
+        <MenuItem key="female" value="female">Female</MenuItem>
+      </Select>
 
       <Box sx={{ marginBottom: '16px' }}>
         <label style={labelStyle} htmlFor="age">Age *</label>
@@ -184,6 +189,19 @@ const CreateTeacher = ({ onSubmit = () => {} }) => {
           name="age"
           type="number"
           value={formData.age}
+          onChange={handleChange}
+          required
+          style={inputStyle}
+        />
+      </Box>
+
+      <Box sx={{ marginBottom: '16px' }}>
+        <label style={labelStyle} htmlFor="date_of_birth">Date of Birth *</label>
+        <input
+          id="date_of_birth"
+          name="date_of_birth"
+          type="date"
+          value={formData.date_of_birth}
           onChange={handleChange}
           required
           style={inputStyle}
@@ -202,28 +220,17 @@ const CreateTeacher = ({ onSubmit = () => {} }) => {
         />
       </Box>
 
-      <FormControl component="fieldset" sx={formControlStyle}>
-        <FormLabel component="legend" sx={{ color: '#f1f5f9' }}>Religion *</FormLabel>
-        <RadioGroup row name="religion" value={formData.religion} onChange={handleChange}>
-          <FormControlLabel value="hindu" control={<Radio sx={{ color: '#f1f5f9' }} />} label="Hindu" />
-          <FormControlLabel value="christian" control={<Radio sx={{ color: '#f1f5f9' }} />} label="Christian" />
-          <FormControlLabel value="muslim" control={<Radio sx={{ color: '#f1f5f9' }} />} label="Muslim" />
-          <FormControlLabel value="others" control={<Radio sx={{ color: '#f1f5f9' }} />} label="Others" />
-        </RadioGroup>
-      </FormControl>
-
-      <Box sx={{ marginBottom: '16px' }}>
-        <label style={labelStyle} htmlFor="date_of_birth">Date of Birth *</label>
-        <input
-          id="date_of_birth"
-          name="date_of_birth"
-          type="date"
-          value={formData.date_of_birth}
-          onChange={handleChange}
-          required
-          style={inputStyle}
-        />
-      </Box>
+      <RadioGroup
+        row
+        name="religion"
+        value={formData.religion}
+        onChange={(e) => handleChange({ target: { name: 'religion', value: e.target.value } })}
+      >
+        <FormControlLabel value="hindu" control={<Radio sx={{ color: '#f1f5f9' }} />} label="Hindu" />
+        <FormControlLabel value="christian" control={<Radio sx={{ color: '#f1f5f9' }} />} label="Christian" />
+        <FormControlLabel value="muslim" control={<Radio sx={{ color: '#f1f5f9' }} />} label="Muslim" />
+        <FormControlLabel value="others" control={<Radio sx={{ color: '#f1f5f9' }} />} label="Others" />
+      </RadioGroup>
 
       <FormControl component="fieldset" sx={formControlStyle}>
         <FormLabel component="legend" sx={{ color: '#f1f5f9' }}>Nationality *</FormLabel>
@@ -283,20 +290,37 @@ const CreateTeacher = ({ onSubmit = () => {} }) => {
         />
       </Box>
 
-      <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: '16px' }}>
-        <Button 
-          type="submit" 
-          variant="contained" 
-          sx={{ 
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', marginTop: '16px' }}>
+        <Button
+          type="submit"
+          variant="contained"
+          sx={{
             backgroundColor: '#3b82f6',
             color: '#f1f5f9',
             padding: '8px 16px',
             '&:hover': {
               backgroundColor: '#2563eb',
-            }
+            },
           }}
         >
           Create Teacher Profile
+        </Button>
+
+        <Button
+          type="button"
+          variant="outlined"
+          onClick={handleClear}
+          sx={{
+            borderColor: '#f87171',
+            color: '#f87171',
+            padding: '8px 16px',
+            '&:hover': {
+              borderColor: '#ef4444',
+              color: '#ef4444',
+            },
+          }}
+        >
+          Clear
         </Button>
       </Box>
     </Box>

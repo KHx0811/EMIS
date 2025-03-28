@@ -19,15 +19,23 @@ const DeleteTeacher = () => {
       }
       const response = await axios.get(`http://localhost:3000/api/teachers/${id}`, {
         headers: {
-          Authorization: `Bearer ${token}`
-        }
+          Authorization: `Bearer ${token}`,
+        },
       });
       const data = response.data.data;
+      if (!data) {
+        setTeacherData(null);
+        alert('Teacher not found. Please check the ID and try again.');
+        return null;
+      }
       data.date_of_birth = new Date(data.date_of_birth).toLocaleDateString('en-GB');
       return data;
     } catch (error) {
       console.error('Error fetching teacher data:', error);
-      if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+      if (error.response && error.response.status === 404) {
+        setTeacherData(null);
+        alert('Teacher not found. Please check the ID and try again.');
+      } else if (error.response && (error.response.status === 401 || error.response.status === 403)) {
         alert('Your session has expired. Please login again.');
         localStorage.removeItem('adminToken');
         navigate('/login/admin');

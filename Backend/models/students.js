@@ -4,8 +4,8 @@ const studentSchema = new mongoose.Schema({
   student_id: {
     type: String,
     required: true,
-    unique: true, // Ensure student_id is unique
-    index: true, // Index the student_id field for faster searches
+    unique: true, 
+    index: true,
   },
   name: {
     type: String,

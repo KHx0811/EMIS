@@ -11,21 +11,30 @@ const TeacherDetails = () => {
   const [teacherData, setTeacherData] = useState(null);
 
   const fetchTeacherById = async (id) => {
+  
+    const token = localStorage.getItem('adminToken');
+    if (!token) {
+      alert('You are not logged in. Please login to continue.');
+      navigate('/login/admin');
+      return null;
+    }
+  
     try {
-      const token = localStorage.getItem('adminToken');
-      if (!token) {
-        alert('You are not logged in. Please login to continue.');
-        navigate('/login/admin');
-        return null;
-      }
       const response = await axios.get(`http://localhost:3000/api/teachers/${id}`, {
         headers: {
-          Authorization: `Bearer ${token}`
-        }
+          Authorization: `Bearer ${token}`,
+        },
       });
-      const data = response.data.data;
-      data.date_of_birth = new Date(data.date_of_birth).toLocaleDateString('en-GB');
-      return data;
+  
+      if (response.data && response.data.data) {
+        const data = response.data.data;
+        data.date_of_birth = new Date(data.date_of_birth).toLocaleDateString('en-GB'); 
+        
+        return data;
+      } else {
+        alert('Teacher not found. Please check the ID and try again.');
+        return null;
+      }
     } catch (error) {
       console.error('Error fetching teacher data:', error);
       if (error.response && (error.response.status === 401 || error.response.status === 403)) {
@@ -40,13 +49,14 @@ const TeacherDetails = () => {
   };
 
   const fetchAllTeachers = async () => {
+    const token = localStorage.getItem('adminToken');
+    if (!token) {
+      alert('You are not logged in. Please login to continue.');
+      navigate('/login/admin');
+      return [];
+    }
+    
     try {
-      const token = localStorage.getItem('adminToken');
-      if (!token) {
-        alert('You are not logged in. Please login to continue.');
-        navigate('/login/admin');
-        return [];
-      }
       const response = await axios.get('http://localhost:3000/api/teachers', {
         headers: {
           Authorization: `Bearer ${token}`
@@ -54,7 +64,6 @@ const TeacherDetails = () => {
       });
       return response.data.data;
     } catch (error) {
-      console.error('Error fetching all teachers:', error);
       if (error.response && (error.response.status === 401 || error.response.status === 403)) {
         alert('Your session has expired. Please login again.');
         localStorage.removeItem('adminToken');
@@ -122,7 +131,7 @@ const TeacherDetails = () => {
 
         const textLines = doc.splitTextToSize(line, 180);
         doc.text(textLines, 20, yPosition);
-        yPosition += 7 * textLines.length; // Increase y-position based on number of lines
+        yPosition += 7 * textLines.length;
       });
 
       yPosition += 10;
@@ -132,7 +141,7 @@ const TeacherDetails = () => {
           doc.addPage();
           yPosition = 20;
         } else {
-          doc.setDrawColor(200, 200, 200); // Light gray
+          doc.setDrawColor(200, 200, 200);
           doc.line(14, yPosition - 5, 196, yPosition - 5);
           yPosition += 5;
         }
@@ -172,10 +181,10 @@ const TeacherDetails = () => {
           onChange={(e) => setTeacherId(e.target.value)}
           onKeyPress={handleKeyPress}
           required
-          halfWidth
+          fullWidth
           size='Small'
           variant='filled'
-          sx={{ textDecoration: 'none', borderColor: 'none', }}
+          sx={{ textDecoration: 'none', borderColor: 'none' }}
         />
         <IconButton
           onClick={handleSearch}
