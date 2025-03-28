@@ -51,9 +51,9 @@ const TeacherSidebar = ({ onMenuItemClick, currentMenuItem }) => {
         }
       });
       
-      if (response.data && response.data.data) {
-        setTeacherName(response.data.data.name);
-        localStorage.setItem('teacherName', response.data.data.name);
+      if (response.data) {
+        setTeacherName(response.data);
+        localStorage.setItem('teacherName', response.data);
       }
     } catch (error) {
       console.error('Error fetching user details:', error.response ? error.response.data : error.message);

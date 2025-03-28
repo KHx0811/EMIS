@@ -10,7 +10,7 @@ const TeacherLogin = () => {
   const navigate = useNavigate();
   const [isFormValid, setIsFormValid] = useState(false);
   const [formData, setFormData] = useState({
-    schoolId: '',
+    teacherId: '',
     email: '',
     password: '',
     captcha: '',
@@ -60,8 +60,8 @@ const TeacherLogin = () => {
   };
 
   const checkFormValidity = () => {
-    const { schoolId, email, password, captcha } = formData;
-    if (schoolId && email && password && captcha) {
+    const { teacherId, email, password, captcha } = formData;
+    if (teacherId && email && password && captcha) {
       setIsFormValid(true);
     } else {
       setIsFormValid(false);
@@ -76,12 +76,12 @@ const TeacherLogin = () => {
           <h1 className="login-title">Teacher Login</h1>
           <form onSubmit={handleLogin}>
             <div className="form-group">
-              <label htmlFor="schoolId">School ID</label>
+              <label htmlFor="schoolId">Teacher ID</label>
               <input
                 type="text"
-                id="schoolId"
-                name="schoolId"
-                placeholder="School ID"
+                id="teacherId"
+                name="teacherId"
+                placeholder="Teacher ID"
                 required
                 onChange={handleChange}
               />

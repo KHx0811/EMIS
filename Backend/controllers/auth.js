@@ -104,12 +104,12 @@ export const login = async (req, res) => {
         data: null,
       });
     } else if (loginType === "teacher") {
-      const { schoolId, email, password } = req.body;
-      const user = await Teacher.findOne({ school_id: schoolId, email: email });
+      const { teacherId, email, password } = req.body;
+      const user = await Teacher.findOne({ teacher_id: teacherId, email: email });
       if (!user) {
         return res.status(400).json({
           status: "error",
-          message: "Invalid email or school ID",
+          message: "Invalid email or teacher ID",
           data: null,
         });
       }
