@@ -236,13 +236,10 @@ export const getTeacherName = async (req, res) => {
       });
     }
 
-    console.log('User from token:', req.user); 
     const teacherId = req.user.teacher_id;
-    console.log('Teacher ID:', teacherId);
     const teacher = await Teacher.findOne({ teacher_id: teacherId }); // Extracted from the JWT token
 
     if (!teacher) {
-      console.log('No teacher found for ID:', teacherId);
       return res.status(404).json({
         status: "error",
         message: "Teacher not found",
@@ -253,7 +250,7 @@ export const getTeacherName = async (req, res) => {
     return res.status(200).json({
       status: "success",
       message: "Teacher name retrieved successfully",
-      data: { name: teacher.name },
+      data: teacher.name,
     });
   } catch (error) {
     console.error('Error in getTeacherName:', error);
