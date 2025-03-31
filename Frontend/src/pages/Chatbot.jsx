@@ -20,11 +20,34 @@ const Chatbot = () => {
   }, [messages, isLoading]);
 
   useEffect(() => {
-    const token = localStorage.getItem('userToken');
-    if (token) {
-      const payload = JSON.parse(atob(token.split('.')[1]));
+    // Check for the token
+    const token = localStorage.getItem('teacherToken');
+    
+    // First check for direct userType in localStorage (more reliable)
+    const storedUserType = localStorage.getItem('userType');
+    
+    if (storedUserType) {
+      // If userType is directly stored, use it
       setIsLoggedIn(true);
-      setUserType(payload.userType);
+      setUserType(storedUserType);
+      console.log("User type from localStorage:", storedUserType);
+    } else if (token) {
+      // Fallback to decoding the token if needed
+      try {
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        setIsLoggedIn(true);
+        setUserType(payload.userType);
+        console.log("User type from token:", payload.userType);
+      } catch (error) {
+        console.error("Error decoding token:", error);
+        // Check for other tokens that might indicate user type
+        if (localStorage.getItem('teacherToken')) {
+          setIsLoggedIn(true);
+          setUserType('teacher');
+          console.log("User type inferred: teacher");
+        }
+        // Add other token checks here (studentToken, adminToken, etc.) if needed
+      }
     }
   }, []);
 
@@ -35,6 +58,7 @@ const Chatbot = () => {
     setMessages(prevMessages => [...prevMessages, userMessage]);
     setInput("");
     setIsLoading(true);
+    console.log("Sending request with user type:", userType);
 
     try {
       const res = await fetch("http://localhost:5000/chat", {
@@ -42,7 +66,7 @@ const Chatbot = () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           message: input,
-          userType: userType
+          userType: userType || 'guest' // Provide a default value if userType is null
         }),
       });
 

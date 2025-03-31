@@ -8,6 +8,16 @@ const assignmentSchema = new mongoose.Schema({
   maxMarks: { type: Number, required: true },
   teacherId: { type: mongoose.Schema.Types.ObjectId, ref: 'Teacher' }
 });
+const attendanceSchema = new mongoose.Schema({
+  Id: { type: mongoose.Schema.Types.ObjectId, ref: 'Student', required: true },
+  studentId: { type: String, required: true },
+  date: { type: Date, required: true },
+  status: { 
+    type: String, 
+    enum: ['Present', 'Absent'], 
+    required: true 
+  },
+});
 
 const teacherNoteSchema = new mongoose.Schema({
   studentId: { type: mongoose.Schema.Types.ObjectId, ref: 'Student', required: true },
@@ -24,6 +34,7 @@ const teacherNoteSchema = new mongoose.Schema({
 const studentSchema = new mongoose.Schema({
   assignments: [assignmentSchema],
   teacherNotes: [teacherNoteSchema],
+  attendance: [attendanceSchema],
   
   parentInteractions: [{
     type: { 

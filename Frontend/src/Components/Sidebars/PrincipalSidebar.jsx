@@ -9,7 +9,7 @@ import { ResizableBox } from 'react-resizable';
 const PrincipalSidebar = ({ onMenuItemClick, currentMenuItem }) => {
   const navigate = useNavigate();
   const [openSubmenu, setOpenSubmenu] = useState(null);
-  const [principalName, setPrincipalName] = useState('Principal');
+  const [principalName, setPrincipalName] = useState('');
 
   useEffect(() => {
     if (currentMenuItem) {
@@ -37,22 +37,22 @@ const PrincipalSidebar = ({ onMenuItemClick, currentMenuItem }) => {
 
   const fetchUserDetails = async () => {
     try {
-      const storedUsername = localStorage.getItem('principalUsername');
-      if (storedUsername) {
-        setPrincipalName(storedUsername);
+      const storedName = localStorage.getItem('principalName');
+      if (storedName) {
+        setPrincipalName(storedName);
         return;
       }
 
       const token = localStorage.getItem('principalToken');
       if (!token) return;
 
-      const response = await axios.get('http://localhost:3000/api/users/details', {
+      const response = await axios.get('http://localhost:3000/api/schools/details', {
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      if (response.data && response.data.data && response.data.data.name) {
-        setTeacherName(response.data.data.name);
-        localStorage.setItem('principalUsername', response.data.data.name);
+      if (response.data) {
+        setPrincipalName(response.data.data);
+        localStorage.setItem('principalUsername', response.data.data);
       }
     } catch (error) {
       console.error('Error fetching user details:', error);

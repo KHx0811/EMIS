@@ -174,3 +174,39 @@ export const getDistrictById = async (req, res) => {
     });
   }
 };
+
+export const getDistrictName = async (req, res) => {
+  try {
+    if (req.user.role !== "districthead") {
+      return res.status(401).json({
+        status: "error",
+        message: "Unauthorized",
+        data: null,
+      });
+    }
+
+    const districtId = req.user.id;
+    const district = await District.findById(districtId); // Extracted from the JWT token
+
+    if (!district) {
+      return res.status(404).json({
+        status: "error",
+        message: "DistrictHead not found",
+        data: null,
+      });
+    }
+
+    return res.status(200).json({
+      status: "success",
+      message: "District name retrieved successfully",
+      data: district.district_name,
+    });
+  } catch (error) {
+    console.error('Error in getDistrictName:', error);
+    return res.status(500).json({
+      status: "error",
+      message: "Internal server error",
+      data: error.message,
+    });
+  }
+};

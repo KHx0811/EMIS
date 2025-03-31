@@ -38,6 +38,7 @@ const TeacherLogin = () => {
         const response = await axios.post('http://localhost:3000/api/auth/login', formData);
         if (response.data.status === 'success') {
           localStorage.setItem('teacherToken', response.data.data);
+          localStorage.setItem('userType', 'teacher');
           console.log('Login successful:', response.data);
           alert('Teacher Login Successful');
           navigate('/dashboard/teacher');

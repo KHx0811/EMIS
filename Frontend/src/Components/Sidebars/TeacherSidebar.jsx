@@ -1,22 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import { Sidebar, Menu, MenuItem } from 'react-pro-sidebar';
-import { LogOut, User, Calendar, FileText, Activity, MessageSquare, FilePlus } from 'lucide-react';
+import { LogOut, User, Calendar, FileText, Activity, MessageSquare, FilePlus, Group, Users } from 'lucide-react';
 import { Box, Typography } from '@mui/material';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { ResizableBox } from 'react-resizable';
 import 'react-resizable/css/styles.css';
 import './AdminSidebar.css';
+import { Telegram } from '@mui/icons-material';
 
 const TeacherSidebar = ({ onMenuItemClick, currentMenuItem }) => {
   const navigate = useNavigate();
   const [openSubmenu, setOpenSubmenu] = useState(null);
-  const [teacherName, setTeacherName] = useState('Teacher');
+  const [teacherName, setTeacherName] = useState('');
 
   useEffect(() => {
     if (currentMenuItem) {
-      if (currentMenuItem.includes('Profile')) {
-        setOpenSubmenu('Profile');
+      if (currentMenuItem.includes('Classes')) {
+        setOpenSubmenu('Classes');
       } else if (currentMenuItem.includes('Search Student')) {
         setOpenSubmenu('Search Student');
       } else if (currentMenuItem.includes('Attendance')) {
@@ -52,7 +53,7 @@ const TeacherSidebar = ({ onMenuItemClick, currentMenuItem }) => {
       });
       
       if (response.data) {
-        setTeacherName(response.data);
+        setTeacherName(response.data.data);
         localStorage.setItem('teacherName', response.data);
       }
     } catch (error) {
@@ -192,11 +193,11 @@ const TeacherSidebar = ({ onMenuItemClick, currentMenuItem }) => {
           >
 
             <MenuItem 
-              onClick={() => onMenuItemClick('profile')}
-              active={currentMenuItem === 'profile'}
-              icon={<User size={18} />}
+              onClick={() => onMenuItemClick('classes')}
+              active={currentMenuItem === 'classes'}
+              icon={<Users size={18} />}
             >
-              Profile
+              Classes
             </MenuItem>
             <MenuItem 
               onClick={() => onMenuItemClick('search student')}

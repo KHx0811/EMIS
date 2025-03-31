@@ -236,8 +236,8 @@ export const getTeacherName = async (req, res) => {
       });
     }
 
-    const teacherId = req.user.teacher_id;
-    const teacher = await Teacher.findOne({ teacher_id: teacherId }); // Extracted from the JWT token
+    const teacherId = req.user.id;
+    const teacher = await Teacher.findById(teacherId); // Extracted from the JWT token
 
     if (!teacher) {
       return res.status(404).json({

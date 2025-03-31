@@ -35,25 +35,25 @@ const DistrictSidebar = ({ onMenuItemClick, currentMenuItem }) => {
 
   const fetchUserDetails = async () => {
     try {
-      const storedUsername = localStorage.getItem('districtUsername');
+      const storedName = localStorage.getItem('districtName');
       
-      if (storedUsername) {
-        setDistrictName(storedUsername);
+      if (storedName) {
+        setDistrictName(storedName);
         return;
       }
       
       const token = localStorage.getItem('districtToken');
       if (!token) return;
       
-      const response = await axios.get('http://localhost:3000/api/users/details', {
+      const response = await axios.get('http://localhost:3000/api/districts/details', {
         headers: {
           Authorization: `Bearer ${token}`
         }
       });
       
-      if (response.data && response.data.data && response.data.data.username) {
-        setDistrictName(response.data.data.username);
-        localStorage.setItem('districtUsername', response.data.data.username);
+      if (response.data) {
+        setDistrictName(response.data.data);
+        localStorage.setItem('districtName', response.data.data);
       }
     } catch (error) {
       console.error('Error fetching user details:', error);

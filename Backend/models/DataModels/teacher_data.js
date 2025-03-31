@@ -1,61 +1,50 @@
 import mongoose from 'mongoose';
 
+// Base schema for all teacher-related data
+const teacherDataSchema = new mongoose.Schema({
+  teacherId: { type: String, required: true },
+  type: { type: String, required: true } // Discriminator key
+}, { timestamps: true, discriminatorKey: 'type' });
 
-const leaveApplicationSchema = new mongoose.Schema({
-  teacherId: { type: mongoose.Schema.Types.ObjectId, ref: 'Teacher', required: true },
+// Create the base model
+const TeacherData = mongoose.models.TeacherData || mongoose.model('TeacherData', teacherDataSchema);
+
+// Class schema as a discriminator
+const ClassModel = mongoose.models.Class || TeacherData.discriminator('Class', new mongoose.Schema({
+  className: { type: String, required: true },
+  section: { type: String, required: true },
+  students: [{ type: String }],
+}));
+
+// Assignment schema as a discriminator
+const AssignmentModel = mongoose.models.Assignment || TeacherData.discriminator('Assignment', new mongoose.Schema({
+  title: { type: String, required: true },
+  description: { type: String },
+  dueDate: { type: Date, required: true },
+  classId: { type: mongoose.Schema.Types.ObjectId, ref: 'TeacherData' }
+}));
+
+// Leave application schema as a discriminator
+const LeaveApplicationModel = mongoose.models.LeaveApplication || TeacherData.discriminator('LeaveApplication', new mongoose.Schema({
   startDate: { type: Date, required: true },
   endDate: { type: Date, required: true },
   reason: { type: String, required: true },
-  status: { 
-    type: String, 
-    enum: ['Pending', 'Approved', 'Rejected'], 
-    default: 'Pending' 
-  }
-});
+  status: { type: String, enum: ['Pending', 'Approved', 'Rejected'], default: 'Pending' },
+  appliedDate: { type: Date, default: Date.now }
+}));
 
+// Parent interaction schema as a discriminator
+const ParentInteractionModel = mongoose.models.ParentInteraction || TeacherData.discriminator('ParentInteraction', new mongoose.Schema({
+  studentId: { type: String, required: true },
+  interactionType: { type: String, enum: ['Email', 'Phone', 'Meeting', 'Message'], required: true },
+  content: { type: String, required: true },
+  date: { type: Date, default: Date.now }
+}));
 
-const teacherSchema = new mongoose.Schema({
-  name: { type: String, required: true },
-  email: { type: String, required: true, unique: true },
-  contact: { type: String },
-  subject: { type: String, required: true },
-  leaveApplications: [{
-    startDate: { type: Date, required: true },
-    endDate: { type: Date, required: true },
-    reason: { type: String, required: true },
-    status: { 
-      type: String, 
-      enum: ['Pending', 'Approved', 'Rejected'], 
-      default: 'Pending' 
-    },
-    appliedDate: { type: Date, default: Date.now }
-  }],
-  assignedClasses: [{
-    class: { type: String, required: true },
-    section: { type: String, required: true }
-  }],
-  parentInteractions: [{
-    studentId: { type: mongoose.Schema.Types.ObjectId, ref: 'Student', required: true },
-    type: { 
-      type: String, 
-      enum: ['Email', 'Phone', 'Meeting', 'Message'], 
-      required: true 
-    },
-    date: { type: Date, default: Date.now },
-    content: { type: String, required: true }
-  }],
-  teacherNotes: [{
-    studentId: { type: mongoose.Schema.Types.ObjectId, ref: 'Student', required: true },
-    type: { 
-      type: String, 
-      enum: ['Behavioral', 'Academic', 'Personal'], 
-      required: true 
-    },
-    content: { type: String, required: true },
-    date: { type: Date, default: Date.now }
-  }]
-}, { timestamps: true });
-
-export default mongoose.model('TeacherData', teacherSchema);
-
-export const TeacherLeave = mongoose.model('TeacherLeave', leaveApplicationSchema);
+export { 
+  TeacherData,
+  ClassModel,
+  AssignmentModel,
+  LeaveApplicationModel,
+  ParentInteractionModel
+};

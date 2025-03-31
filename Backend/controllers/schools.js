@@ -189,3 +189,39 @@ export const getSchoolById = async (req, res) => {
     });
   }
 };
+
+export const getPrincipalName = async (req, res) => {
+  try {
+    if (req.user.role !== "school") {
+      return res.status(401).json({
+        status: "error",
+        message: "Unauthorized",
+        data: null,
+      });
+    }
+
+    const schoolId = req.user.id;
+    const principal = await School.findById(schoolId); // Extracted from the JWT token
+
+    if (!principal) {
+      return res.status(404).json({
+        status: "error",
+        message: "Principal not found",
+        data: null,
+      });
+    }
+
+    return res.status(200).json({
+      status: "success",
+      message: "Principal name retrieved successfully",
+      data: principal.principal_name,
+    });
+  } catch (error) {
+    console.error('Error in getPrincipalName:', error);
+    return res.status(500).json({
+      status: "error",
+      message: "Internal server error",
+      data: error.message,
+    });
+  }
+};

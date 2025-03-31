@@ -13,6 +13,7 @@ import Leave from '@/forms/Teacher/Leave';
 import Marks from '@/forms/Teacher/Marks';
 import ContactAdmin from '@/forms/Teacher/ContactAdmin';
 import SearchStudent from '@/forms/Teacher/searchstudent';
+import Classes from '@/forms/Teacher/Classes';
 
 const TeacherDashboard = () => {
   const navigate = useNavigate();
@@ -119,16 +120,9 @@ const TeacherDashboard = () => {
 
   const renderContent = () => {
     switch (selectedMenuItem) {
-      case 'profile':
+      case 'classes':
         return (
-          <Box sx={globalStyles}>
-            <Typography variant="h4" sx={{ color: '#e0e0e0', mb: 3 }}>
-              Profile
-            </Typography>
-            <Typography variant="body1" sx={{ color: '#e0e0e0' }}>
-              Details about the teacher's profile.
-            </Typography>
-          </Box>
+          <Box sx={globalStyles}><Classes /></Box>
         );
       case 'search student':
       return (

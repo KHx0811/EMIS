@@ -4,115 +4,110 @@ from flask_cors import CORS
 app = Flask(__name__)
 CORS(app)
 
+# Mock function to simulate Gemini 2.0 Flash model integration
+def gemini_flash_model_response(message, user_type=None):
+    return f"Gemini 2.0 Flash model processed your query: '{message}' for user type: '{user_type}'"
+
+# Role-based operations
+role_operations = {
+    'admin': [
+        "create, read, update, delete users (students, parents, teachers, principals, district heads)",
+        "full access to all data and operations"
+    ],
+    'parent': [
+        "view child data (attendance, marks, fees, extracurricular activities)"
+    ],
+    'teacher': [
+        "create classes, add students to classes within the same school",
+        "read student and parent details",
+        "upload marks, attendance, register students for events/sports",
+        "apply for leave, arrange parent-teacher interactions"
+    ],
+    'principal': [
+        "monitor all classes, teachers, and students in the school",
+        "conduct events, allocate budgets, fix fees for classes",
+        "schedule meetings with the district head"
+    ],
+    'districthead': [
+        "monitor all schools within the district",
+        "allocate budgets for schools, attend council meetings",
+        "record school progress and assess school fitness"
+    ]
+}
+
+# Generate response based on user role and message
 def generate_response(message, user_type=None):
     lower_message = message.lower()
-    
-    common_responses = [
-        {
-            'keywords': ['hii','hello','hey','help', 'support', 'assistance', 'how can i', 'what to do'],
-            'response': "I'm here to help! What specific information do you need? Please specify your role or login for the exact assistance you require.",
-            'link': "/selectuser"
-        },
-        {
-            'keywords': ['login', 'access', 'dashboard'],
-            'response': "Depending on your role, you can access different dashboards. Could you specify if you're a parent, teacher, principal, or admin?",
-            'link': "/selectuser"
-        }
-    ]
-
-    universal_responses = [
-        {
-            'keywords': ['password', 'reset', 'forgot'],
-            'response': "To reset your password, please use the 'Forgot Password' option on the login page or contact system administrator.",
-            'link': "/getresetpasswordotp"
-        },
-        {
-            'keywords': ['contact', 'support', 'administrator', 'admin'],
-            'response': "For direct support, please contact the system administrator through the contact section in your respective dashboard.",
-            'link': "/selectuser"
-        }
-    ]
-
-    user_type_responses = {
+    few_shot_examples = {
+        'admin': [
+            "As an admin, you can manage users by creating, reading, updating, or deleting their information. For example, you can add a new teacher or update a student's details.",
+            "Admins have full access to all data and operations. For instance, you can monitor system-wide activity or generate reports."
+        ],
         'parent': [
-            {
-                'keywords': ['edit', 'change', 'update', 'wrong', 'data', 'child'],
-                'response': "To edit your child's information, go to the Parent Dashboard and use the 'Edit Profile' section or contact the administrator.",
-                'link': "/dashboard/parent"
-            },
-            {
-                'keywords': ['grades', 'performance', 'marks', 'score'],
-                'response': "You can view your child's academic performance in the Parent Dashboard under the 'Academic Progress' section.",
-                'link': "/dashboard/parent"
-            }
+            "As a parent, you can view your child's attendance, marks, fees, and extracurricular activities. For example, you can check if your child has completed their fee payment.",
+            "Parents can also monitor their child's progress and communicate with teachers through the dashboard."
         ],
         'teacher': [
-            {
-                'keywords': ['attendance', 'record', 'students', 'mark'],
-                'response': "Manage student attendance through the Teacher Dashboard in the 'Attendance Management' section.",
-                'link': "/dashboard/teacher"
-            },
-            {
-                'keywords': ['assignment', 'homework', 'submit', 'upload'],
-                'response': "Submit and track student assignments using the Assignments module in your Teacher Dashboard.",
-                'link': "/dashboard/teacher"
-            }
+            "As a teacher, you can create classes, add students, upload marks, and track attendance. For example, you can register a student for a sports event.",
+            "Teachers can also arrange parent-teacher interactions or apply for leave through the dashboard."
         ],
         'principal': [
-            {
-                'keywords': ['school', 'report', 'overview', 'statistics'],
-                'response': "Access comprehensive school reports and analytics in the Principal Dashboard.",
-                'link': "/dashboard/principal"
-            }
+            "As a principal, you can monitor all classes, teachers, and students in your school. For example, you can allocate budgets for school development.",
+            "Principals can also conduct events, fix class fees, and schedule meetings with district heads."
         ],
-        'admin': [
-            {
-                'keywords': ['user', 'management', 'create', 'delete', 'account'],
-                'response': "Manage users, create accounts, and handle system configurations in the Admin Dashboard.",
-                'link': "/dashboard/admin"
-            }
+        'districthead': [
+            "As a district head, you can monitor all schools in your district. For example, you can allocate budgets to schools or assess their performance.",
+            "District heads can also attend council meetings and record school progress for fitness assessments."
         ]
     }
-
-    def find_matching_response(response_list):
-        for response in response_list:
-            if any(keyword in lower_message for keyword in response['keywords']):
-                return response
-        return None
-
-    if user_type and user_type.lower() in user_type_responses:
-        specific_response = find_matching_response(user_type_responses[user_type.lower()])
-        if specific_response:
-            return specific_response
-
-    universal_response = find_matching_response(universal_responses)
-    if universal_response:
-        return universal_response
-
-    common_response = find_matching_response(common_responses)
-    if common_response:
-        return common_response
-
+    if user_type and user_type.lower() in role_operations:
+        for operation in role_operations[user_type.lower()]:
+            if any(keyword in lower_message for keyword in operation.split(", ")):
+                return {
+                    'response': (
+                        f"As a {user_type}, you can perform the following operation: {operation}. "
+                        f"To proceed, visit your dashboard at /dashboard/{user_type.lower()} and navigate to the relevant section. "
+                        f"Here are some examples to guide you:\n- {few_shot_examples[user_type.lower()][0]}\n- {few_shot_examples[user_type.lower()][1]}"
+                    ),
+                    'link': f"/dashboard/{user_type.lower()}"
+                }
+    if 'contact admin' in lower_message or 'support' in lower_message:
+        return {
+            'response': (
+                "You can contact the admin through the contact-admin form in your dashboard. "
+                "If you need immediate assistance, please email support@example.com or call our helpline at +1-800-123-4567."
+            ),
+            'link': "/contact-admin"
+        }
     return {
-        'response': "I'm unable to understand your specific query. Could you provide more details or specify your user role? Options include: Parent, Teacher, Principal, or Admin.",
-        'link': "/selectuser"
+        'response': (
+            "I'm sorry, I couldn't understand your request. Here are some suggestions to help you: "
+            "1. Check your spelling or rephrase your query. "
+            "2. Visit the help section at /help for detailed guidance. "
+            "3. Contact support if you need further assistance."
+        ),
+        'link': "/help"
     }
 
 @app.route('/chat', methods=['POST'])
 def chat():
-    data = request.json
+    data = request.get_json()
     message = data.get('message', '')
-    user_type = data.get('userType')
+    user_type = data.get('userType', None)
+    print(f"User Type: {user_type}, Message: {message}")  # Debugging logs
 
-    if not message:
-        return jsonify({'error': 'No message provided'}), 400
+    # Get the response from generate_response
+    response_data = generate_response(message, user_type)
 
-    ai_response = generate_response(message, user_type)
-
+    # Return the entire payload including the original message, userType, and response
     return jsonify({
-        'response': ai_response['response'],
-        'link': ai_response['link']
+        'message': message,
+        'userType': user_type,
+        'response': response_data['response'],
+        'link': response_data.get('link', None)  # Include link if available
     })
 
 if __name__ == '__main__':
-    app.run(debug=True, port=5000)
+    app.run(host='0.0.0.0', port=5000)
+    
+    
