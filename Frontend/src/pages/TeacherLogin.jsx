@@ -14,7 +14,7 @@ const TeacherLogin = () => {
     email: '',
     password: '',
     captcha: '',
-    loginType: 'teacher' // Set the login type to teacher
+    loginType: 'teacher'
   });
 
   useEffect(() => {

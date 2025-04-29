@@ -8,6 +8,7 @@ const CreateDistrict = ({ onSubmit = () => {} }) => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     district_name: '',
+    districthead_name: '',
     state: '',
     email: '',
     password: '',
@@ -26,6 +27,7 @@ const CreateDistrict = ({ onSubmit = () => {} }) => {
   const handleClear = () => {
     setFormData({
       district_name: '',
+      districthead_name: '',
       state: '',
       email: '',
       password: '',
@@ -127,6 +129,18 @@ const CreateDistrict = ({ onSubmit = () => {} }) => {
           id="state"
           name="state"
           value={formData.state}
+          onChange={handleChange}
+          required
+          style={inputStyle}
+        />
+      </Box>
+
+      <Box sx={{ marginBottom: '16px' }}>
+        <label style={labelStyle} htmlFor="district_name">DistrictHead Name *</label>
+        <input
+          id="districthead_name"
+          name="districthead_name"
+          value={formData.districthead_name}
           onChange={handleChange}
           required
           style={inputStyle}

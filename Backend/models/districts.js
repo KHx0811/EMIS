@@ -6,6 +6,10 @@ const districtSchema = new Schema({
     type: String,
     required: true,
   },
+  districthead_name: {
+    type: String,
+    required: true,
+  },
   state: {
     type: String,
     required: true,

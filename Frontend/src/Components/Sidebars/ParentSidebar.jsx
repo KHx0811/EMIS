@@ -5,23 +5,20 @@ import { Box, Typography } from '@mui/material';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { ResizableBox } from 'react-resizable';
-import './AdminSidebar.css';
 
 const ParentSidebar = ({ onMenuItemClick, currentMenuItem }) => {
   const navigate = useNavigate();
   const [openSubmenu, setOpenSubmenu] = useState(null);
-  const [parentName, setParentName] = useState('Parent');
+  const [parentName, setParentName] = useState('');
 
   useEffect(() => {
       if (currentMenuItem) {
-        if (currentMenuItem.includes('Profile')) {
-          setOpenSubmenu('Profile');
-        } else if (currentMenuItem.includes('Child Profile')) {
+        if (currentMenuItem.includes('Child Profile')) {
           setOpenSubmenu('Child Profile');
-        } else if (currentMenuItem.includes('Attendence')) {
-          setOpenSubmenu('Attendence');
+        } else if (currentMenuItem.includes('Attendance')) {
+          setOpenSubmenu('Attendance');
         } else if (currentMenuItem.includes('Marks')) {
-          setOpenSubmenu('Internal Marks');
+          setOpenSubmenu('Marks');
         } else if (currentMenuItem.includes('Teacher')) {
           setOpenSubmenu('Teachers');
         } else if (currentMenuItem.includes('Fees')) {
@@ -50,15 +47,16 @@ const ParentSidebar = ({ onMenuItemClick, currentMenuItem }) => {
       }
       const token = localStorage.getItem('parentToken');
       if (!token) return;
-      const response = await axios.get('http://localhost:3000/api/teachers/details', {
+      const response = await axios.get('http://localhost:3000/api/parents/details', {
         headers: {
           Authorization: `Bearer ${token}`
         }
       });
 
-      if (response.data && response.data.data && response.data.data.name) {
-        setName(response.data.data.name);
-        localStorage.setItem('adminName', response.data.data.name);
+      if (response.data) {
+        setParentName(response.data.data);
+        console.log('Parent Name:', response.data.data);
+        localStorage.setItem('parentUserName', response.data.data);
       }
     } catch (error) {
       console.error('Error fetching user details:', error);
@@ -77,8 +75,8 @@ const ParentSidebar = ({ onMenuItemClick, currentMenuItem }) => {
       
       const payload = JSON.parse(atob(tokenParts[1]));
       if (payload.name) {
-        setAdminName(payload.name);
-        localStorage.setItem('parentName', payload.name);
+        setParentName(payload.name);
+        localStorage.setItem('parentUserName', payload.name);
       }
     } catch (e) {
       console.error('Error extracting username from token:', e);
@@ -92,6 +90,7 @@ const ParentSidebar = ({ onMenuItemClick, currentMenuItem }) => {
   const handleLogout = () => {
     localStorage.removeItem('parentToken');
     localStorage.removeItem('parentName');
+    localStorage.removeItem('userType');
     navigate('/login/parent');
   };
 
@@ -161,7 +160,7 @@ const ParentSidebar = ({ onMenuItemClick, currentMenuItem }) => {
               backgroundColor: '#141b2d !important',
               cursor: 'pointer'
             }}
-            onClick={handleDashboardClick}
+            onClick={() => onMenuItemClick('profile')}
           >
             <Typography variant="h6" sx={{ color: '#ffffff', margin: '8px 0 0 0', fontSize: '1.2rem', fontWeight: 'bold' }}>
               {parentName}
@@ -197,13 +196,6 @@ const ParentSidebar = ({ onMenuItemClick, currentMenuItem }) => {
             }}
           >
 
-            <MenuItem 
-              onClick={() => onMenuItemClick('profile')}
-              active={currentMenuItem === 'profile'}
-              icon={<User size={18} />}
-            >
-              Profile
-            </MenuItem>
             <MenuItem 
               onClick={() => onMenuItemClick('childProfile')}
               active={currentMenuItem === 'childProfile'}

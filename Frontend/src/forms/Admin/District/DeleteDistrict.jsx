@@ -141,6 +141,7 @@ const DeleteDistrict = () => {
           <Typography variant="h6">District Details</Typography>
           <Typography>District ID: {districtData.district_id}</Typography>
           <Typography>District Name: {districtData.district_name}</Typography>
+          <Typography>DistrictHead Name: {districtData.districthead_name}</Typography>
           <Typography>State: {districtData.state}</Typography>
           <Typography>Email: {districtData.email}</Typography>
           <Button 

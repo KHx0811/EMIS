@@ -13,7 +13,7 @@ const ParentLogin = () => {
     email: '',
     dateOfBirth: '',
     captcha: '',
-    loginType: 'parent' // Set the login type to parent
+    loginType: 'parent'
   });
 
   useEffect(() => {
@@ -41,6 +41,7 @@ const ParentLogin = () => {
         const response = await axios.post('http://localhost:3000/api/auth/login', formData);
         if(response.data.status === 'success') {
           localStorage.setItem('parentToken', response.data.data);
+          localStorage.setItem('userType', 'parent');
           console.log('Login successful:', response.data);
           alert('Parent Login Successful');
           navigate('/dashboard/parent');

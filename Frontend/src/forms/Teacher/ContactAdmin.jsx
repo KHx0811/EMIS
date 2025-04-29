@@ -12,11 +12,19 @@ const ContactAdmin = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    const userType = localStorage.getItem('userType') || 'teacher';
+  
     try {
       const token = localStorage.getItem('teacherToken');
+      const payload = {
+        userType,
+        subject,
+        message,
+      };
+    
       const response = await axios.post(
-        'http://localhost:3000/api/contact-admin',
-        { subject, message },
+        'http://localhost:3000/api/teachers/contact-admin', 
+        payload,
         {
           headers: {
             Authorization: `Bearer ${token}`,

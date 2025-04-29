@@ -11,6 +11,7 @@ const UpdateDistrict = () => {
   const [districtData, setDistrictData] = useState(null);
   const [formData, setFormData] = useState({
     district_name: '',
+    districthead_name: '',
     state: '',
     email: '',
     district_id: '',
@@ -240,6 +241,18 @@ const UpdateDistrict = () => {
               id="state"
               name="state"
               value={formData.state || ''}
+              onChange={handleChange}
+              required
+              style={inputStyle}
+            />
+          </Box>
+
+          <Box sx={{ marginBottom: '16px' }}>
+            <label style={labelStyle} htmlFor="districthead_name">DistrictHead Name *</label>
+            <input
+              id="districthead_name"
+              name="districthead_name"
+              value={formData.districthead_name || ''}
               onChange={handleChange}
               required
               style={inputStyle}

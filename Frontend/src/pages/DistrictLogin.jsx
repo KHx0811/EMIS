@@ -38,6 +38,7 @@ const DistrictLogin = () => {
         const response = await axios.post('http://localhost:3000/api/auth/login', formData);
         if(response.data.status === 'success') {
           localStorage.setItem('districtToken', response.data.data);
+          localStorage.setItem('userType', 'districthead');
           console.log('Login successful:', response.data);
           alert('District Head Login Successful');
           navigate('/dashboard/districthead');
@@ -87,7 +88,7 @@ const DistrictLogin = () => {
               />
             </div>
             <div className="form-group">
-              <label htmlFor="email">Email</label>
+              <label htmlFor="email">DistrictHead Email</label>
               <input
                 type="email"
                 id="email"
@@ -98,7 +99,7 @@ const DistrictLogin = () => {
               />
             </div>
             <div className="form-group">
-              <label htmlFor="password">Password</label>
+              <label htmlFor="password">DistrictHead Password</label>
               <input
                 type="password"
                 id="password"

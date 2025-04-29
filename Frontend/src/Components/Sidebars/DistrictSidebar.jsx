@@ -1,33 +1,31 @@
 import React, { useState, useEffect } from 'react';
 import { Sidebar, Menu, MenuItem, SubMenu } from 'react-pro-sidebar';
-import { LogOut, User, Search, Calendar, FileText, Activity, MessageSquare, FilePlus, DollarSign, BarChart2 } from 'lucide-react';
+import { LogOut, Search, DollarSign, FilePlus, MessageSquare, Activity, FileText, Send } from 'lucide-react';
 import { Box, Typography } from '@mui/material';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import { ResizableBox } from 'react-resizable';
+import 'react-resizable/css/styles.css';
 import './AdminSidebar.css';
 
 const DistrictSidebar = ({ onMenuItemClick, currentMenuItem }) => {
   const navigate = useNavigate();
   const [openSubmenu, setOpenSubmenu] = useState(null);
-  const [districtName, setDistrictName] = useState('District Head');
+  const [districtHeadName, setDistrictHeadName] = useState('District Head');
 
   useEffect(() => {
     if (currentMenuItem) {
-      if (currentMenuItem.includes('Profile')) {
-        setOpenSubmenu('Profile');
-      } else if (currentMenuItem.includes('SchoolSearch')) {
-        setOpenSubmenu('School Search');
-      } else if (currentMenuItem.includes('Budgets')) {
+      if (currentMenuItem.includes('schoolSearch') || currentMenuItem.includes('teacherSearch') || currentMenuItem.includes('studentSearch')) {
+        setOpenSubmenu('Search');
+      } else if (currentMenuItem.includes('budgets')) {
         setOpenSubmenu('Budgets');
-      } else if (currentMenuItem.includes('Invitations')) {
-        setOpenSubmenu('Invitations');
-      } else if (currentMenuItem.includes('Meetings')) {
+      } else if (currentMenuItem.includes('meetings')) {
         setOpenSubmenu('Meetings');
-      } else if (currentMenuItem.includes('SchoolProgress')) {
+      } else if (currentMenuItem.includes('schoolProgress')) {
         setOpenSubmenu('School Progress');
-      } else if (currentMenuItem.includes('Exams')) {
+      } else if (currentMenuItem.includes('exams')) {
         setOpenSubmenu('Exams');
-      } else if (currentMenuItem.includes('Contact Admin')) {
+      } else if (currentMenuItem.includes('contactAdmin')) {
         setOpenSubmenu('Contact Admin');
       }
     }
@@ -35,25 +33,22 @@ const DistrictSidebar = ({ onMenuItemClick, currentMenuItem }) => {
 
   const fetchUserDetails = async () => {
     try {
-      const storedName = localStorage.getItem('districtName');
-      
+      const storedName = localStorage.getItem('districtHeadName');
       if (storedName) {
-        setDistrictName(storedName);
+        setDistrictHeadName(storedName);
         return;
       }
-      
+
       const token = localStorage.getItem('districtToken');
       if (!token) return;
-      
+
       const response = await axios.get('http://localhost:3000/api/districts/details', {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
+        headers: { Authorization: `Bearer ${token}` },
       });
-      
+
       if (response.data) {
-        setDistrictName(response.data.data);
-        localStorage.setItem('districtName', response.data.data);
+        setDistrictHeadName(response.data.data);
+        localStorage.setItem('districtHeadName', response.data.data);
       }
     } catch (error) {
       console.error('Error fetching user details:', error);
@@ -65,14 +60,14 @@ const DistrictSidebar = ({ onMenuItemClick, currentMenuItem }) => {
     try {
       const token = localStorage.getItem('districtToken');
       if (!token) return;
-      
+
       const tokenParts = token.split('.');
       if (tokenParts.length !== 3) return;
-      
+
       const payload = JSON.parse(atob(tokenParts[1]));
       if (payload.username) {
-        setDistrictName(payload.username);
-        localStorage.setItem('districtUsername', payload.username);
+        setDistrictHeadName(payload.username);
+        localStorage.setItem('districtHeadUsername', payload.username);
       }
     } catch (e) {
       console.error('Error extracting username from token:', e);
@@ -86,6 +81,7 @@ const DistrictSidebar = ({ onMenuItemClick, currentMenuItem }) => {
   const handleLogout = () => {
     localStorage.removeItem('districtToken');
     localStorage.removeItem('districtUsername');
+    localStorage.removeItem('userType');
     navigate('/login/district');
   };
 
@@ -98,15 +94,22 @@ const DistrictSidebar = ({ onMenuItemClick, currentMenuItem }) => {
   }, []);
 
   return (
-    <Box
+    <ResizableBox
+      width={220}
+      height={Infinity}
+      minConstraints={[220, Infinity]}
+      maxConstraints={[window.innerWidth * 0.5, Infinity]}
+      axis="x"
+      handle={<span className="custom-handle custom-handle-x" />}
+      resizeHandles={['e']}
       className="district-sidebar-wrapper"
-      sx={{
+      style={{
         position: 'relative',
         height: '100vh',
         backgroundColor: '#141b2d !important',
         boxShadow: '2px 0px 10px rgba(15, 19, 34, 0.6)',
         '& *': {
-          backgroundColor: 'inherit'
+          backgroundColor: 'inherit',
         },
       }}
     >
@@ -117,29 +120,41 @@ const DistrictSidebar = ({ onMenuItemClick, currentMenuItem }) => {
           backgroundColor: '#141b2d !important',
           position: 'relative',
           color: '#ffffff',
+          '& .ps-sidebar-container': {
+            backgroundColor: '#141b2d !important'
+          },
+          '& .ps-menu-root': {
+            backgroundColor: '#141b2d !important'
+          },
+          '& [data-testid="ps-sidebar-container-test-id"]': {
+            backgroundColor: '#141b2d !important'
+          },
+          '& .MuiBox-root': {
+            backgroundColor: '#141b2d !important'
+          }
         }}
-        width="220px"
+        width="100%"
       >
-        <Box 
+        <Box
           sx={{
             padding: '20px 15px',
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
             borderBottom: '1px solid rgba(255,255,255,0.1)',
-            backgroundColor: '#141b2d !important'
+            backgroundColor: '#141b2d !important',
           }}
         >
-          <Box 
-            sx={{ 
-              textAlign: 'center', 
+          <Box
+            sx={{
+              textAlign: 'center',
               backgroundColor: '#141b2d !important',
-              cursor: 'pointer'
+              cursor: 'pointer',
             }}
-            onClick={handleDashboardClick}
+            onClick={() => onMenuItemClick('profile')}
           >
-            <Typography variant="h6" sx={{ color: '#ffffff', margin: '8px 0 0 0', fontSize: '1.2rem', fontWeight: 'bold' }}>
-              {districtName}
+            <Typography active={currentMenuItem === 'profile'} variant="h6" sx={{ color: '#ffffff', margin: '8px 0 0 0', fontSize: '1.2rem', fontWeight: 'bold' }}>
+              {districtHeadName}
             </Typography>
             <Typography variant="body2" sx={{ color: '#00deb6', margin: '2px 0 0 0', fontSize: '0.85rem', opacity: 0.9 }}>
               District Head
@@ -158,88 +173,80 @@ const DistrictSidebar = ({ onMenuItemClick, currentMenuItem }) => {
                 '&:hover': {
                   backgroundColor: 'rgba(0, 222, 182, 0.1)',
                   color: '#00deb6',
-                }
+                },
               }),
               icon: {
-                color: '#00deb6'
+                color: '#00deb6',
               },
               subMenuContent: {
-                backgroundColor: '#141b2d !important'
-              }
+                backgroundColor: '#141b2d !important',
+              },
             }}
             rootStyles={{
               backgroundColor: '#141b2d !important',
             }}
           >
-            <MenuItem 
-              onClick={handleDashboardClick} 
-              active={currentMenuItem === 'dashboard'}
-              icon={<User size={18} />}
-            >
-              Dashboard
-            </MenuItem>
-
-            <MenuItem 
-              onClick={() => onMenuItemClick('profile')}
-              active={currentMenuItem === 'profile'}
-              icon={<User size={18} />}
-            >
-              Profile
-            </MenuItem>
-
-            <MenuItem 
-              onClick={() => onMenuItemClick('schoolSearch')}
-              active={currentMenuItem === 'schoolSearch'}
+            <SubMenu 
+              label="Search" 
               icon={<Search size={18} />}
+              open={openSubmenu === 'Search'}
+              onClick={() => handleSubmenuClick('Search')}
             >
-              School Search
-            </MenuItem>
+              <MenuItem
+                onClick={() => onMenuItemClick('schoolSearch')}
+                active={currentMenuItem === 'schoolSearch'}
+              >
+                School Details
+              </MenuItem>
+              <MenuItem
+                onClick={() => onMenuItemClick('teacherSearch')}
+                active={currentMenuItem === 'teacherSearch'}
+              >
+                Teacher Details
+              </MenuItem>
+              <MenuItem
+                onClick={() => onMenuItemClick('studentSearch')}
+                active={currentMenuItem === 'studentSearch'}
+              >
+                Student Details
+              </MenuItem>
+            </SubMenu>
 
-            <MenuItem 
+            <MenuItem
               onClick={() => onMenuItemClick('budgets')}
               active={currentMenuItem === 'budgets'}
               icon={<DollarSign size={18} />}
             >
               Budgets
             </MenuItem>
-
-            <MenuItem 
-              onClick={() => onMenuItemClick('invitations')}
-              active={currentMenuItem === 'invitations'}
-              icon={<FilePlus size={18} />}
-            >
-              Invitations
-            </MenuItem>
-
-            <MenuItem 
+            
+            <MenuItem
               onClick={() => onMenuItemClick('meetings')}
               active={currentMenuItem === 'meetings'}
               icon={<MessageSquare size={18} />}
             >
               Meetings
             </MenuItem>
-
-            <MenuItem 
+            <MenuItem
               onClick={() => onMenuItemClick('schoolProgress')}
               active={currentMenuItem === 'schoolProgress'}
               icon={<Activity size={18} />}
             >
               School Progress
             </MenuItem>
-
-            <MenuItem 
+            <MenuItem
               onClick={() => onMenuItemClick('exams')}
               active={currentMenuItem === 'exams'}
               icon={<FileText size={18} />}
             >
               Exams
             </MenuItem>
-            <MenuItem 
-              onClick={() => onMenuItemClick('Contact Admin')}
-              active={currentMenuItem === 'Contact Admin'}
-              icon={<FileText size={18} />}
+            <MenuItem
+              onClick={() => onMenuItemClick('contactAdmin')}
+              active={currentMenuItem === 'contactAdmin'}
+              icon={<Send size={18} />}
             >
-              Contact Admin 
+              Contact Admin
             </MenuItem>
           </Menu>
         </Box>
@@ -269,14 +276,14 @@ const DistrictSidebar = ({ onMenuItemClick, currentMenuItem }) => {
             color: '#00deb6',
             border: 'none',
             cursor: 'pointer',
-            fontWeight: 'bold'
+            fontWeight: 'bold',
           }}
         >
           <LogOut size={18} style={{ marginRight: '8px' }} />
           Logout
         </button>
       </Box>
-    </Box>
+    </ResizableBox>
   );
 };
 

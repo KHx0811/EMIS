@@ -14,7 +14,7 @@ const PrincipalLogin = () => {
     email: '',
     password: '',
     captcha: '',
-    loginType: 'school' // Set the login type to school
+    loginType: 'school'
   });
 
   useEffect(() => {
@@ -38,7 +38,7 @@ const PrincipalLogin = () => {
         const response = await axios.post('http://localhost:3000/api/auth/login', formData);
         if(response.data.status === 'success') {
           localStorage.setItem('principalToken', response.data.data);
-          console.log('Login successful:', response.data);
+          localStorage.setItem('userType', 'principal');
           alert('Principal Login Successful');
           navigate('/dashboard/principal');
         }else {

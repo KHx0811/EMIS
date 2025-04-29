@@ -184,3 +184,41 @@ export const getParentById = async (req, res) => {
     });
   }
 };
+
+export const getParentName = async (req, res) => {
+  try {
+    if (req.user.role !== "parent") {
+      return res.status(401).json({
+        status: "error",
+        message: "Unauthorized",
+        data: null,
+      });
+    }
+
+    const parentId = req.user.id;
+    console.log('Parent ID:', parentId);
+    const parent = await Parent.findById(parentId);
+    console.log('Parent:', parent);
+
+    if (!parent) {
+      return res.status(404).json({
+        status: "error",
+        message: "Parent not found",
+        data: null,
+      });
+    }
+
+    return res.status(200).json({
+      status: "success",
+      message: "Parent name retrieved successfully",
+      data: parent.name,
+    });
+  } catch (error) {
+    console.error('Error in getParentName:', error);
+    return res.status(500).json({
+      status: "error",
+      message: "Internal server error",
+      data: error.message,
+    });
+  }
+};

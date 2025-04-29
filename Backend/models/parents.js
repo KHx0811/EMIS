@@ -43,4 +43,4 @@ const parentSchema = new Schema({
     required: true,
   },
 });
-export default model("parents", parentSchema);
+export default model("Parent", parentSchema);

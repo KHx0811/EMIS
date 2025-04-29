@@ -80,6 +80,7 @@ const TeacherDashboard = () => {
         console.error('Token verification failed:', error);
         localStorage.removeItem('teacherToken');
         localStorage.removeItem('teacherUsername');
+        localStorage.removeItem('userType');
         navigate('/login/teacher');
       }
     };

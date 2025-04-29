@@ -101,6 +101,7 @@ const DistrictList = () => {
       const districtData = [
         `District ID: ${district.district_id || 'N/A'}`,
         `District Name: ${district.district_name || 'N/A'}`,
+        `DistrictHead Name: ${district.districthead_name || 'N/A'}`,
         `State: ${district.state || 'N/A'}`,
         `Email: ${district.email || 'N/A'}`
       ];
@@ -206,6 +207,7 @@ const DistrictList = () => {
           <Typography variant="h6">District Details</Typography>
           <Typography>District ID      : {districtData.district_id}</Typography>
           <Typography>District Name    : {districtData.district_name}</Typography>
+          <Typography>DistrictHead Name    : {districtData.districthead_name}</Typography>
           <Typography>State            : {districtData.state}</Typography>
           <Typography>Email            : {districtData.email}</Typography>
         </Box>

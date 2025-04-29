@@ -5,15 +5,16 @@ import axios from 'axios';
 import PrincipalSidebar from '../../Components/Sidebars/PrincipalSidebar';
 import SessionTimer from '@/Components/SessionTimer';
 
+import PrincipalProfile from '@/forms/Principal/Profile';
 import StudentSearch from '@/forms/Principal/StudentSearch';
 import TeacherSearch from '@/forms/Principal/TeacherSearch';
 import SchoolFees from '@/forms/Principal/SchoolFees';
-import BudgetAllocation from '@/forms/Principal/BudgetAllocation';
+import BudgetUsage from '@/forms/Principal/BudgetAllocation';
 import Events from '@/forms/Principal/Events';
 import Meetings from '@/forms/Principal/Meetings';
 import LeaveApprovals from '@/forms/Principal/LeaveApprovals';
 import StudentProgress from '@/forms/Principal/StudentProgress';
-import ContactAdmin from '@/forms/Teacher/ContactAdmin';
+import ContactAdmin from '@/forms/Principal/ContactAdmin';
 
 const PrincipalDashboard = () => {
   const navigate = useNavigate();
@@ -102,16 +103,6 @@ const PrincipalDashboard = () => {
       }
     }
   };
-  
-  const getToken = () => {
-    const token = localStorage.getItem('teacherToken');
-    if (!token) {
-      navigate('/login/teacher');
-      return null;
-    }
-    return token;
-  };
-
 
   const checkTokenExpiration = () => {
     const token = localStorage.getItem('principalToken');
@@ -129,6 +120,7 @@ const PrincipalDashboard = () => {
       if (payload.exp && payload.exp < currentTime) {
         console.error('Token has expired');
         localStorage.removeItem('principalToken');
+        localStorage.removeItem('userType');
         navigate('/login/principal');
       }
     } catch (e) {
@@ -160,29 +152,18 @@ const PrincipalDashboard = () => {
     setSelectedMenuItem(getSelectedMenuItem());
   }, [location.pathname]);
 
-  
-
   const renderContent = () => {
     switch (selectedMenuItem) {
       case 'profile':
-        return (
-          <Box sx={globalStyles}>
-            <Typography variant="h4" sx={{ color: '#e0e0e0', mb: 3 }}>
-              Profile
-            </Typography>
-            <Typography variant="body1" sx={{ color: '#e0e0e0' }}>
-              Details about the principal's profile.
-            </Typography>
-          </Box>
-        );
+        return <Box sx={globalStyles}><PrincipalProfile /></Box>;
       case 'studentSearch':
         return <Box sx={globalStyles}><StudentSearch /></Box>;
       case 'teacherSearch':
         return <Box sx={globalStyles}><TeacherSearch /></Box>;
       case 'schoolFees':
         return <Box sx={globalStyles}><SchoolFees /></Box>;
-      case 'budgetAllocation':
-        return <Box sx={globalStyles}><BudgetAllocation /></Box>;
+      case 'budgetUsage':
+        return <Box sx={globalStyles}><BudgetUsage /></Box>;
       case 'events':
         return <Box sx={globalStyles}><Events /></Box>;
       case 'meetings':
@@ -207,9 +188,9 @@ const PrincipalDashboard = () => {
   return (
     <Box sx={{ display: 'flex', height: '100vh' }}>
       <CssBaseline />
-      <PrincipalSidebar 
-        onMenuItemClick={handleMenuItemClick} 
-        currentMenuItem={selectedMenuItem} 
+      <PrincipalSidebar
+        onMenuItemClick={handleMenuItemClick}
+        currentMenuItem={selectedMenuItem}
       />
       <Box sx={{ flexGrow: 1, p: 3, backgroundColor: '#141b2d', overflow: 'auto' }}>
         <Box

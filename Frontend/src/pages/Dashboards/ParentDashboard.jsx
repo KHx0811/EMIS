@@ -4,7 +4,8 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import ParentSidebar from '../../Components/Sidebars/ParentSidebar';
 import { BookOpen, Bell, Calendar, CreditCard } from 'lucide-react';
-import Attendence from '@/forms/Parent/Attendence';
+import ChildProfile from '@/forms/Parent/ChildProfile';
+import Attendance from '@/forms/Parent/Attendance';
 import Marks from '@/forms/Parent/Marks';
 import Teachers from '@/forms/Parent/Teachers';
 import Feedues from '@/forms/Parent/Feedues';
@@ -12,6 +13,7 @@ import SchoolEvents from '@/forms/Parent/SchoolEvents';
 import PTMeetings from '@/forms/Parent/PTMeetings';
 import Activities from '@/forms/Parent/Activities';
 import SessionTimer from '@/Components/SessionTimer';
+import ParentProfile from '@/forms/Parent/Profile';
 
 const ParentDashboard = () => {
   const navigate = useNavigate();
@@ -108,13 +110,13 @@ const ParentDashboard = () => {
   const checkTokenExpiration = () => {
     const token = localStorage.getItem('parentToken');
     if (!token) return;
-    
+
     const tokenParts = token.split('.');
     if (tokenParts.length !== 3) {
       console.error('Invalid token format');
       return;
     }
-    
+
     try {
       const payload = JSON.parse(atob(tokenParts[1]));
       const currentTime = Math.floor(Date.now() / 1000);
@@ -123,6 +125,7 @@ const ParentDashboard = () => {
         console.log('Current time:', new Date(currentTime * 1000));
         localStorage.removeItem('parentToken');
         localStorage.removeItem('parentUsername');
+        localStorage.removeItem('userType');
         navigate('/login/parent');
       }
     } catch (e) {
@@ -131,33 +134,33 @@ const ParentDashboard = () => {
   };
 
   useEffect(() => {
-      checkTokenExpiration();
-      const token = localStorage.getItem('parentToken');
-      if (!token) {
+    checkTokenExpiration();
+    const token = localStorage.getItem('parentToken');
+    if (!token) {
+      navigate('/login/parent');
+      return;
+    }
+
+    const verifyToken = async () => {
+      try {
+        await axios.get('http://localhost:3000/api/auth/verify', {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+        console.log('Token verified successfully');
+      } catch (error) {
+        console.error('Token verification failed:', error);
+        localStorage.removeItem('parentToken');
+        localStorage.removeItem('parentUsername');
         navigate('/login/parent');
-        return;
       }
-      
-      const verifyToken = async () => {
-        try {
-          await axios.get('http://localhost:3000/api/auth/verify', {
-            headers: {
-              Authorization: `Bearer ${token}`
-            }
-          });
-          console.log('Token verified successfully');
-        } catch (error) {
-          console.error('Token verification failed:', error);
-          localStorage.removeItem('parentToken');
-          localStorage.removeItem('parentUsername');
-          navigate('/login/parent');
-        }
-      };
-      
-      verifyToken();
-      
-      setSelectedMenuItem(getSelectedMenuItem());
-    }, [location.pathname]);
+    };
+
+    verifyToken();
+
+    setSelectedMenuItem(getSelectedMenuItem());
+  }, [location.pathname]);
 
   const handleMenuItemClick = (menuItem) => {
     setSelectedMenuItem(menuItem);
@@ -168,32 +171,25 @@ const ParentDashboard = () => {
   const renderContent = () => {
     switch (selectedMenuItem) {
       case 'profile':
-        return (
-          <Box sx={globalStyles}>
-            <Typography variant="h4" sx={{ color: '#e0e0e0', mb: 3 }}>
-              Welcome to the Parent Dashboard
-            </Typography>
-            <Typography variant="body1" sx={{ color: '#e0e0e0' }}>
-              Details about the principal's profile.
-            </Typography>
-          </Box>
-        );
-        case 'attendence':
-          return <Box sx={globalStyles}><Attendence /></Box>;
-        case 'marks':
-          return <Box sx={globalStyles}><Marks /></Box>;
-        case 'teachers':
-          return <Box sx={globalStyles}><Teachers /></Box>;
-        case 'feedues':
-          return <Box sx={globalStyles}><Feedues /></Box>;
-        case 'events':
-          return <Box sx={globalStyles}><SchoolEvents /></Box>;
-        case 'PT meetings':
-          return <Box sx={globalStyles}><PTMeetings /></Box>;
-        case 'activities':
-          return <Box sx={globalStyles}><Activities /></Box>;
-        case 'contactAdmin':
-          return <Box sx={globalStyles}><ContactAdmin /></Box>
+        return (<Box sx={globalStyles}><ParentProfile /></Box>);
+      case 'childProfile':
+        return (<Box sx={globalStyles}><ChildProfile /></Box>);
+      case 'Attendance':
+        return <Box sx={globalStyles}><Attendance /></Box>;
+      case 'Marks':
+        return <Box sx={globalStyles}><Marks /></Box>;
+      case 'teachers':
+        return <Box sx={globalStyles}><Teachers /></Box>;
+      case 'feedues':
+        return <Box sx={globalStyles}><Feedues /></Box>;
+      case 'events':
+        return <Box sx={globalStyles}><SchoolEvents /></Box>;
+      case 'PT meetings':
+        return <Box sx={globalStyles}><PTMeetings /></Box>;
+      case 'activities':
+        return <Box sx={globalStyles}><Activities /></Box>;
+      case 'contactAdmin':
+        return <Box sx={globalStyles}><ContactAdmin /></Box>
       default:
         return (
           <Box>
@@ -208,11 +204,11 @@ const ParentDashboard = () => {
   return (
     <Box sx={{ display: 'flex', height: '100vh' }}>
       <CssBaseline />
-      <ParentSidebar 
-        onMenuItemClick={handleMenuItemClick} 
-        currentMenuItem={selectedMenuItem} 
+      <ParentSidebar
+        onMenuItemClick={handleMenuItemClick}
+        currentMenuItem={selectedMenuItem}
       />
-      
+
       <Box
         sx={{
           flexGrow: 1,

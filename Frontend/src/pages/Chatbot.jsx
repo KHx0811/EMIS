@@ -4,14 +4,17 @@ import './Chatbot.css';
 
 const Chatbot = () => {
   const [messages, setMessages] = useState([
-    { text: "👋 Hi there! What brings you to our AI assistance today?", sender: "bot" }
+    { text: "👋 Hi there! I'm your education management assistant. How can I help you today?", sender: "bot" }
   ]);
   const [input, setInput] = useState("");
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [userType, setUserType] = useState(null);
+  const [userType, setUserType] = useState('guest');
+  const [conversationId, setConversationId] = useState(null);
   const chatboxRef = useRef(null);
+  const inputRef = useRef(null);
+  const prevUserTypeRef = useRef('guest');
+  const tokenCheckIntervalRef = useRef(null);
 
   useEffect(() => {
     if (chatboxRef.current) {
@@ -19,67 +22,120 @@ const Chatbot = () => {
     }
   }, [messages, isLoading]);
 
+  // Focus input after sending a message or when chat opens
   useEffect(() => {
-    // Check for the token
-    const token = localStorage.getItem('teacherToken');
-    
-    // First check for direct userType in localStorage (more reliable)
-    const storedUserType = localStorage.getItem('userType');
-    
-    if (storedUserType) {
-      // If userType is directly stored, use it
-      setIsLoggedIn(true);
-      setUserType(storedUserType);
-      console.log("User type from localStorage:", storedUserType);
-    } else if (token) {
-      // Fallback to decoding the token if needed
-      try {
-        const payload = JSON.parse(atob(token.split('.')[1]));
-        setIsLoggedIn(true);
-        setUserType(payload.userType);
-        console.log("User type from token:", payload.userType);
-      } catch (error) {
-        console.error("Error decoding token:", error);
-        // Check for other tokens that might indicate user type
-        if (localStorage.getItem('teacherToken')) {
-          setIsLoggedIn(true);
-          setUserType('teacher');
-          console.log("User type inferred: teacher");
-        }
-        // Add other token checks here (studentToken, adminToken, etc.) if needed
-      }
+    if (isOpen && inputRef.current && !isLoading) {
+      inputRef.current.focus();
     }
+  }, [isOpen, isLoading]);
+
+  // Initial setup and token monitoring
+  useEffect(() => {    
+    // Initialize user ID if not present
+    const userId = localStorage.getItem('userId') || generateUserId();
+    if (!localStorage.getItem('userId')) {
+      localStorage.setItem('userId', userId);
+    }
+    
+    // Initial check for user type
+    checkUserTypeFromTokens();
+    
+    // Set up interval to monitor tokens
+    tokenCheckIntervalRef.current = setInterval(checkUserTypeFromTokens, 1000);
+    
+    return () => {
+      if (tokenCheckIntervalRef.current) {
+        clearInterval(tokenCheckIntervalRef.current);
+      }
+    };
   }, []);
 
+  const checkUserTypeFromTokens = () => {
+    const tokens = {
+      parentToken: localStorage.getItem('parentToken'),
+      teacherToken: localStorage.getItem('teacherToken'),
+      principalToken: localStorage.getItem('principalToken'),
+      districtHeadToken: localStorage.getItem('districtHeadToken')
+    };
+    
+    const tokenToUserType = {
+      'parentToken': 'parent',
+      'teacherToken': 'teacher',
+      'principalToken': 'principal',
+      'districtHeadToken': 'districtHead'
+    };
+    
+    // Detect user type from tokens
+    let foundUserType = null;
+    for (const [tokenName, token] of Object.entries(tokens)) {
+      if (token) {
+        foundUserType = tokenToUserType[tokenName];
+        break;
+      }
+    }
+    
+    const newUserType = foundUserType || 'guest';
+    const userId = localStorage.getItem('userId');
+    
+    // Only update if user type has changed
+    if (newUserType !== prevUserTypeRef.current) {
+      console.log(`User type changed from ${prevUserTypeRef.current} to ${newUserType}`);
+      
+      // Reset messages when user type changes (login/logout)
+      setMessages([
+        { text: `👋 Hi there! I'm your education management assistant. How can I help you today?`, sender: "bot" }
+      ]);
+      
+      // Update user type and conversation ID
+      setUserType(newUserType);
+      localStorage.setItem('userType', newUserType);
+      setConversationId(`${userId}_${newUserType}`);
+      
+      // Update previous user type reference
+      prevUserTypeRef.current = newUserType;
+    }
+  };
+
+  const generateUserId = () => {
+    return 'user_' + Math.random().toString(36).substring(2, 15);
+  };
+
   const sendMessage = async () => {
-    if (!input.trim()) return;
+    if (!input.trim() || isLoading) return;
 
     const userMessage = { text: input, sender: "user" };
     setMessages(prevMessages => [...prevMessages, userMessage]);
     setInput("");
     setIsLoading(true);
-    console.log("Sending request with user type:", userType);
 
     try {
+      const currentUserType = userType;
+      
       const res = await fetch("http://localhost:5000/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           message: input,
-          userType: userType || 'guest' // Provide a default value if userType is null
+          userType: currentUserType,
+          conversationId: conversationId
         }),
       });
 
       const data = await res.json();
+      
+      if (data.conversationId) {
+        setConversationId(data.conversationId);
+      }
+      
       setMessages(prevMessages => [
         ...prevMessages,
-        { text: data.response, sender: "bot", link: data.link }
+        { text: data.response, sender: "bot" }
       ]);
     } catch (error) {
       console.error("Error sending message:", error);
       setMessages(prevMessages => [
         ...prevMessages,
-        { text: "Sorry, something went wrong.", sender: "bot" }
+        { text: "Sorry, I'm having trouble connecting to the server. Please try again later.", sender: "bot" }
       ]);
     } finally {
       setIsLoading(false);
@@ -87,9 +143,39 @@ const Chatbot = () => {
   };
 
   const handleKeyPress = (e) => {
-    if (e.key === 'Enter') {
+    if (e.key === 'Enter' && !isLoading) {
       sendMessage();
     }
+  };
+
+  const formatMessage = (message) => {
+    if (message.includes("```")) {
+      const parts = message.split("```");
+      return (
+        <>
+          {parts.map((part, i) => {
+            if (i % 2 === 0) {
+              return <span key={i}>{part}</span>;
+            } else {
+              return (
+                <pre key={i} className="code-block">
+                  <code>{part}</code>
+                </pre>
+              );
+            }
+          })}
+        </>
+      );
+    }
+    
+    let formattedText = message;
+    
+    return formattedText.split('\n').map((line, i) => (
+      <React.Fragment key={i}>
+        {line}
+        {i < formattedText.split('\n').length - 1 && <br />}
+      </React.Fragment>
+    ));
   };
 
   return (
@@ -105,16 +191,17 @@ const Chatbot = () => {
       
       {isOpen && (
         <div className="chatbot-container">
-          <div className="chatbot-close-icon">
-            <X
-              size={20}
-              color="white"
-              onClick={() => setIsOpen(false)}
-            />
-          </div>
           <div className="chatbot-header">
             <Sparkles size={20} color="white" style={{ marginRight: '10px' }} />
             <h3>AI Assistance</h3>
+            {userType && <span className="user-role-badge">{userType}</span>}
+            <div className="chatbot-close-icon">
+              <X
+                size={20}
+                color="white"
+                onClick={() => setIsOpen(false)}
+              />
+            </div>
           </div>
           <div 
             className="chatbox" 
@@ -125,27 +212,22 @@ const Chatbot = () => {
                 key={index}
                 className={`message ${msg.sender}`}
               >
-                {msg.text}
-                {msg.link && (
-                  <a 
-                    href={msg.link} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="message-link"
-                  >
-                    Go to {msg.link}
-                  </a>
-                )}
+                {typeof msg.text === 'string' ? formatMessage(msg.text) : msg.text}
               </div>
             ))}
             {isLoading && (
               <div className="message bot typing-indicator">
-                Typing...
+                <div className="typing-dots">
+                  <div className="dot"></div>
+                  <div className="dot"></div>
+                  <div className="dot"></div>
+                </div>
               </div>
             )}
           </div>
           <div className="chat-input-container">
             <input
+              ref={inputRef}
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyPress={handleKeyPress}
@@ -155,6 +237,7 @@ const Chatbot = () => {
             <button
               onClick={sendMessage}
               disabled={!input.trim() || isLoading}
+              className="send-button"
             >
               <Send size={20} />
             </button>

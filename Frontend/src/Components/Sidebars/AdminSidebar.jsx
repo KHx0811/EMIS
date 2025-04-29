@@ -82,6 +82,7 @@ const AdminSidebar = ({ onMenuItemClick, currentMenuItem }) => {
   const handleLogout = () => {
     localStorage.removeItem('adminToken');
     localStorage.removeItem('adminUsername');
+    localStorage.removeItem('userType');
     navigate('/login/admin');
   };
 

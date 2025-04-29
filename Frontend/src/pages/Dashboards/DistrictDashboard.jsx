@@ -3,13 +3,18 @@ import { Box, CssBaseline, Typography } from '@mui/material';
 import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import DistrictSidebar from '../../Components/Sidebars/DistrictSidebar';
+
+import DistrictProfile from '@/forms/District/DistrictProfile';
 import SchoolSearch from '@/forms/District/SchoolSearch';
 import Budgets from '@/forms/District/Budgets';
-import Invitations from '@/forms/District/Invitations';
+import Invitations from '@/forms/District/ContactAdmin';
 import Meetings from '@/forms/District/Meetings';
 import SchoolProgress from '@/forms/District/SchoolProgress';
 import Exams from '@/forms/District/Exams';
 import SessionTimer from '@/Components/SessionTimer';
+import TeacherSearch from '@/forms/District/TeacherSearch';
+import StudentSearch from '@/forms/District/StudentSearch';
+import ContactAdmin from '@/forms/District/ContactAdmin';
 
 const DistrictDashboard = () => {
   const navigate = useNavigate();
@@ -102,7 +107,7 @@ const DistrictDashboard = () => {
   const getToken = () => {
     const token = localStorage.getItem('districtToken');
     if (!token) {
-      navigate('/login/districthead');
+      navigate('/login/district');
       return null;
     }
     return token;
@@ -148,6 +153,7 @@ const DistrictDashboard = () => {
       } catch (error) {
         console.error('Token verification failed:', error);
         localStorage.removeItem('districtToken');
+        localStorage.removeItem('userType');
         navigate('/login/districthead');
       }
     };
@@ -160,40 +166,23 @@ const DistrictDashboard = () => {
   const renderContent = () => {
     switch (selectedMenuItem) {
       case 'profile':
-        return (
-          <Box sx={globalStyles}>
-            <Typography variant="h4" sx={{ color: '#e0e0e0', mb: 3 }}>
-              Profile
-            </Typography>
-            <Typography variant="body1" sx={{ color: '#e0e0e0' }}>
-              Details about the district head's profile.
-            </Typography>
-          </Box>
-        );
+        return <Box sx={globalStyles}><DistrictProfile /></Box>
       case 'schoolSearch':
-        return (
-          <Box sx={globalStyles}><SchoolSearch /></Box>
-        );
+        return <Box sx={globalStyles}><SchoolSearch /></Box>
+      case 'teacherSearch':
+        return <Box sx={globalStyles}><TeacherSearch /></Box>
+      case 'studentSearch':
+        return <Box sx={globalStyles}><StudentSearch /></Box>
       case 'budgets':
-        return (
-          <Box sx={globalStyles}><Budgets /></Box>
-        );
-      case 'invitations':
-        return (
-          <Box sx={globalStyles}><Invitations /></Box>
-        );
+        return <Box sx={globalStyles}><Budgets /></Box>
       case 'meetings':
-        return (
-          <Box sx={globalStyles}><Meetings /></Box>
-        );
+        return <Box sx={globalStyles}><Meetings /></Box>
       case 'schoolProgress':
-        return (
-          <Box sx={globalStyles}><SchoolProgress /></Box>
-        );
+        return <Box sx={globalStyles}><SchoolProgress /></Box>
       case 'exams':
-        return (
-          <Box sx={globalStyles}><Exams /></Box>
-        );
+        return <Box sx={globalStyles}><Exams /></Box>
+      case 'contactAdmin':
+        return <Box sx={globalStyles}><ContactAdmin /></Box>
       default:
         return (
           <Box>
@@ -208,11 +197,11 @@ const DistrictDashboard = () => {
   return (
     <Box sx={{ display: 'flex', height: '100vh' }}>
       <CssBaseline />
-      <DistrictSidebar 
-        onMenuItemClick={handleMenuItemClick} 
-        currentMenuItem={selectedMenuItem} 
+      <DistrictSidebar
+        onMenuItemClick={handleMenuItemClick}
+        currentMenuItem={selectedMenuItem}
       />
-      
+
       <Box
         sx={{
           flexGrow: 1,

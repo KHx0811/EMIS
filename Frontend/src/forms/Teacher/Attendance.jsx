@@ -2,54 +2,94 @@ import React, { useState, useEffect } from 'react';
 import { Box, Button, Typography, Select, MenuItem } from '@mui/material';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { inputStyle, labelStyle, formControlStyle, selectStyle } from '../Admin/Student/formStyles.js';
 
-const Attendance = ({ onSubmit = () => {} }) => {
+const Attendance = () => {
   const navigate = useNavigate();
+  const [classes, setClasses] = useState([]);
   const [students, setStudents] = useState([]);
+  const [selectedClass, setSelectedClass] = useState('');
   const [attendanceData, setAttendanceData] = useState([]);
   const [date, setDate] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  const fetchClasses = async () => {
+    try {
+      setLoading(true);
+      const token = localStorage.getItem('teacherToken');
+      if (!token) {
+        alert('You are not logged in. Please login to continue.');
+        navigate('/login/teacher');
+        return;
+      }
+
+      const response = await axios.get('http://localhost:3000/api/teachers/teacher-classes', {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setClasses(response.data.data);
+    } catch (error) {
+      if (error.response?.status === 401) {
+        alert('Your session has expired. Please login again.');
+        localStorage.removeItem('teacherToken');
+        navigate('/login/teacher');
+      } else {
+        console.error('Error fetching classes:', error);
+        alert('Error fetching classes. Please try again.');
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchStudents = async () => {
-      try {
-        const token = localStorage.getItem('teacherToken');
-        if (!token) {
-          alert('You are not logged in. Please login to continue.');
-          navigate('/login/teacher');
-          return;
-        }
-  
-        const response = await axios.get('http://localhost:3000/api/teachers/all-students', {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        });
-  
-        console.log('API Response:', response.data);
-  
-        // Extract students from the correct property
-        const studentsData = Array.isArray(response.data.data) ? response.data.data : [];
-  
-        if (studentsData.length === 0) {
-          console.warn('No students found in the response.');
-          alert('No students found. Please check with the administrator.');
-        }
-  
-        setStudents(studentsData);
+    fetchClasses();
+  }, [navigate]);
+
+  const handleClassChange = async (e) => {
+    const classId = e.target.value;
+    setSelectedClass(classId);
+    setStudents([]);
+    setAttendanceData([]);
+
+    if (!classId) return;
+
+    try {
+      setLoading(true);
+      const token = localStorage.getItem('teacherToken');
+      if (!token) {
+        alert('You are not logged in. Please login to continue.');
+        navigate('/login/teacher');
+        return;
+      }
+
+      const response = await axios.get(`http://localhost:3000/api/teachers/class-students/${classId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (response.data.data && response.data.data.length > 0) {
+        setStudents(response.data.data);
         setAttendanceData(
-          studentsData.map((student) => ({
+          response.data.data.map((student) => ({
             studentId: student.student_id,
-            status: '' // Default status is empty
+            status: '',
           }))
         );
-      } catch (error) {
+      } else {
+        alert('No students found in this class.');
+      }
+    } catch (error) {
+      if (error.response?.status === 401) {
+        alert('Your session has expired. Please login again.');
+        localStorage.removeItem('teacherToken');
+        navigate('/login/teacher');
+      } else {
         console.error('Error fetching students:', error);
         alert('Error fetching students. Please try again.');
       }
-    };
-  
-    fetchStudents();
-  }, [navigate]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleStatusChange = (studentId, status) => {
     setAttendanceData((prevData) =>
@@ -61,7 +101,13 @@ const Attendance = ({ onSubmit = () => {} }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!date) {
+      alert('Please select a date.');
+      return;
+    }
+
     try {
+      setLoading(true);
       const token = localStorage.getItem('teacherToken');
       if (!token) {
         alert('You are not logged in. Please login to continue.');
@@ -70,23 +116,24 @@ const Attendance = ({ onSubmit = () => {} }) => {
       }
 
       const payload = {
+        classId: selectedClass,
         date,
-        attendance: attendanceData
+        attendance: attendanceData,
       };
 
-      const response = await axios.post('http://localhost:3000/api/teachers/upload-attendance', payload, {
+      await axios.post('http://localhost:3000/api/teachers/upload-attendance', payload, {
         headers: {
           Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
+          'Content-Type': 'application/json',
+        },
       });
 
-      console.log('Attendance submitted successfully:', response.data);
       alert('Attendance submitted successfully');
-      onSubmit(response.data);
     } catch (error) {
       console.error('Error submitting attendance:', error);
       alert('Error submitting attendance. Please try again.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -99,7 +146,8 @@ const Attendance = ({ onSubmit = () => {} }) => {
         flexDirection: 'column',
         backgroundColor: '#0f172a',
         padding: '24px',
-        borderRadius: '8px'
+        borderRadius: '8px',
+        color: '#f1f5f9',
       }}
     >
       <Typography
@@ -109,15 +157,32 @@ const Attendance = ({ onSubmit = () => {} }) => {
         sx={{
           color: '#f1f5f9',
           marginBottom: '24px',
-          borderBottom: '1px solid #475569',
-          paddingBottom: '16px'
         }}
       >
         Attendance Form
       </Typography>
 
-      <Box sx={{ marginBottom: '16px' }}>
-        <label htmlFor="date" style={{ color: '#f1f5f9' }}>Date *</label>
+      <Box sx={formControlStyle}>
+        <label htmlFor="class" style={labelStyle}>Select Class *</label>
+        <Select
+          id="class"
+          value={selectedClass}
+          onChange={handleClassChange}
+          required
+          sx={selectStyle}
+          disabled={loading}
+        >
+          <MenuItem value="" disabled>Select a class</MenuItem>
+          {classes.map((classItem) => (
+            <MenuItem key={classItem._id} value={classItem._id}>
+              {classItem.className} - {classItem.section}
+            </MenuItem>
+          ))}
+        </Select>
+      </Box>
+
+      <Box sx={formControlStyle}>
+        <label htmlFor="date" style={labelStyle}>Date *</label>
         <input
           id="date"
           name="date"
@@ -125,14 +190,7 @@ const Attendance = ({ onSubmit = () => {} }) => {
           value={date}
           onChange={(e) => setDate(e.target.value)}
           required
-          style={{
-            backgroundColor: '#1F2A40',
-            color: '#e0e0e0',
-            width: '100%',
-            padding: '12px',
-            borderRadius: '4px',
-            border: '1px solid #3d3d3d'
-          }}
+          style={inputStyle}
         />
       </Box>
 
@@ -157,11 +215,7 @@ const Attendance = ({ onSubmit = () => {} }) => {
                     }
                     onChange={(e) => handleStatusChange(student.student_id, e.target.value)}
                     required
-                    sx={{
-                      backgroundColor: '#1F2A40',
-                      color: '#e0e0e0',
-                      width: '100%'
-                    }}
+                    sx={selectStyle}
                   >
                     <MenuItem value="" disabled>Select Status</MenuItem>
                     <MenuItem value="Present">Present</MenuItem>
@@ -183,8 +237,8 @@ const Attendance = ({ onSubmit = () => {} }) => {
             color: '#f1f5f9',
             padding: '8px 16px',
             '&:hover': {
-              backgroundColor: '#2563eb'
-            }
+              backgroundColor: '#2563eb',
+            },
           }}
         >
           Submit Attendance

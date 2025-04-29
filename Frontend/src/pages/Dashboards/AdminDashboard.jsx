@@ -152,6 +152,7 @@ const AdminDashboard = () => {
         console.log('Current time:', new Date(currentTime * 1000));
         localStorage.removeItem('adminToken');
         localStorage.removeItem('adminUsername');
+        localStorage.removeItem('userType');
         navigate('/login/admin');
       }
     } catch (e) {

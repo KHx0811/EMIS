@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Sidebar, Menu, MenuItem } from 'react-pro-sidebar';
-import { LogOut, User, Search, Calendar, DollarSign, BarChart2, Activity, FileText } from 'lucide-react';
+import { LogOut, User, Search, Calendar, DollarSign, BarChart2, Activity, FileText, Send } from 'lucide-react';
 import { Box, Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -19,8 +19,8 @@ const PrincipalSidebar = ({ onMenuItemClick, currentMenuItem }) => {
         setOpenSubmenu('Teacher Search');
       } else if (currentMenuItem.includes('SchoolFees')) {
         setOpenSubmenu('SchoolFees');
-      } else if (currentMenuItem.includes('Budget Allocation')) {
-        setOpenSubmenu('Budget Allocation');
+      } else if (currentMenuItem.includes('Budget Usage')) {
+        setOpenSubmenu('Budget Usage');
       } else if (currentMenuItem.includes('Events')) {
         setOpenSubmenu('Events');
       } else if (currentMenuItem.includes('Meetings')) {
@@ -64,10 +64,10 @@ const PrincipalSidebar = ({ onMenuItemClick, currentMenuItem }) => {
     try {
       const token = localStorage.getItem('principalToken');
       if (!token) return;
-      
+
       const tokenParts = token.split('.');
       if (tokenParts.length !== 3) return;
-      
+
       const payload = JSON.parse(atob(tokenParts[1]));
       if (payload.name) {
         setPrincipalName(payload.name);
@@ -85,6 +85,7 @@ const PrincipalSidebar = ({ onMenuItemClick, currentMenuItem }) => {
   const handleLogout = () => {
     localStorage.removeItem('principalToken');
     localStorage.removeItem('principalUsername');
+    localStorage.removeItem('userType');
     navigate('/login/principal');
   };
 
@@ -154,6 +155,7 @@ const PrincipalSidebar = ({ onMenuItemClick, currentMenuItem }) => {
               backgroundColor: '#141b2d !important',
               cursor: 'pointer',
             }}
+            onClick={() => onMenuItemClick('profile')}
           >
             <Typography variant="h6" sx={{ color: '#ffffff', margin: '8px 0 0 0', fontSize: '1.2rem', fontWeight: 'bold' }}>
               {principalName}
@@ -189,20 +191,6 @@ const PrincipalSidebar = ({ onMenuItemClick, currentMenuItem }) => {
             }}
           >
             <MenuItem
-              onClick={() => onMenuItemClick('dashboard')}
-              active={currentMenuItem === 'dashboard'}
-              icon={<User size={18} />}
-            >
-              Dashboard
-            </MenuItem>
-            <MenuItem
-              onClick={() => onMenuItemClick('profile')}
-              active={currentMenuItem === 'profile'}
-              icon={<User size={18} />}
-            >
-              Profile
-            </MenuItem>
-            <MenuItem
               onClick={() => onMenuItemClick('studentSearch')}
               active={currentMenuItem === 'studentSearch'}
               icon={<Search size={18} />}
@@ -224,11 +212,11 @@ const PrincipalSidebar = ({ onMenuItemClick, currentMenuItem }) => {
               School Fees
             </MenuItem>
             <MenuItem
-              onClick={() => onMenuItemClick('budgetAllocation')}
-              active={currentMenuItem === 'budgetAllocation'}
+              onClick={() => onMenuItemClick('budgetUsage')}
+              active={currentMenuItem === 'budgetUsage'}
               icon={<BarChart2 size={18} />}
             >
-              Budget Allocation
+              Budget Usage
             </MenuItem>
             <MenuItem
               onClick={() => onMenuItemClick('events')}
@@ -257,6 +245,13 @@ const PrincipalSidebar = ({ onMenuItemClick, currentMenuItem }) => {
               icon={<Activity size={18} />}
             >
               Student Progress
+            </MenuItem>
+            <MenuItem
+              onClick={() => onMenuItemClick('contactAdmin')}
+              active={currentMenuItem === 'contactAdmin'}
+              icon={<Send size={18} />}
+            >
+              Contact Admin
             </MenuItem>
           </Menu>
         </Box>

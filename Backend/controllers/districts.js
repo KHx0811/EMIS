@@ -28,7 +28,7 @@ export const getAllDistricts = async (req, res) => {
 export const createDistrict = async (req, res) => {
   try {
     if (req.user.role === "admin") {
-      const { district_name, state, email, password } = req.body;
+      const { district_name, districthead_name, state, email, password } = req.body;
 
       const randomNumber = Math.floor(1000 + Math.random() * 9000); // Generate a 4-digit random number
       const districtId = `${district_name.slice(0, 4).toUpperCase()}${randomNumber}`;
@@ -46,6 +46,7 @@ export const createDistrict = async (req, res) => {
 
       const district = new District({
         district_name,
+        districthead_name,
         state,
         email,
         password: hashedPassword,
@@ -186,7 +187,7 @@ export const getDistrictName = async (req, res) => {
     }
 
     const districtId = req.user.id;
-    const district = await District.findById(districtId); // Extracted from the JWT token
+    const district = await District.findById(districtId);
 
     if (!district) {
       return res.status(404).json({
@@ -198,8 +199,8 @@ export const getDistrictName = async (req, res) => {
 
     return res.status(200).json({
       status: "success",
-      message: "District name retrieved successfully",
-      data: district.district_name,
+      message: "DistrictHead name retrieved successfully",
+      data: district.districthead_name,
     });
   } catch (error) {
     console.error('Error in getDistrictName:', error);

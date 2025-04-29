@@ -1,0 +1,297 @@
+// Form layout fixes
+<Box
+  component="form"
+  onSubmit={handleSubmit}
+  sx={{
+    backgroundColor: '#1F2A40',
+    padding: '24px',
+    borderRadius: '8px',
+    marginBottom: '24px',
+    display: 'grid',
+    gridTemplateColumns: '1fr 1fr',
+    gap: '20px'
+  }}
+>
+  {/* Form title - spans full width */}
+  <Typography sx={{ 
+    color: '#f1f5f9', 
+    marginBottom: '16px', 
+    fontSize: '1.25rem',
+    gridColumn: '1 / -1'
+  }}>
+    {editMode ? 'Update Exam' : 'Create New Exam'}
+  </Typography>
+
+  {/* First column fields */}
+  <Box sx={formControlStyle}>
+    <label style={labelStyle} htmlFor="exam_name">Exam Name *</label>
+    <input
+      id="exam_name"
+      name="exam_name"
+      value={formData.exam_name}
+      onChange={handleChange}
+      placeholder="Enter exam name"
+      required
+      style={inputStyle}
+      disabled={loading}
+    />
+  </Box>
+
+  <Box sx={formControlStyle}>
+    <label style={labelStyle} htmlFor="exam_type">Exam Type *</label>
+    <Select
+      id="exam_type"
+      name="exam_type"
+      value={formData.exam_type}
+      onChange={handleChange}
+      required
+      sx={selectStyle}
+      disabled={loading}
+    >
+      {/* Options remain the same */}
+    </Select>
+  </Box>
+
+  <Box sx={formControlStyle}>
+    <label style={labelStyle} htmlFor="subject">Subject *</label>
+    <input
+      id="subject"
+      name="subject"
+      value={formData.subject}
+      onChange={handleChange}
+      placeholder="Enter subject"
+      required
+      style={inputStyle}
+      disabled={loading}
+    />
+  </Box>
+
+  <Box sx={formControlStyle}>
+    <label style={labelStyle} htmlFor="status">Status *</label>
+    <Select
+      id="status"
+      name="status"
+      value={formData.status}
+      onChange={handleChange}
+      required
+      sx={selectStyle}
+      disabled={loading}
+    >
+      {/* Options remain the same */}
+    </Select>
+  </Box>
+
+  {/* Date fields - properly spaced */}
+  <Box sx={formControlStyle}>
+    <label style={labelStyle} htmlFor="start_date">Start Date & Time *</label>
+    <input
+      id="start_date"
+      name="start_date"
+      type="datetime-local"
+      value={formData.start_date ? /* existing code */ : /* existing code */}
+      onChange={(e) => handleDateChange(e, 'start_date')}
+      required
+      style={inputStyle}
+      disabled={loading}
+    />
+  </Box>
+
+  <Box sx={formControlStyle}>
+    <label style={labelStyle} htmlFor="end_date">End Date & Time *</label>
+    <input
+      id="end_date"
+      name="end_date"
+      type="datetime-local"
+      value={formData.end_date ? /* existing code */ : /* existing code */}
+      onChange={(e) => handleDateChange(e, 'end_date')}
+      required
+      style={inputStyle}
+      disabled={loading}
+    />
+  </Box>
+
+  <Box sx={formControlStyle}>
+    <label style={labelStyle} htmlFor="registration_deadline">Registration Deadline *</label>
+    <input
+      id="registration_deadline"
+      name="registration_deadline"
+      type="datetime-local"
+      value={formData.registration_deadline ? /* existing code */ : /* existing code */}
+      onChange={(e) => handleDateChange(e, 'registration_deadline')}
+      required
+      style={inputStyle}
+      disabled={loading}
+    />
+  </Box>
+
+  <Box sx={formControlStyle}>
+    <label style={labelStyle} htmlFor="duration_minutes">Duration (minutes) *</label>
+    <input
+      id="duration_minutes"
+      name="duration_minutes"
+      type="number"
+      value={formData.duration_minutes}
+      onChange={handleChange}
+      required
+      style={inputStyle}
+      disabled={loading}
+    />
+  </Box>
+
+  <Box sx={formControlStyle}>
+    <label style={labelStyle} htmlFor="max_score">Maximum Score *</label>
+    <input
+      id="max_score"
+      name="max_score"
+      type="number"
+      value={formData.max_score}
+      onChange={handleChange}
+      required
+      style={inputStyle}
+      disabled={loading}
+    />
+  </Box>
+
+  <Box sx={formControlStyle}>
+    <label style={labelStyle} htmlFor="passing_score">Passing Score *</label>
+    <input
+      id="passing_score"
+      name="passing_score"
+      type="number"
+      value={formData.passing_score}
+      onChange={handleChange}
+      required
+      style={inputStyle}
+      disabled={loading}
+    />
+  </Box>
+
+  {/* Selection fields - spans full width */}
+  <FormControl sx={{ gridColumn: '1 / -1' }}>
+    <InputLabel id="centers-label" sx={{ color: '#94a3b8' }}>Exam Centers *</InputLabel>
+    <Select
+      labelId="centers-label"
+      id="centers"
+      multiple
+      value={formData.centers}
+      onChange={(e) => handleMultiSelectChange(e, 'centers')}
+      input={<OutlinedInput label="Exam Centers" />}
+      renderValue={(selected) => (
+        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+          {selected.map((value) => (
+            <Chip key={value} label={getSchoolName(value)} sx={{ backgroundColor: '#334155', color: '#f1f5f9' }} />
+          ))}
+        </Box>
+      )}
+      MenuProps={MenuProps}
+      required
+      sx={selectStyle}
+      disabled={loading}
+    >
+      {/* Options remain the same */}
+    </Select>
+    {formData.centers.length === 0 && (
+      <FormHelperText sx={{ color: '#ef4444' }}>At least one center is required</FormHelperText>
+    )}
+  </FormControl>
+
+  <FormControl sx={{ gridColumn: '1 / -1' }}>
+    <InputLabel id="eligible-grades-label" sx={{ color: '#94a3b8' }}>Eligible Grades</InputLabel>
+    <Select
+      labelId="eligible-grades-label"
+      id="eligible_grades"
+      multiple
+      value={formData.eligible_grades}
+      onChange={(e) => handleMultiSelectChange(e, 'eligible_grades')}
+      input={<OutlinedInput label="Eligible Grades" />}
+      renderValue={(selected) => (
+        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+          {selected.map((value) => (
+            <Chip key={value} label={`Grade ${value}`} sx={{ backgroundColor: '#334155', color: '#f1f5f9' }} />
+          ))}
+        </Box>
+      )}
+      MenuProps={MenuProps}
+      sx={selectStyle}
+      disabled={loading}
+    >
+      {/* Options remain the same */}
+    </Select>
+  </FormControl>
+
+  {/* Text areas - spans full width */}
+  <Box sx={{ ...formControlStyle, gridColumn: '1 / -1' }}>
+    <label style={labelStyle} htmlFor="description">Description</label>
+    <textarea
+      id="description"
+      name="description"
+      value={formData.description}
+      onChange={handleChange}
+      placeholder="Enter exam description"
+      style={{
+        ...inputStyle,
+        height: '80px',
+        resize: 'vertical'
+      }}
+      disabled={loading}
+    />
+  </Box>
+
+  <Box sx={{ ...formControlStyle, gridColumn: '1 / -1' }}>
+    <label style={labelStyle} htmlFor="instructions">Instructions</label>
+    <textarea
+      id="instructions"
+      name="instructions"
+      value={formData.instructions}
+      onChange={handleChange}
+      placeholder="Enter instructions for students"
+      style={{
+        ...inputStyle,
+        height: '100px',
+        resize: 'vertical'
+      }}
+      disabled={loading}
+    />
+  </Box>
+
+  {/* Buttons - spans full width, aligned right */}
+  <Box sx={{ 
+    display: 'flex', 
+    gap: '16px', 
+    justifyContent: 'flex-end', 
+    marginTop: '24px',
+    gridColumn: '1 / -1'
+  }}>
+    <Button
+      type="button"
+      onClick={() => {
+        setShowCreateForm(false);
+        resetForm();
+      }}
+      sx={{
+        backgroundColor: '#475569',
+        color: '#f1f5f9',
+        '&:hover': { backgroundColor: '#334155' }
+      }}
+      disabled={loading}
+    >
+      Cancel
+    </Button>
+    <Button
+      type="submit"
+      variant="contained"
+      sx={{
+        backgroundColor: '#3b82f6',
+        color: '#f1f5f9',
+        '&:hover': { backgroundColor: '#2563eb' }
+      }}
+      disabled={loading}
+    >
+      {loading ? (
+        <CircularProgress size={24} sx={{ color: '#f1f5f9' }} />
+      ) : (
+        editMode ? 'Update Exam' : 'Create Exam'
+      )}
+    </Button>
+  </Box>
+</Box>

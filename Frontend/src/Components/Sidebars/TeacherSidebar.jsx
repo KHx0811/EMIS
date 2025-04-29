@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Sidebar, Menu, MenuItem } from 'react-pro-sidebar';
-import { LogOut, User, Calendar, FileText, Activity, MessageSquare, FilePlus, Group, Users } from 'lucide-react';
+import { LogOut, User, Calendar, FileText, Activity, MessageSquare, FilePlus, Group, Users, Send } from 'lucide-react';
 import { Box, Typography } from '@mui/material';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
@@ -87,6 +87,7 @@ const TeacherSidebar = ({ onMenuItemClick, currentMenuItem }) => {
   const handleLogout = () => {
     localStorage.removeItem('teacherToken');
     localStorage.removeItem('teacherUsername');
+    localStorage.removeItem('userType');
     navigate('/login/teacher');
   };
 
@@ -257,7 +258,7 @@ const TeacherSidebar = ({ onMenuItemClick, currentMenuItem }) => {
             <MenuItem 
               onClick={() => onMenuItemClick('Contact Admin')}
               active={currentMenuItem === 'Contact Admin'}
-              icon={<FileText size={18} />}
+              icon={<Send size={18} />}
             >
               Contact Admin
             </MenuItem>

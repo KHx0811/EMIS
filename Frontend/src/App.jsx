@@ -9,7 +9,6 @@ import PrincipalLogin from './pages/PrincipalLogin'
 import DistrictLogin from './pages/DistrictLogin'
 import ResetPassword from './pages/ResetPassword'
 import SendResetOtp from './pages/SendResetOtp'
-import StudentDashboard from './pages/Dashboards/StudentDashboard'
 import TeacherDashboard from './pages/Dashboards/TeacherDashboard'
 import ParentDashboard from './pages/Dashboards/ParentDashboard'
 import PrincipalDashboard from './pages/Dashboards/PrincipalDashboard'
@@ -33,7 +32,6 @@ const App = () => {
         <Route path="/login/admin" element={<AdminLogin />} />
         <Route path="/getresetpasswordotp" element={<SendResetOtp />} />
         <Route path="/resetpassword" element={<ResetPassword />} />
-        <Route path='/dashboard/student' element={<StudentDashboard />} />
         <Route path='/dashboard/teacher' element={<TeacherDashboard />} />
         <Route path='/dashboard/teacher/:section' element={<TeacherDashboard />} />
         <Route path='/dashboard/parent' element={<ParentDashboard />} />

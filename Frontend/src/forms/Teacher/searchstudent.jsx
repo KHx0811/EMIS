@@ -1,198 +1,95 @@
 import React, { useState } from 'react';
-import { Box, TextField, IconButton, Typography, Snackbar, Alert } from '@mui/material';
-import SearchIcon from '@mui/icons-material/Search';
+import { Box, TextField, Button, Typography, Snackbar, Alert } from '@mui/material';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
 
 const SearchStudent = () => {
-  const navigate = useNavigate();
-  const [studentId, setStudentId] = useState('');
+  const [searchParams, setSearchParams] = useState({ studentId: '' });
   const [studentData, setStudentData] = useState(null);
   const [error, setError] = useState(null);
 
-  const fetchStudentById = async (id) => {
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setSearchParams({ ...searchParams, [name]: value });
+  };
+
+  const handleSearch = async () => {
     try {
       const token = localStorage.getItem('teacherToken');
       if (!token) {
         throw new Error('No token found');
       }
 
-      const response = await axios.get(`http://localhost:3000/api/students/${id}`,
-        {}, // Empty body
-        {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
-        }
-      );
+      const { studentId } = searchParams;
+      const response = await axios.get(`http://localhost:3000/api/teachers/search-student/${studentId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
-      // Log the full response for debugging
-      console.log('Student Search Response:', response.data);
-
-      return response.data.data;
+      setStudentData(response.data.data);
+      setError(null);
     } catch (error) {
-      console.error('Detailed error fetching student data:', error.response || error);
-      
-      if (error.response) {
-        const errorMessage = error.response.data.message || 'Error fetching student data';
-        setError(errorMessage);
-        
-        if (error.response.status === 401 || error.response.status === 403) {
-          localStorage.removeItem('teacherToken');
-          localStorage.removeItem('teacherUsername');
-          navigate('/login/teacher');
-        }
-      } else if (error.request) {
-        setError('No response from server. Please check your connection.');
-      } else {
-        setError('Error: ' + error.message);
-      }
-      
-      return null;
+      console.error('Error fetching student data:', error);
+      setError(error.response?.data?.message || 'Error fetching student data');
     }
-  };
-
-  const handleSearch = async () => {
-    if (!studentId.trim()) {
-      setError('Please enter a student ID');
-      return;
-    }
-
-    setError(null);
-    setStudentData(null);
-    const data = await fetchStudentById(studentId);
-    setStudentData(data);
-  };
-
-  const handleKeyPress = (e) => {
-    if (e.key === 'Enter') {
-      handleSearch();
-    }
-  };
-
-  const handleCloseError = () => {
-    setError(null);
-  };
-
-  // Helper function to safely render field
-  const renderField = (label, value) => {
-    return value ? (
-      <Typography>
-        <strong>{label}:</strong> {value}
-      </Typography>
-    ) : null;
   };
 
   return (
-    <Box
-      sx={{
-        display: 'flex',
-        flexDirection: 'column',
-        backgroundColor: '#0f172a',
-        padding: '24px',
-        borderRadius: '8px'
-      }}
-    >
-      <Typography
-        variant="h3"
-        component="h1"
-        gutterBottom
-        sx={{
-          color: '#f1f5f9',
-          marginBottom: '24px',
-          borderBottom: '1px solid #475569',
-          paddingBottom: '16px'
-        }}
-      >
-        Search Student Profile
+    <Box sx={{ padding: '24px', backgroundColor: '#0f172a', borderRadius: '8px' }}>
+      <Typography variant="h3" sx={{ color: '#f1f5f9', marginBottom: '16px' }}>
+        Search Student
       </Typography>
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+      <Box sx={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
         <TextField
           label="Student ID"
-          value={studentId}
-          onChange={(e) => setStudentId(e.target.value)}
-          onKeyPress={handleKeyPress}
-          required
+          name="studentId"
+          value={searchParams.studentId}
+          onChange={handleChange}
           fullWidth
-          size="small"
           variant="filled"
-          sx={{ 
-            backgroundColor: '#1F2A40',
-            color: '#e0e0e0',
-            '& .MuiFilledInput-root': {
-              backgroundColor: '#1F2A40',
-              color: '#e0e0e0'
-            }
-          }}
+          sx={{ backgroundColor: '#1F2A40', color: '#e0e0e0' }}
         />
-        <IconButton
+        <Button
+          variant="contained"
           onClick={handleSearch}
-          sx={{
-            color: '#f1f5f9',
-            backgroundColor: '#3b82f6',
-            borderRadius: '50px',
-            padding: '12px',
-            marginLeft: '8px',
-            '&:hover': {
-              backgroundColor: '#2563eb',
-            }
-          }}
+          sx={{ backgroundColor: '#3b82f6', color: '#f1f5f9' }}
         >
-          <SearchIcon />
-        </IconButton>
+          Search
+        </Button>
       </Box>
-
       {error && (
-        <Snackbar 
-          open={!!error} 
-          autoHideDuration={6000} 
-          onClose={handleCloseError}
-          anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-        >
-          <Alert 
-            onClose={handleCloseError} 
-            severity="error" 
-            sx={{ width: '100%' }}
-          >
-            {error}
-          </Alert>
+        <Snackbar open autoHideDuration={6000} onClose={() => setError(null)}>
+          <Alert severity="error">{error}</Alert>
         </Snackbar>
       )}
-
       {studentData && (
-        <Box sx={{ mt: 2, color: '#f1f5f9' }}>
-          <Typography variant="h6" sx={{ mb: 2, borderBottom: '1px solid #475569', pb: 1 }}>
-            Student Details
-          </Typography>
-          <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 2 }}>
-            {renderField('Name', studentData.name)}
-            {renderField('Student ID', studentData.student_id)}
-            {renderField('Gender', studentData.gender)}
-            {renderField('Age', studentData.age)}
-            {renderField('Education Level', studentData.education_level)}
-            {renderField('School', studentData.school)}
-            {renderField('Status', studentData.status)}
-            {renderField('Date of Birth', studentData.date_of_birth ? new Date(studentData.date_of_birth).toLocaleDateString() : null)}
-            {renderField('Date of Admission', studentData.date_of_admission ? new Date(studentData.date_of_admission).toLocaleDateString() : null)}
-            
-            {studentData.education_level === 'secondary' && renderField('Class', studentData.class)}
-            {studentData.education_level !== 'secondary' && renderField('Year', studentData.year)}
-            
-            {studentData.education_level === 'graduation' && (
-              <>
-                {renderField('Degree', studentData.degree)}
-                {renderField('Specialization', studentData.specialization)}
-              </>
-            )}
-
-            {renderField('Religion', studentData.religion)}
-            {renderField('Nationality', studentData.nationality)}
-            {renderField('Address', studentData.address)}
-            {renderField('Parent ID', studentData.parent_id)}
-            {renderField('School ID', studentData.school_id)}
-          </Box>
-        </Box>
+        <Box sx={{ marginTop: '16px', color: '#f1f5f9' }}>
+        <Typography variant="h6">Student Details</Typography>
+        <Typography>Name: {studentData.name}</Typography>
+        <Typography>Student ID: {studentData.student_id}</Typography>
+        <Typography>Gender: {studentData.gender}</Typography>
+        <Typography>Age: {studentData.age}</Typography>
+        <Typography>Education Level: {studentData.education_level}</Typography>
+        <Typography>School: {studentData.school}</Typography>
+        <Typography>Status: {studentData.status}</Typography>
+        <Typography>Date of Birth: {new Date(studentData.date_of_birth).toLocaleDateString()}</Typography>
+        <Typography>Date of Admission: {new Date(studentData.date_of_admission).toLocaleDateString()}</Typography>
+        {studentData.education_level === 'secondary' && (
+          <Typography>Class: {studentData.class}</Typography>
+        )}
+        {studentData.education_level !== 'secondary' && (
+          <Typography>Year: {studentData.year}</Typography>
+        )}
+        {studentData.education_level === 'graduation' && (
+          <>
+            <Typography>Degree: {studentData.degree}</Typography>
+            <Typography>Specialization: {studentData.specialization}</Typography>
+          </>
+        )}
+        <Typography>Religion: {studentData.religion}</Typography>
+        <Typography>Nationality: {studentData.nationality}</Typography>
+        <Typography>Address: {studentData.address}</Typography>
+        <Typography>Parent ID: {studentData.parent_id}</Typography>
+        <Typography>School ID: {studentData.school_id}</Typography>
+      </Box>
       )}
     </Box>
   );
