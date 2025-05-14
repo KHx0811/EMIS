@@ -3,6 +3,9 @@ import { Box, Button, Typography, FormControl, Select, MenuItem, CircularProgres
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { inputStyle, labelStyle, formControlStyle } from '../Admin/Student/formStyles.js';
+import config from '@/assets/config';
+
+const { url } = config;
 
 const FeeDues = () => {
   const navigate = useNavigate();
@@ -45,7 +48,7 @@ const FeeDues = () => {
       }
 
       console.log('Fetching child details...');
-      const response = await axios.get('http://localhost:3000/api/parents/child-details', {
+      const response = await axios.get(`${url}/api/parents/child-details`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       
@@ -84,7 +87,7 @@ const FeeDues = () => {
       }
 
       console.log(`Fetching fee details for student ID: ${studentId}`);
-      const response = await axios.get(`http://localhost:3000/api/parents/child-fee-details/${studentId}`, {
+      const response = await axios.get(`${url}/api/parents/child-fee-details/${studentId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       

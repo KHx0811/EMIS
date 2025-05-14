@@ -2,6 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { Box, Button, Typography, Select, MenuItem, TextField } from '@mui/material';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import config from '@/assets/config';
+
+const { url } = config;
 
 const AssignAssignment = () => {
   const navigate = useNavigate();
@@ -24,7 +27,7 @@ const AssignAssignment = () => {
           return;
         }
 
-        const response = await axios.get('http://localhost:3000/api/teachers/teacher-classes', {
+        const response = await axios.get(`${url}/api/teachers/teacher-classes`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 
@@ -62,7 +65,7 @@ const AssignAssignment = () => {
         dueDate: formData.dueDate,
       };
 
-      await axios.post('http://localhost:3000/api/teachers/assign-assignment', payload, {
+      await axios.post(`${url}/api/teachers/assign-assignment`, payload, {
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json',

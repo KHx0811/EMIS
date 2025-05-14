@@ -3,6 +3,9 @@ import { Box, Button, Typography, FormControl, Select, MenuItem } from '@mui/mat
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { inputStyle, labelStyle, formControlStyle } from '../Admin/Student/formStyles.js';
+import config from '@/assets/config';
+
+const { url } = config;
 
 const Marks = () => {
   const navigate = useNavigate();
@@ -17,12 +20,11 @@ const Marks = () => {
     'Monthly', 'Quarterly', 'Half-Yearly', 'Annual', 'Unit Test', 'Project'
   ]);
 
-  // Fetch child details on component mount
+
   useEffect(() => {
     fetchChildDetails();
   }, [navigate]);
 
-  // Extract unique subjects from marks records
   useEffect(() => {
     if (marksRecords.length > 0) {
       const uniqueSubjects = [...new Set(marksRecords.map(record => record.subject))];
@@ -40,12 +42,11 @@ const Marks = () => {
         return;
       }
 
-      const response = await axios.get('http://localhost:3000/api/parents/child-details', {
+      const response = await axios.get(`${url}/api/parents/child-details`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       
       setChildDetails(response.data.data);
-      // Fetch all marks records for the child
       fetchAllMarks(response.data.data.student_id);
     } catch (error) {
       if (error.response?.status === 401) {
@@ -71,7 +72,7 @@ const Marks = () => {
         return;
       }
 
-      const response = await axios.get(`http://localhost:3000/api/parents/child-marks/${studentId}`, {
+      const response = await axios.get(`${url}/api/parents/child-marks/${studentId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       
@@ -98,7 +99,6 @@ const Marks = () => {
       return;
     }
 
-    // Filter marks based on selected criteria
     let filtered = [...marksRecords];
     
     if (examType) {
@@ -112,13 +112,13 @@ const Marks = () => {
     setFilteredMarks(filtered);
   };
 
-  // Format date for display
+
   const formatDate = (dateString) => {
     const options = { year: 'numeric', month: 'long', day: 'numeric' };
     return new Date(dateString).toLocaleDateString(undefined, options);
   };
 
-  // Calculate percentage
+
   const calculatePercentage = (value, maxMarks) => {
     return ((value / maxMarks) * 100).toFixed(2);
   };

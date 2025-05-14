@@ -8,6 +8,9 @@ import {
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { inputStyle, labelStyle } from '../Admin/Student/formStyles';
+import config from '@/assets/config';
+
+const { url } = config;
 
 const statusColors = {
   Scheduled: '#22c55e',
@@ -21,7 +24,7 @@ const participantTypeColors = {
   Teachers: '#06b6d4',
   School: '#14b8a6',
   DistrictHead: '#f43f5e',
-  SchoolPrincipals: '#f43f5e' // Added for district meetings
+  SchoolPrincipals: '#f43f5e'
 };
 
 const formatDate = (dateString) => {
@@ -77,7 +80,7 @@ const Meetings = () => {
         return;
       }
 
-      const response = await axios.get('http://localhost:3000/api/schools/meetings', {
+      const response = await axios.get(`${url}/api/schools/meetings`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -106,7 +109,7 @@ const Meetings = () => {
         return;
       }
 
-      const response = await axios.get('http://localhost:3000/api/schools/districthead-meetings', {
+      const response = await axios.get(`${url}/api/schools/districthead-meetings`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -180,7 +183,7 @@ const Meetings = () => {
       console.log('selectedMeeting:', selectedMeeting);
 
       const response = await axios.put(
-        `http://localhost:3000/api/schools/meetings/${selectedMeeting.meetingId}`,
+        `${url}/api/schools/meetings/${selectedMeeting.meetingId}`,
         formData,
         {
           headers: {
@@ -235,7 +238,7 @@ const Meetings = () => {
       }
 
       const response = await axios.post(
-        'http://localhost:3000/api/schools/meetings',
+        `${url}/api/schools/meetings`,
         newMeetingData,
         {
           headers: {
@@ -877,7 +880,6 @@ const Meetings = () => {
         </Box>
       </Modal>
 
-      {/* Create Meeting Modal */}
       <Modal
         open={openCreateModal}
         onClose={() => setOpenCreateModal(false)}

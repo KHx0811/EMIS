@@ -7,6 +7,9 @@ import {
 } from '@mui/material';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import config from '@/assets/config';
+
+const { url } = config;
 
 const statusColors = {
   Scheduled: '#22c55e',
@@ -64,7 +67,6 @@ const DistrictMeetings = () => {
   const [filterStatus, setFilterStatus] = useState('All');
   const [filterParticipantType, setFilterParticipantType] = useState('All');
   
-  // New state for tab management
   const [activeTab, setActiveTab] = useState(0);
 
   useEffect(() => {
@@ -81,7 +83,7 @@ const DistrictMeetings = () => {
         return;
       }
 
-      const response = await axios.get('http://localhost:3000/api/districts/meetings', {
+      const response = await axios.get(`${url}/api/districts/meetings`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -110,7 +112,7 @@ const DistrictMeetings = () => {
         return;
       }
 
-      const response = await axios.get('http://localhost:3000/api/districts/schools', {
+      const response = await axios.get(`${url}/api/districts/schools`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -193,7 +195,7 @@ const DistrictMeetings = () => {
       }
 
       const response = await axios.put(
-        `http://localhost:3000/api/districts/meetings/${selectedMeeting.meetingId}`,
+        `${url}/api/districts/meetings/${selectedMeeting.meetingId}`,
         formData,
         {
           headers: {
@@ -248,7 +250,7 @@ const DistrictMeetings = () => {
       }
 
       const response = await axios.post(
-        'http://localhost:3000/api/districts/meetings',
+        `${url}/api/districts/meetings`,
         newMeetingData,
         {
           headers: {
@@ -295,7 +297,7 @@ const DistrictMeetings = () => {
       }
 
       await axios.delete(
-        `http://localhost:3000/api/districts/meetings/${meetingToDelete.meetingId}`,
+        `${url}/api/districts/meetings/${meetingToDelete.meetingId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`
@@ -335,18 +337,17 @@ const DistrictMeetings = () => {
     }
   };
 
-  // Filter meetings for the all district meetings tab (excluding principal meetings)
+
   const districtMeetings = meetings
     .filter(meeting => meeting.participantType !== 'SchoolPrincipals')
     .filter(meeting => filterStatus === 'All' || meeting.status === filterStatus)
     .filter(meeting => filterParticipantType === 'All' || meeting.participantType === filterParticipantType);
 
-  // Filter meetings specifically for school principals
   const principalMeetings = meetings
     .filter(meeting => meeting.participantType === 'SchoolPrincipals')
     .filter(meeting => filterStatus === 'All' || meeting.status === filterStatus);
 
-  // Get the current view of meetings based on the active tab
+ 
   const currentMeetings = activeTab === 0 ? districtMeetings : principalMeetings;
 
   return (
@@ -374,7 +375,7 @@ const DistrictMeetings = () => {
         </Button>
       </Box>
 
-      {/* Tabs for switching between general district meetings and principal meetings */}
+
       <Box sx={{ borderBottom: 1, borderColor: '#475569', mb: 3 }}>
         <Tabs 
           value={activeTab} 

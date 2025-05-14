@@ -14,6 +14,9 @@ import Marks from '@/forms/Teacher/Marks';
 import ContactAdmin from '@/forms/Teacher/ContactAdmin';
 import SearchStudent from '@/forms/Teacher/searchstudent';
 import Classes from '@/forms/Teacher/Classes';
+import config from '@/assets/config';
+
+const { url } = config;
 
 const TeacherDashboard = () => {
   const navigate = useNavigate();
@@ -70,7 +73,7 @@ const TeacherDashboard = () => {
     
     const verifyToken = async () => {
       try {
-        await axios.get('http://localhost:3000/api/auth/verify', {
+        await axios.get(`${url}/api/auth/verify`, {
           headers: {
             Authorization: `Bearer ${token}`
           }

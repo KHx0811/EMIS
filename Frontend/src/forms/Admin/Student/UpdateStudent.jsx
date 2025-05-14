@@ -4,6 +4,9 @@ import SearchIcon from '@mui/icons-material/Search';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { inputStyle, labelStyle, formControlStyle, selectStyle } from './formStyles';
+import config from '@/assets/config';
+
+const { url } = config;
 
 const UpdateStudent = () => {
   const navigate = useNavigate();
@@ -39,7 +42,7 @@ const UpdateStudent = () => {
         return null;
       }
       
-      const response = await axios.get(`http://localhost:3000/api/students/${id}`, {
+      const response = await axios.get(`${url}/api/students/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -150,7 +153,7 @@ const UpdateStudent = () => {
         }
       }
 
-      const response = await axios.put(`http://localhost:3000/api/students/${studentId}`, dataToSubmit, {
+      const response = await axios.put(`${url}/api/students/${studentId}`, dataToSubmit, {
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json'

@@ -7,6 +7,9 @@ import { useNavigate } from 'react-router-dom';
 import { ResizableBox } from 'react-resizable';
 import 'react-resizable/css/styles.css';
 import './AdminSidebar.css';
+import config from '@/assets/config';
+
+const { url } = config;
 
 const AdminSidebar = ({ onMenuItemClick, currentMenuItem }) => {
   const navigate = useNavigate();
@@ -41,7 +44,7 @@ const AdminSidebar = ({ onMenuItemClick, currentMenuItem }) => {
       const token = localStorage.getItem('adminToken');
       if (!token) return;
       
-      const response = await axios.get('http://localhost:3000/api/users/details', {
+      const response = await axios.get(`${url}/api/users/details`, {
         headers: {
           Authorization: `Bearer ${token}`
         }

@@ -4,6 +4,9 @@ import { Box, Typography, Button, Dialog, DialogTitle,
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { CalendarToday, LocationOn, AccessTime as AccessTimeIcon } from '@mui/icons-material';
+import config from '@/assets/config';
+
+const { url } = config;
 
 const SchoolEvents = () => {
   const navigate = useNavigate();
@@ -48,7 +51,7 @@ const SchoolEvents = () => {
           return;
         }
 
-        const response = await axios.get('http://localhost:3000/api/parents/school-events', {
+        const response = await axios.get(`${url}/api/parents/school-events`, {
           headers: {
             Authorization: `Bearer ${token}`
           }
@@ -75,7 +78,7 @@ const SchoolEvents = () => {
       const token = localStorage.getItem('parentToken');
       if (!token) return;
 
-      const response = await axios.get('http://localhost:3000/api/parents/event-registrations', {
+      const response = await axios.get(`${url}/api/parents/event-registrations`, {
         headers: {
           Authorization: `Bearer ${token}`
         }

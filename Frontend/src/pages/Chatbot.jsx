@@ -1,6 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { MessageCircleQuestion, Send, X, Sparkles } from 'lucide-react';
 import './Chatbot.css';
+import config from '@/assets/config';
+
+const { url } = config;
 
 const Chatbot = () => {
   const [messages, setMessages] = useState([
@@ -22,25 +25,25 @@ const Chatbot = () => {
     }
   }, [messages, isLoading]);
 
-  // Focus input after sending a message or when chat opens
+
   useEffect(() => {
     if (isOpen && inputRef.current && !isLoading) {
       inputRef.current.focus();
     }
   }, [isOpen, isLoading]);
 
-  // Initial setup and token monitoring
+
   useEffect(() => {    
-    // Initialize user ID if not present
+
     const userId = localStorage.getItem('userId') || generateUserId();
     if (!localStorage.getItem('userId')) {
       localStorage.setItem('userId', userId);
     }
     
-    // Initial check for user type
+    
     checkUserTypeFromTokens();
     
-    // Set up interval to monitor tokens
+    
     tokenCheckIntervalRef.current = setInterval(checkUserTypeFromTokens, 1000);
     
     return () => {
@@ -65,7 +68,7 @@ const Chatbot = () => {
       'districtHeadToken': 'districtHead'
     };
     
-    // Detect user type from tokens
+
     let foundUserType = null;
     for (const [tokenName, token] of Object.entries(tokens)) {
       if (token) {
@@ -77,21 +80,21 @@ const Chatbot = () => {
     const newUserType = foundUserType || 'guest';
     const userId = localStorage.getItem('userId');
     
-    // Only update if user type has changed
+
     if (newUserType !== prevUserTypeRef.current) {
       console.log(`User type changed from ${prevUserTypeRef.current} to ${newUserType}`);
       
-      // Reset messages when user type changes (login/logout)
+     
       setMessages([
         { text: `👋 Hi there! I'm your education management assistant. How can I help you today?`, sender: "bot" }
       ]);
       
-      // Update user type and conversation ID
+
       setUserType(newUserType);
       localStorage.setItem('userType', newUserType);
       setConversationId(`${userId}_${newUserType}`);
       
-      // Update previous user type reference
+
       prevUserTypeRef.current = newUserType;
     }
   };
@@ -101,7 +104,7 @@ const Chatbot = () => {
   };
 
   const handleLinkClick = (link) => {
-    // Navigate to the link
+  
     window.location.href = link;
   };
 
@@ -116,7 +119,7 @@ const Chatbot = () => {
     try {
       const currentUserType = userType;
       
-      const res = await fetch("http://localhost:5000/chat", {
+      const res = await fetch(`${url}/chat`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -132,7 +135,7 @@ const Chatbot = () => {
         setConversationId(data.conversationId);
       }
       
-      // Create a message object with text and optional link data
+      
       const botMessage = {
         text: data.response,
         sender: "bot",
@@ -162,7 +165,7 @@ const Chatbot = () => {
   };
 
   const formatMessage = (message, msgObj) => {
-    // First process the message content
+    
     let processedMessage;
     
     if (message.includes("```")) {

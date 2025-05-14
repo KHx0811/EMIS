@@ -3,6 +3,9 @@ import { Box, Button, Typography, Select, MenuItem, TextField, FormControl, Inpu
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { inputStyle, labelStyle, formControlStyle, selectStyle } from '../Admin/Student/formStyles.js';
+import config from '@/assets/config';
+
+const { url } = config;
 
 const Marks = () => {
   const navigate = useNavigate();
@@ -26,7 +29,7 @@ const Marks = () => {
         return;
       }
   
-      const response = await axios.get('http://localhost:3000/api/teachers/teacher-classes', {
+      const response = await axios.get(`${url}/api/teachers/teacher-classes`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setClasses(response.data.data);
@@ -64,7 +67,7 @@ const Marks = () => {
         return;
       }
   
-      const response = await axios.get(`http://localhost:3000/api/teachers/class-students/${classId}`, {
+      const response = await axios.get(`${url}/api/teachers/class-students/${classId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
   
@@ -144,7 +147,7 @@ const Marks = () => {
         marks: marksData 
       };
       
-      await axios.post('http://localhost:3000/api/teachers/upload-marks', payload, {
+      await axios.post(`${url}/api/teachers/upload-marks`, payload, {
         headers: { 
           Authorization: `Bearer ${token}`, 
           'Content-Type': 'application/json' 

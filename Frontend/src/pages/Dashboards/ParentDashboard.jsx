@@ -14,6 +14,9 @@ import PTMeetings from '@/forms/Parent/PTMeetings';
 import SessionTimer from '@/Components/SessionTimer';
 import ParentProfile from '@/forms/Parent/Profile';
 import ContactAdmin from '@/forms/Parent/ContactAdmin';
+import config from '@/assets/config';
+
+const { url } = config;
 
 const ParentDashboard = () => {
   const navigate = useNavigate();
@@ -143,7 +146,7 @@ const ParentDashboard = () => {
 
     const verifyToken = async () => {
       try {
-        await axios.get('http://localhost:3000/api/auth/verify', {
+        await axios.get(`${url}/api/auth/verify`, {
           headers: {
             Authorization: `Bearer ${token}`
           }

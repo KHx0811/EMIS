@@ -3,6 +3,9 @@ import { Box, Button, Typography, Paper, Chip, Divider, Modal } from '@mui/mater
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { inputStyle, labelStyle } from '../../forms/Admin/Student/formStyles';
+import config from '@/assets/config';
+
+const { url } = config;
 
 const statusColors = {
   Pending: '#f59e0b', // Amber
@@ -28,7 +31,6 @@ const Leave = () => {
   const [error, setError] = useState(null);
   const [openModal, setOpenModal] = useState(false);
 
-  // Fetch leave applications on component mount
   useEffect(() => {
     fetchLeaveApplications();
   }, []);
@@ -42,7 +44,7 @@ const Leave = () => {
         return;
       }
 
-      const response = await axios.get('http://localhost:3000/api/teachers/leave-applications',{
+      const response = await axios.get(`${url}/api/teachers/leave-applications`,{
           headers: {
             Authorization: `Bearer ${token}`
           }
@@ -83,7 +85,7 @@ const Leave = () => {
         return;
       }
 
-      const response = await axios.post('http://localhost:3000/api/teachers/apply-leave',formData,
+      const response = await axios.post(`${url}/api/teachers/apply-leave`,formData,
         {
           headers: {
             Authorization: `Bearer ${token}`,

@@ -4,6 +4,9 @@ import { Box, Typography, Grid, Card, CardContent, Button, Dialog, DialogTitle,
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { CalendarToday, LocationOn, Category, Delete as DeleteIcon, Edit as EditIcon, AccessTime as AccessTimeIcon } from '@mui/icons-material';
+import config from '@/assets/config';
+
+const { url } = config;
 
 const TeacherEvents = () => {
   const navigate = useNavigate();
@@ -25,7 +28,6 @@ const TeacherEvents = () => {
   const [registrations, setRegistrations] = useState([]);
   const [showRegistrations, setShowRegistrations] = useState(false);
 
-  // Form styles
   const inputStyle = {
     width: '100%',
     padding: '12px',
@@ -86,7 +88,7 @@ const TeacherEvents = () => {
           return;
         }
 
-        const response = await axios.get('http://localhost:3000/api/teachers/school-events', {
+        const response = await axios.get(`${url}/api/teachers/school-events`, {
           headers: {
             Authorization: `Bearer ${token}`
           }
@@ -112,7 +114,7 @@ const TeacherEvents = () => {
       const token = localStorage.getItem('teacherToken');
       if (!token) return;
 
-      const response = await axios.get('http://localhost:3000/api/teachers/classes', {
+      const response = await axios.get(`${url}/api/teachers/classes`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -133,7 +135,7 @@ const TeacherEvents = () => {
       const token = localStorage.getItem('teacherToken');
       if (!token) return;
 
-      const response = await axios.get(`http://localhost:3000/api/teachers/classes/${classId}/students`, {
+      const response = await axios.get(`${url}/api/teachers/classes/${classId}/students`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -155,7 +157,7 @@ const TeacherEvents = () => {
       const token = localStorage.getItem('teacherToken');
       if (!token) return;
 
-      const response = await axios.get('http://localhost:3000/api/teachers/event-registrations', {
+      const response = await axios.get(`${url}/api/teachers/event-registrations`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -208,7 +210,7 @@ const TeacherEvents = () => {
       if (!token) return;
 
       const response = await axios.post(
-        'http://localhost:3000/api/teachers/register-event',
+        `${url}/api/teachers/register-event`,
         {
           eventId: selectedEvent._id,
           classId: selectedClass,
@@ -246,7 +248,7 @@ const TeacherEvents = () => {
       if (!token) return;
 
       await axios.put(
-        `http://localhost:3000/api/teachers/event-registrations/${registrationId}/cancel`,
+        `${url}/api/teachers/event-registrations/${registrationId}/cancel`,
         {},
         {
           headers: {

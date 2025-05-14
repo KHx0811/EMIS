@@ -3,6 +3,9 @@ import { Box, Typography, Grid, Paper, Avatar, Divider, Skeleton } from '@mui/ma
 import { School, CalendarMonth, Person, Email, Badge, LocationCity, Public } from '@mui/icons-material';
 import axios from 'axios';
 import { format } from 'date-fns';
+import config from '@/assets/config';
+
+const { url } = config;
 
 const DistrictProfile = () => {
   const [profileData, setProfileData] = useState(null);
@@ -17,7 +20,7 @@ const DistrictProfile = () => {
           throw new Error('Authentication token not found');
         }
 
-        const response = await axios.get('http://localhost:3000/api/districts/profile', {
+        const response = await axios.get(`${url}/api/districts/profile`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 

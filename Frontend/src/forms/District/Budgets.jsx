@@ -9,6 +9,9 @@ import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { inputStyle, labelStyle, formControlStyle, selectStyle } from '../Admin/Student/formStyles';
+import config from '@/assets/config';
+
+const { url } = config;
 
 const Budgets = () => {
   const navigate = useNavigate();
@@ -69,7 +72,7 @@ const Budgets = () => {
 
       console.log('Fetching schools with token:', token.substring(0, 10) + '...');
 
-      const response = await axios.get('http://localhost:3000/api/districts/schools', {
+      const response = await axios.get(`${url}/api/districts/schools`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -104,7 +107,7 @@ const Budgets = () => {
         return;
       }
 
-      const response = await axios.get('http://localhost:3000/api/districts/budgets', {
+      const response = await axios.get(`${url}/api/districts/budgets`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -126,7 +129,7 @@ const Budgets = () => {
         return;
       }
 
-      const response = await axios.get('http://localhost:3000/api/districts/budget-stats', {
+      const response = await axios.get(`${url}/api/districts/budget-stats`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -186,7 +189,7 @@ const Budgets = () => {
       };
 
       if (editMode && currentBudgetId) {
-        await axios.put(`http://localhost:3000/api/districts/budgets/${currentBudgetId}`, payload, {
+        await axios.put(`${url}/api/districts/budgets/${currentBudgetId}`, payload, {
           headers: { 
             Authorization: `Bearer ${token}`, 
             'Content-Type': 'application/json' 
@@ -194,7 +197,7 @@ const Budgets = () => {
         });
         setSuccess('Budget updated successfully');
       } else {
-        await axios.post('http://localhost:3000/api/districts/budgets', payload, {
+        await axios.post(`${url}/api/districts/budgets`, payload, {
           headers: { 
             Authorization: `Bearer ${token}`, 
             'Content-Type': 'application/json' 
@@ -246,7 +249,7 @@ const Budgets = () => {
         return;
       }
 
-      await axios.delete(`http://localhost:3000/api/districts/budgets/${budgetToDelete._id}`, {
+      await axios.delete(`${url}/api/districts/budgets/${budgetToDelete._id}`, {
         headers: {
           Authorization: `Bearer ${token}`
         }

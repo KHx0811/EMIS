@@ -4,6 +4,9 @@ import SearchIcon from '@mui/icons-material/Search';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { inputStyle, labelStyle } from '../Student/formStyles';
+import config from '@/assets/config';
+
+const { url } = config;
 
 const DeleteSchool = () => {
   const navigate = useNavigate();
@@ -19,7 +22,7 @@ const DeleteSchool = () => {
         navigate('/login/admin');
         return null;
       }
-      const response = await axios.get(`http://localhost:3000/api/schools/${id}`, {
+      const response = await axios.get(`${url}/api/schools/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -52,7 +55,7 @@ const DeleteSchool = () => {
         navigate('/login/admin');
         return;
       }
-      await axios.delete(`http://localhost:3000/api/schools/${id}`, {
+      await axios.delete(`${url}/api/schools/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`
         }

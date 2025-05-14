@@ -4,6 +4,9 @@ import SearchIcon from '@mui/icons-material/Search';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { inputStyle, labelStyle } from '../Student/formStyles';
+import config from '@/assets/config';
+
+const { url } = config;
 
 const DeleteDistrict = () => {
   const navigate = useNavigate();
@@ -18,7 +21,7 @@ const DeleteDistrict = () => {
         navigate('/login/admin');
         return null;
       }
-      const response = await axios.get(`http://localhost:3000/api/districts/${id}`, {
+      const response = await axios.get(`${url}/api/districts/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -45,7 +48,7 @@ const DeleteDistrict = () => {
         navigate('/login/admin');
         return;
       }
-      await axios.delete(`http://localhost:3000/api/districts/${id}`, {
+      await axios.delete(`${url}/api/districts/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`
         }

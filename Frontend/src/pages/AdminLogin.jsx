@@ -7,6 +7,10 @@ import './AdminLogin.css';
 import '@fortawesome/fontawesome-free/css/all.min.css';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import config from '@/assets/config';
+
+const { url } = config;
+
 
 const AdminLogin = () => {
   const navigate = useNavigate();
@@ -37,7 +41,7 @@ const AdminLogin = () => {
     const captchaValue = formData.captcha;
     if (validateCaptcha(captchaValue)) {
       try {
-        const response = await axios.post('http://localhost:3000/api/auth/login', formData);
+        const response = await axios.post(`${url}/api/auth/login`, formData);
         console.log('Login response:', response.data);
         if (response.data && response.data.data) {
           localStorage.setItem('adminToken', response.data.data);

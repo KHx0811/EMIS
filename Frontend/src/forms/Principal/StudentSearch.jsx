@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import { Box, TextField, Button, Typography, Snackbar, Alert } from '@mui/material';
 import axios from 'axios';
+import config from '@/assets/config';
+
+const { url } = config;
 
 const StudentSearch = () => {
   const [searchParams, setSearchParams] = useState({ studentId: '' });
@@ -25,7 +28,7 @@ const StudentSearch = () => {
         setError('Please enter a valid Student ID');
         return;
       }
-      const response = await axios.get(`http://localhost:3000/api/schools/search-student/${studentId}`, {
+      const response = await axios.get(`${url}/api/schools/search-student/${studentId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 

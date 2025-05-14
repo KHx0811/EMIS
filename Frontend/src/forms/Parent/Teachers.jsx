@@ -3,6 +3,9 @@ import { Box, Typography, Accordion, AccordionSummary, AccordionDetails } from '
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import config from '@/assets/config';
+
+const { url } = config;
 
 const Teachers = () => {
   const navigate = useNavigate();
@@ -24,7 +27,7 @@ const Teachers = () => {
         return;
       }
 
-      const response = await axios.get('http://localhost:3000/api/parents/child-details', {
+      const response = await axios.get(`${url}/api/parents/child-details`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       
@@ -54,7 +57,7 @@ const Teachers = () => {
         return;
       }
 
-      const response = await axios.get(`http://localhost:3000/api/parents/child-teachers/${studentId}`, {
+      const response = await axios.get(`${url}/api/parents/child-teachers/${studentId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       

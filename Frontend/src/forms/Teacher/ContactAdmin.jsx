@@ -4,6 +4,9 @@ import axios from 'axios';
 import { inputStyle, labelStyle } from '../../forms/Admin/Student/formStyles';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { format } from 'date-fns';
+import config from '@/assets/config';
+
+const { url } = config;
 
 const ContactAdmin = () => {
   const [subject, setSubject] = useState('');
@@ -14,22 +17,20 @@ const ContactAdmin = () => {
   const [loadingHistory, setLoadingHistory] = useState(false);
   const [expandedId, setExpandedId] = useState(null);
   
-  // New state to control polling
   const [isPolling, setIsPolling] = useState(true);
-  const POLLING_INTERVAL = 10000; // Poll every 10 seconds
-  
-  // Initial fetch of previous requests
+  const POLLING_INTERVAL = 10000; 
+
   useEffect(() => {
     fetchPreviousRequests();
     
-    // Set up polling for continuous updates
+ 
     const intervalId = setInterval(() => {
       if (isPolling) {
-        fetchPreviousRequests(false); // Pass false to avoid showing loading indicator during polling
+        fetchPreviousRequests(false);
       }
     }, POLLING_INTERVAL);
     
-    // Clean up interval on component unmount
+
     return () => clearInterval(intervalId);
   }, [isPolling]);
 
@@ -42,7 +43,7 @@ const ContactAdmin = () => {
       const token = localStorage.getItem('teacherToken');
       
       const response = await axios.get(
-        'http://localhost:3000/api/teachers/contact-admin/messages',
+        `${url}/api/teachers/contact-admin/messages`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -50,14 +51,14 @@ const ContactAdmin = () => {
         }
       );
 
-      // Update previous requests only if data has changed
+
       const newData = response.data.data;
       if (JSON.stringify(newData) !== JSON.stringify(previousRequests)) {
         setPreviousRequests(newData);
       }
     } catch (error) {
       console.error('Failed to fetch previous requests:', error);
-      // Only show error if it's the initial load
+
       if (showLoading) {
         setResponseMessage('Failed to load previous requests. Please try again.');
       }
@@ -83,7 +84,7 @@ const ContactAdmin = () => {
       };
       
       const response = await axios.post(
-        'http://localhost:3000/api/teachers/contact-admin',
+        `${url}/api/teachers/contact-admin`,
         payload,
         {
           headers: {
@@ -96,7 +97,7 @@ const ContactAdmin = () => {
       setSubject('');
       setMessage('');
       
-      // Immediately fetch updated requests after submission
+
       fetchPreviousRequests();
     } catch (error) {
       setResponseMessage('Failed to send the request. Please try again.');
@@ -118,7 +119,7 @@ const ContactAdmin = () => {
     setExpandedId(expandedId === id ? null : id);
   };
   
-  // Toggle polling on/off
+
   const togglePolling = () => {
     setIsPolling(prev => !prev);
   };

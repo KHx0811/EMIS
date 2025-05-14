@@ -5,6 +5,9 @@ import axios from 'axios';
 import jsPDF from 'jspdf';
 import { useNavigate } from 'react-router-dom';
 // import { inputStyle, labelStyle, formControlStyle } from './formStyles';
+import config from '@/assets/config';
+
+const { url } = config;
 
 const StudentList = () => {
   const navigate = useNavigate();
@@ -19,7 +22,7 @@ const StudentList = () => {
         navigate('/login/admin');
         return null;
       }
-      const response = await axios.get(`http://localhost:3000/api/students/${id}`, {
+      const response = await axios.get(`${url}/api/students/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -49,7 +52,7 @@ const StudentList = () => {
         navigate('/login/admin');
         return [];
       }
-      const response = await axios.get('http://localhost:3000/api/students', {
+      const response = await axios.get(`${url}/api/students`, {
         headers: {
           Authorization: `Bearer ${token}`
         }

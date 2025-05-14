@@ -4,6 +4,9 @@ import SearchIcon from '@mui/icons-material/Search';
 import axios from 'axios';
 import jsPDF from 'jspdf';
 import { useNavigate } from 'react-router-dom';
+import config from '@/assets/config';
+
+const { url } = config;
 
 const TeacherDetails = () => {
   const navigate = useNavigate();
@@ -20,7 +23,7 @@ const TeacherDetails = () => {
     }
   
     try {
-      const response = await axios.get(`http://localhost:3000/api/teachers/${id}`, {
+      const response = await axios.get(`${url}/api/teachers/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -57,7 +60,7 @@ const TeacherDetails = () => {
     }
     
     try {
-      const response = await axios.get('http://localhost:3000/api/teachers', {
+      const response = await axios.get(`${url}/api/teachers`, {
         headers: {
           Authorization: `Bearer ${token}`
         }

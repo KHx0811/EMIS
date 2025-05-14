@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import { Box, Button, Typography, Select, MenuItem, FormControl, InputLabel } from '@mui/material';
 import axios from 'axios';
 import { inputStyle, labelStyle, formControlStyle, selectStyle } from '../Admin/Student/formStyles';
+import config from '@/assets/config';
+
+const { url } = config;
 
 const ParentInteraction = () => {
   const [formData, setFormData] = useState({
@@ -28,7 +31,7 @@ const ParentInteraction = () => {
 
     try {
       const token = localStorage.getItem('teacherToken');
-      const response = await axios.post('http://localhost:3000/api/teachers/parent-interaction', formData, {
+      const response = await axios.post(`${url}/api/teachers/parent-interaction`, formData, {
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json'

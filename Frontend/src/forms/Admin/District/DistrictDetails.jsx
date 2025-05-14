@@ -4,6 +4,9 @@ import SearchIcon from '@mui/icons-material/Search';
 import axios from 'axios';
 import jsPDF from 'jspdf';
 import { useNavigate } from 'react-router-dom';
+import config from '@/assets/config';
+
+const { url } = config;
 
 const DistrictList = () => {
   const navigate = useNavigate();
@@ -18,7 +21,7 @@ const DistrictList = () => {
         navigate('/login/admin');
         return null;
       }
-      const response = await axios.get(`http://localhost:3000/api/districts/${id}`, {
+      const response = await axios.get(`${url}/api/districts/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -45,7 +48,7 @@ const DistrictList = () => {
         navigate('/login/admin');
         return [];
       }
-      const response = await axios.get('http://localhost:3000/api/districts', {
+      const response = await axios.get(`${url}/api/districts`, {
         headers: {
           Authorization: `Bearer ${token}`
         }

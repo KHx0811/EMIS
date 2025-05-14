@@ -7,6 +7,9 @@ import {
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { inputStyle,labelStyle } from '../Admin/Student/formStyles';
+import config from '@/assets/config';
+
+const { url } = config;
 
 const statusColors = {
   Pending: '#f59e0b',
@@ -55,7 +58,7 @@ const LeaveApprovals = () => {
         return;
       }
 
-      const response = await axios.get('http://localhost:3000/api/schools/leave-applications', {
+      const response = await axios.get(`${url}/api/schools/leave-applications`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -105,7 +108,7 @@ const LeaveApprovals = () => {
       }
 
       const response = await axios.put(
-        `http://localhost:3000/api/schools/leave-applications/${selectedLeave.applicationId}`,
+        `${url}/api/schools/leave-applications/${selectedLeave.applicationId}`,
         formData,
         {
           headers: {

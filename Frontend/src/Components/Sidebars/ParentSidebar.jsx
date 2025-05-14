@@ -5,6 +5,9 @@ import { Box, Typography } from '@mui/material';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { ResizableBox } from 'react-resizable';
+import config from '@/assets/config';
+
+const { url } = config;
 
 const ParentSidebar = ({ onMenuItemClick, currentMenuItem }) => {
   const navigate = useNavigate();
@@ -45,7 +48,7 @@ const ParentSidebar = ({ onMenuItemClick, currentMenuItem }) => {
       }
       const token = localStorage.getItem('parentToken');
       if (!token) return;
-      const response = await axios.get('http://localhost:3000/api/parents/details', {
+      const response = await axios.get(`${url}/api/parents/details`, {
         headers: {
           Authorization: `Bearer ${token}`
         }

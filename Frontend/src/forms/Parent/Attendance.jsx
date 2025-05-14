@@ -3,6 +3,9 @@ import { Box, Button, Typography } from '@mui/material';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { inputStyle, labelStyle, formControlStyle } from '../Admin/Student/formStyles.js';
+import config from '@/assets/config';
+
+const { url } = config;
 
 const Attendance = () => {
   const navigate = useNavigate();
@@ -12,7 +15,7 @@ const Attendance = () => {
   const [dailyAttendance, setDailyAttendance] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  // Fetch child details on component mount
+
   useEffect(() => {
     fetchChildDetails();
   }, [navigate]);
@@ -27,12 +30,11 @@ const Attendance = () => {
         return;
       }
 
-      const response = await axios.get('http://localhost:3000/api/parents/child-details', {
+      const response = await axios.get(`${url}/api/parents/child-details`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       
       setChildDetails(response.data.data);
-      // Fetch all attendance records for the child
       fetchAllAttendance(response.data.data.student_id);
     } catch (error) {
       if (error.response?.status === 401) {
@@ -58,7 +60,7 @@ const Attendance = () => {
         return;
       }
 
-      const response = await axios.get(`http://localhost:3000/api/parents/child-attendance/${studentId}`, {
+      const response = await axios.get(`${url}/api/parents/child-attendance/${studentId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       
@@ -81,7 +83,7 @@ const Attendance = () => {
       return;
     }
 
-    // Find attendance for the selected date
+
     const selectedDate = new Date(date);
     const attendance = attendanceRecords.find(record => {
       const recordDate = new Date(record.date);
@@ -91,7 +93,7 @@ const Attendance = () => {
     setDailyAttendance(attendance || { date, status: 'No record found' });
   };
 
-  // Format date for display
+
   const formatDate = (dateString) => {
     const options = { year: 'numeric', month: 'long', day: 'numeric' };
     return new Date(dateString).toLocaleDateString(undefined, options);

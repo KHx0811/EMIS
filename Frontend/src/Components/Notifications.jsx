@@ -14,6 +14,9 @@ import {
 } from '@mui/material';
 import { Bell } from 'lucide-react';
 import axios from 'axios';
+import config from '@/assets/config';
+
+const { url } = config;
 
 const Notifications = () => {
   const [open, setOpen] = useState(false);
@@ -37,7 +40,7 @@ const Notifications = () => {
       const token = localStorage.getItem('adminToken');
       if (!token) return;
 
-      const response = await axios.get('http://localhost:3000/api/admin/messages', {
+      const response = await axios.get(`${url}/api/admin/messages`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -93,7 +96,7 @@ const Notifications = () => {
       setResponding(true);
       const token = localStorage.getItem('adminToken');
       
-      await axios.post('http://localhost:3000/api/admin/respond-message', {
+      await axios.post(`${url}/api/admin/respond-message`, {
         messageId: selectedMessage._id,
         response: response.trim()
       }, {

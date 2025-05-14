@@ -3,6 +3,9 @@ import { Box, Button, FormControl, FormLabel, MenuItem, Radio, RadioGroup, FormC
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { inputStyle, labelStyle, formControlStyle, selectStyle } from './formStyles';
+import config from '@/assets/config';
+
+const { url } = config;
 
 const CreateStudentForm = ({ onSubmit = () => {} }) => {
   const navigate = useNavigate();
@@ -47,7 +50,7 @@ const CreateStudentForm = ({ onSubmit = () => {} }) => {
         return;
       }
 
-      const response = await axios.get('http://localhost:3000/api/schools', {
+      const response = await axios.get(`${url}/api/schools`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -273,7 +276,7 @@ const CreateStudentForm = ({ onSubmit = () => {} }) => {
         date_of_admission: new Date(formData.date_of_admission).toISOString(),
       };
 
-      const response = await axios.post('http://localhost:3000/api/students', formattedData, {
+      const response = await axios.post(`${url}/api/students`, formattedData, {
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json',

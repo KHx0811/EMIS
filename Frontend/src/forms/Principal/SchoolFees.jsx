@@ -5,6 +5,9 @@ import EditIcon from '@mui/icons-material/Edit';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { inputStyle, labelStyle, formControlStyle, selectStyle } from '../Admin/Student/formStyles.js';
+import config from '@/assets/config';
+
+const { url } = config;
 
 const SchoolFees = () => {
   const navigate = useNavigate();
@@ -43,7 +46,7 @@ const SchoolFees = () => {
         return;
       }
 
-      const response = await axios.get('http://localhost:3000/api/schools/details', {
+      const response = await axios.get(`${url}/api/schools/details`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -66,7 +69,7 @@ const SchoolFees = () => {
         return;
       }
 
-      const response = await axios.get('http://localhost:3000/api/schools/fees', {
+      const response = await axios.get(`${url}/api/schools/fees`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -138,7 +141,7 @@ const SchoolFees = () => {
       };
 
       if (editMode && currentFeeId) {
-        await axios.put(`http://localhost:3000/api/schools/fees/${currentFeeId}`, payload, {
+        await axios.put(`${url}/api/schools/fees/${currentFeeId}`, payload, {
           headers: { 
             Authorization: `Bearer ${token}`, 
             'Content-Type': 'application/json' 
@@ -146,8 +149,7 @@ const SchoolFees = () => {
         });
         setSuccess('Fee structure updated successfully');
       } else {
-        // Create new fee structure
-        await axios.post('http://localhost:3000/api/schools/fees/create-fees', payload, {
+        await axios.post(`${url}/api/schools/fees/create-fees`, payload, {
           headers: { 
             Authorization: `Bearer ${token}`, 
             'Content-Type': 'application/json' 
@@ -172,7 +174,7 @@ const SchoolFees = () => {
       setLoading(true);
       const token = localStorage.getItem('principalToken');
       
-      const response = await axios.get(`http://localhost:3000/api/schools/fees/${fee._id}`, {
+      const response = await axios.get(`${url}/api/schools/fees/${fee._id}`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -217,7 +219,7 @@ const SchoolFees = () => {
         return;
       }
 
-      await axios.delete(`http://localhost:3000/api/schools/fees/${feeToDelete._id}`, {
+      await axios.delete(`${url}/api/schools/fees/${feeToDelete._id}`, {
         headers: {
           Authorization: `Bearer ${token}`
         }

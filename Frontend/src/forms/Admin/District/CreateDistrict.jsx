@@ -3,6 +3,9 @@ import { Box, Button, Typography } from '@mui/material';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { inputStyle, labelStyle } from '../Student/formStyles';
+import config from '@/assets/config';
+
+const { url } = config;
 
 const CreateDistrict = ({ onSubmit = () => {} }) => {
   const navigate = useNavigate();
@@ -32,7 +35,7 @@ const CreateDistrict = ({ onSubmit = () => {} }) => {
       email: '',
       password: '',
     });
-    setGeneratedDistrictId(''); // Clear the generated district ID message
+    setGeneratedDistrictId('');
   };
 
   const handleSubmit = async (e) => {
@@ -45,7 +48,7 @@ const CreateDistrict = ({ onSubmit = () => {} }) => {
         return;
       }
 
-      const response = await axios.post('http://localhost:3000/api/districts', formData, {
+      const response = await axios.post(`${url}/api/districts`, formData, {
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json',
@@ -54,7 +57,7 @@ const CreateDistrict = ({ onSubmit = () => {} }) => {
 
       const createdDistrict = response.data.data;
       console.log('District created successfully:', createdDistrict);
-      setGeneratedDistrictId(createdDistrict.district_id); // Store the generated district ID
+      setGeneratedDistrictId(createdDistrict.district_id);
       alert('District created successfully');
       onSubmit(createdDistrict);
     } catch (error) {

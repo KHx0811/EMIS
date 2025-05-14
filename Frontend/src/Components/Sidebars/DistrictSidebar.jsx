@@ -40,7 +40,7 @@ const DistrictSidebar = ({ onMenuItemClick, currentMenuItem }) => {
       const token = localStorage.getItem('districtToken');
       if (!token) return;
 
-      const response = await axios.get('http://localhost:3000/api/districts/details', {
+      const response = await axios.get(`${url}/api/districts/details`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 

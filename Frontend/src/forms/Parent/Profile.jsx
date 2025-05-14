@@ -3,6 +3,9 @@ import { Box, Typography, Grid, Paper, Avatar, Divider, Skeleton } from '@mui/ma
 import { Person, CalendarMonth, Email, Badge, Phone } from '@mui/icons-material';
 import axios from 'axios';
 import { format } from 'date-fns';
+import config from '@/assets/config';
+
+const { url } = config;
 
 const ParentProfile = () => {
   const [profileData, setProfileData] = useState(null);
@@ -17,7 +20,7 @@ const ParentProfile = () => {
           throw new Error('Authentication token not found');
         }
 
-        const response = await axios.get('http://localhost:3000/api/parents/profile', {
+        const response = await axios.get(`${url}/api/parents/profile`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 

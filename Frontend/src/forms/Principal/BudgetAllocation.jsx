@@ -9,6 +9,9 @@ import DescriptionIcon from '@mui/icons-material/Description';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { inputStyle, labelStyle, formControlStyle, selectStyle } from '../Admin/Student/formStyles';
+import config from '@/assets/config';
+
+const { url } = config;
 
 const BudgetUsage = () => {
   const navigate = useNavigate();
@@ -46,7 +49,7 @@ const BudgetUsage = () => {
         return;
       }
 
-      const response = await axios.get('http://localhost:3000/api/schools/budgets', {
+      const response = await axios.get(`${url}/api/schools/budgets`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -68,7 +71,7 @@ const BudgetUsage = () => {
         return;
       }
 
-      const response = await axios.get('http://localhost:3000/api/schools/budget-stats', {
+      const response = await axios.get(`${url}/api/schools/budget-stats`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -90,7 +93,7 @@ const BudgetUsage = () => {
         return;
       }
 
-      const response = await axios.get(`http://localhost:3000/api/schools/budgets/usage/${budgetId}`, {
+      const response = await axios.get(`${url}/api/schools/budgets/usage/${budgetId}`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -148,7 +151,7 @@ const BudgetUsage = () => {
         receipt_number: formData.receipt_number || undefined
       };
 
-      const response = await axios.post('http://localhost:3000/api/schools/budgets/usage', payload, {
+      const response = await axios.post(`${url}/api/schools/budgets/usage`, payload, {
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -203,7 +206,7 @@ const BudgetUsage = () => {
         return;
       }
 
-      const response = await axios.delete(`http://localhost:3000/api/schools/budgets/usage/${usageToDelete._id}`, {
+      const response = await axios.delete(`${url}/api/schools/budgets/usage/${usageToDelete._id}`, {
         headers: {
           Authorization: `Bearer ${token}`
         }

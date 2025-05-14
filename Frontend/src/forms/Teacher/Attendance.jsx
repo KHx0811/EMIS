@@ -3,6 +3,9 @@ import { Box, Button, Typography, Select, MenuItem, TextField, CircularProgress 
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { inputStyle, labelStyle, formControlStyle, selectStyle } from '../Admin/Student/formStyles.js';
+import config from '@/assets/config';
+
+const { url } = config;
 
 const Attendance = () => {
   const navigate = useNavigate();
@@ -28,7 +31,7 @@ const Attendance = () => {
         return;
       }
 
-      const response = await axios.get('http://localhost:3000/api/teachers/teacher-classes', {
+      const response = await axios.get(`${url}/api/teachers/teacher-classes`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setClasses(response.data.data);
@@ -55,7 +58,7 @@ const Attendance = () => {
     setSelectedClass(classId);
     setStudents([]);
     setAttendanceData([]);
-    setStudentAttendance(null); // Reset student attendance when class changes
+    setStudentAttendance(null);
 
     if (!classId) return;
 
@@ -68,16 +71,15 @@ const Attendance = () => {
         return;
       }
 
-      const response = await axios.get(`http://localhost:3000/api/teachers/class-students/${classId}`, {
+      const response = await axios.get(`${url}/api/teachers/class-students/${classId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
       if (response.data.data && response.data.data.length > 0) {
         setStudents(response.data.data);
-        
-        // Check if we already have attendance data for this date
+
         const attendanceResponse = await axios.get(
-          `http://localhost:3000/api/teachers/get-attendance/${classId}/${date}`,
+          `${url}/api/teachers/get-attendance/${classId}/${date}`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
         
@@ -119,9 +121,8 @@ const Attendance = () => {
         setLoading(true);
         const token = localStorage.getItem('teacherToken');
         
-        // Check if we already have attendance data for this date
         const attendanceResponse = await axios.get(
-          `http://localhost:3000/api/teachers/get-attendance/${selectedClass}/${newDate}`,
+          `${url}/api/teachers/get-attendance/${selectedClass}/${newDate}`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
         
@@ -177,8 +178,8 @@ const Attendance = () => {
       };
 
       const endpoint = isEditMode 
-        ? 'http://localhost:3000/api/teachers/update-attendance' 
-        : 'http://localhost:3000/api/teachers/upload-attendance';
+        ? `${url}/api/teachers/update-attendance` 
+        : `${url}/api/teachers/upload-attendance`;
 
       await axios.post(endpoint, payload, {
         headers: {
@@ -212,7 +213,7 @@ const Attendance = () => {
       }
 
       const response = await axios.get(
-        `http://localhost:3000/api/teachers/student-attendance/${searchStudentId}`,
+        `${url}/api/teachers/student-attendance/${searchStudentId}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
@@ -237,7 +238,7 @@ const Attendance = () => {
       const token = localStorage.getItem('teacherToken');
       
       await axios.post(
-        'http://localhost:3000/api/teachers/update-student-attendance',
+        `${url}/api/teachers/update-student-attendance`,
         { attendanceId, status: newStatus },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -267,7 +268,7 @@ const Attendance = () => {
         Attendance Management
       </Typography>
 
-      {/* Student Search Section */}
+
       <Box
         sx={{
           backgroundColor: '#1e293b',

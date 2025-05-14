@@ -3,12 +3,15 @@ import { Box, Button, Typography, Alert, MenuItem, Select, FormControl, FormLabe
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { inputStyle, labelStyle, selectStyle, formControlStyle } from '../Student/formStyles';
+import config from '@/assets/config';
+
+const { url } = config;
 
 const CreateTeacher = ({ onSubmit = () => {} }) => {
   const navigate = useNavigate();
   const [error, setError] = useState('');
   const [generatedTeacherId, setGeneratedTeacherId] = useState('');
-  const [schools, setSchools] = useState([]); // For storing fetched schools
+  const [schools, setSchools] = useState([]);
   const [loading, setLoading] = useState(false);
 
   const [formData, setFormData] = useState({
@@ -38,7 +41,7 @@ const CreateTeacher = ({ onSubmit = () => {} }) => {
         return;
       }
 
-      const response = await axios.get('http://localhost:3000/api/schools', {
+      const response = await axios.get(`${url}/api/schools`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -105,7 +108,7 @@ const CreateTeacher = ({ onSubmit = () => {} }) => {
         date_of_birth: new Date(formData.date_of_birth).toISOString(),
       };
 
-      const response = await axios.post('http://localhost:3000/api/teachers', formattedData, {
+      const response = await axios.post(`${url}/api/teachers`, formattedData, {
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json',

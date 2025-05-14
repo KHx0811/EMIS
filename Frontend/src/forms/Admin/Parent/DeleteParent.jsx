@@ -3,6 +3,9 @@ import { Box, TextField, IconButton, Button, Typography } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import config from '@/assets/config';
+
+const { url } = config;
 
 const DeleteParent = () => {
   const navigate = useNavigate();
@@ -17,7 +20,7 @@ const DeleteParent = () => {
         navigate('/login/admin');
         return null;
       }
-      const response = await axios.get(`http://localhost:3000/api/parents/${id}`, {
+      const response = await axios.get(`${url}/api/parents/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -46,7 +49,7 @@ const DeleteParent = () => {
         navigate('/login/admin');
         return;
       }
-      await axios.delete(`http://localhost:3000/api/parents/${id}`, {
+      await axios.delete(`${url}/api/parents/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`
         }

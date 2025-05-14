@@ -2,6 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { Box, CssBaseline, Typography } from '@mui/material';
 import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
+import config from '@/assets/config';
+
+const { url } = config;
+
 import DistrictSidebar from '../../Components/Sidebars/DistrictSidebar';
 
 import DistrictProfile from '@/forms/District/DistrictProfile';
@@ -146,7 +150,7 @@ const DistrictDashboard = () => {
 
     const verifyToken = async () => {
       try {
-        await axios.get('http://localhost:3000/api/auth/verify', {
+        await axios.get(`${url}0/api/auth/verify`, {
           headers: { Authorization: `Bearer ${token}` },
         });
       } catch (error) {

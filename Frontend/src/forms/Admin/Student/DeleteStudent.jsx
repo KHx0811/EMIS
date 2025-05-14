@@ -4,6 +4,9 @@ import SearchIcon from '@mui/icons-material/Search';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { inputStyle, labelStyle, formControlStyle } from './formStyles';
+import config from '@/assets/config';
+
+const { url } = config;
 
 const DeleteStudent = () => {
   const navigate = useNavigate();
@@ -18,7 +21,7 @@ const DeleteStudent = () => {
         navigate('/login/admin');
         return null;
       }
-      const response = await axios.get(`http://localhost:3000/api/students/${id}`, {
+      const response = await axios.get(`${url}/api/students/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -48,7 +51,7 @@ const DeleteStudent = () => {
         navigate('/login/admin');
         return;
       }
-      await axios.delete(`http://localhost:3000/api/students/${id}`, {
+      await axios.delete(`${url}/api/students/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -92,7 +95,7 @@ const DeleteStudent = () => {
       sx={{ 
         display: 'flex', 
         flexDirection: 'column',
-        backgroundColor: '#0f172a', // Dark background color
+        backgroundColor: '#0f172a',
         padding: '24px',
         borderRadius: '8px'
       }}
@@ -169,12 +172,12 @@ const DeleteStudent = () => {
             color="secondary" 
             onClick={handleDelete}
             sx={{ 
-              backgroundColor: '#3b82f6', // Button background color
-              color: '#f1f5f9', // Button text color
+              backgroundColor: '#3b82f6',
+              color: '#f1f5f9',
               padding: '8px 16px',
               marginTop: '16px',
               '&:hover': {
-                backgroundColor: '#2563eb', // Button hover background color
+                backgroundColor: '#2563eb',
               }
             }}
           >

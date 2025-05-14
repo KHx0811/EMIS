@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Typography, Snackbar, Alert } from '@mui/material';
 import axios from 'axios';
+import config from '@/assets/config';
+
+const { url } = config;
 
 const ChildProfile = () => {
   const [childData, setChildData] = useState(null);
@@ -14,7 +17,7 @@ const ChildProfile = () => {
           throw new Error('No token found');
         }
 
-        const response = await axios.get('http://localhost:3000/api/parents/child-details', {
+        const response = await axios.get(`${url}/api/parents/child-details`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 

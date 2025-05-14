@@ -14,6 +14,9 @@ import Events from '@/forms/Principal/Events';
 import Meetings from '@/forms/Principal/Meetings';
 import LeaveApprovals from '@/forms/Principal/LeaveApprovals';
 import ContactAdmin from '@/forms/Principal/ContactAdmin';
+import config from '@/assets/config';
+
+const { url } = config;
 
 const PrincipalDashboard = () => {
   const navigate = useNavigate();
@@ -137,7 +140,7 @@ const PrincipalDashboard = () => {
 
     const verifyToken = async () => {
       try {
-        await axios.get('http://localhost:3000/api/auth/verify', {
+        await axios.get(`${url}/api/auth/verify`, {
           headers: { Authorization: `Bearer ${token}` },
         });
       } catch (error) {

@@ -3,6 +3,9 @@ import { Box, Button, Typography, Alert, CircularProgress } from '@mui/material'
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { inputStyle, labelStyle } from '../Student/formStyles';
+import config from '@/assets/config';
+
+const { url } = config;
 
 const CreateSchool = ({ onSubmit = () => { } }) => {
   const navigate = useNavigate();
@@ -36,7 +39,7 @@ const CreateSchool = ({ onSubmit = () => { } }) => {
         return;
       }
 
-      const response = await axios.get('http://localhost:3000/api/districts', {
+      const response = await axios.get(`${url}/api/districts`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -99,7 +102,7 @@ const CreateSchool = ({ onSubmit = () => { } }) => {
         date_of_establishment: new Date(formData.date_of_establishment).toISOString(),
       };
 
-      const response = await axios.post('http://localhost:3000/api/schools', formattedData, {
+      const response = await axios.post(`${url}/api/schools`, formattedData, {
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json',

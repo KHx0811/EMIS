@@ -4,6 +4,9 @@ import NavbarHome from '@/Components/NavbarHome';
 import { LoadCanvasTemplateNoReload, loadCaptchaEnginge, validateCaptcha } from 'react-simple-captcha';
 import axios from 'axios';
 import './AdminSignup.css';
+import config from '@/assets/config';
+
+const { url } = config;
 
 const AdminSignup = () => {
   const navigate = useNavigate();
@@ -34,7 +37,7 @@ const AdminSignup = () => {
     const captchaValue = formData.captcha;
     if (validateCaptcha(captchaValue)) {
       try {
-        const response = await axios.post('http://localhost:3000/api/auth/signup', formData);
+        const response = await axios.post(`${url}/api/auth/signup`, formData);
         console.log('Signup successful:', response.data);
         alert('Admin Signup Successful');
         navigate('/login/admin');

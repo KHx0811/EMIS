@@ -4,6 +4,9 @@ import axios from 'axios';
 import { inputStyle, labelStyle } from '../../forms/Admin/Student/formStyles';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { format } from 'date-fns';
+import config from '@/assets/config';
+
+const { url } = config;
 
 const ContactAdmin = () => {
   const [subject, setSubject] = useState('');
@@ -36,7 +39,7 @@ const ContactAdmin = () => {
     try {
       const token = localStorage.getItem('districtToken');
       const response = await axios.get(
-        'http://localhost:3000/api/districts/contact-admin/messages',
+        `${url}/api/districts/contact-admin/messages`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -75,7 +78,7 @@ const ContactAdmin = () => {
       };
 
       const response = await axios.post(
-        'http://localhost:3000/api/districts/contact-admin',
+        `${url}/api/districts/contact-admin`,
         payload,
         {
           headers: {

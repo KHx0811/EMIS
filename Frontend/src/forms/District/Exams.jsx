@@ -31,6 +31,9 @@ import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { inputStyle, labelStyle, formControlStyle, selectStyle } from '../Admin/Student/formStyles';
+import config from '@/assets/config';
+
+const { url } = config;
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -108,7 +111,7 @@ const Exams = () => {
         return;
       }
 
-      const response = await axios.get('http://localhost:3000/api/districts/schools', {
+      const response = await axios.get(`${url}/api/districts/schools`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -141,7 +144,7 @@ const Exams = () => {
         return;
       }
 
-      const response = await axios.get('http://localhost:3000/api/districts/exams', {
+      const response = await axios.get(`${url}/api/districts/exams`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -163,7 +166,7 @@ const Exams = () => {
         return;
       }
 
-      const response = await axios.get('http://localhost:3000/api/districts/exam-stats', {
+      const response = await axios.get(`${url}/api/districts/exam-stats`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -181,7 +184,7 @@ const Exams = () => {
       exam_type: 'midterm',
       subject: '',
       start_date: new Date(),
-      end_date: new Date(Date.now() + 86400000), // Add 1 day
+      end_date: new Date(Date.now() + 86400000),
       registration_deadline: new Date(),
       centers: [],
       eligible_grades: [],
@@ -257,7 +260,7 @@ const Exams = () => {
       }
 
       if (editMode && currentExamId) {
-        await axios.put(`http://localhost:3000/api/districts/exams/${currentExamId}`, formData, {
+        await axios.put(`${url}/api/districts/exams/${currentExamId}`, formData, {
           headers: {
             Authorization: `Bearer ${token}`,
             'Content-Type': 'application/json'
@@ -265,7 +268,7 @@ const Exams = () => {
         });
         setSuccess('Exam updated successfully');
       } else {
-        await axios.post('http://localhost:3000/api/districts/exams', formData, {
+        await axios.post(`${url}/api/districts/exams`, formData, {
           headers: {
             Authorization: `Bearer ${token}`,
             'Content-Type': 'application/json'
@@ -325,7 +328,7 @@ const Exams = () => {
         return;
       }
 
-      await axios.delete(`http://localhost:3000/api/districts/exams/${examToDelete.exam_id}`, {
+      await axios.delete(`${url}/api/districts/exams/${examToDelete.exam_id}`, {
         headers: {
           Authorization: `Bearer ${token}`
         }

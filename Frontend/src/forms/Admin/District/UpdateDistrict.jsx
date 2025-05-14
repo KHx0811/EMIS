@@ -4,6 +4,9 @@ import SearchIcon from '@mui/icons-material/Search';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { inputStyle, labelStyle } from '../Student/formStyles';
+import config from '@/assets/config';
+
+const { url } = config;
 
 const UpdateDistrict = () => {
   const navigate = useNavigate();
@@ -27,7 +30,7 @@ const UpdateDistrict = () => {
         return null;
       }
       
-      const response = await axios.get(`http://localhost:3000/api/districts/${id}`, {
+      const response = await axios.get(`${url}/api/districts/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -104,7 +107,7 @@ const UpdateDistrict = () => {
         return;
       }
 
-      const response = await axios.put(`http://localhost:3000/api/districts/${districtId}`, formData, {
+      const response = await axios.put(`${url}/api/districts/${districtId}`, formData, {
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json'

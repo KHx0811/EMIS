@@ -8,6 +8,9 @@ import { ResizableBox } from 'react-resizable';
 import 'react-resizable/css/styles.css';
 import './AdminSidebar.css';
 import { Telegram } from '@mui/icons-material';
+import config from '@/assets/config';
+
+const { url } = config;
 
 const TeacherSidebar = ({ onMenuItemClick, currentMenuItem }) => {
   const navigate = useNavigate();
@@ -46,7 +49,7 @@ const TeacherSidebar = ({ onMenuItemClick, currentMenuItem }) => {
         return;
       }
       
-      const response = await axios.get('http://localhost:3000/api/teachers/details', {
+      const response = await axios.get(`${url}/api/teachers/details`, {
         headers: {
           Authorization: `Bearer ${token}`
         }

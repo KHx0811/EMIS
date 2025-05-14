@@ -3,6 +3,9 @@ import NavbarHome from '../Components/NavbarHome';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './ResetPassword.css';
+import config from '@/assets/config';
+
+const { url } = config;
 
 const ResetPassword = () => {
   const navigate = useNavigate();
@@ -25,7 +28,7 @@ const ResetPassword = () => {
     }
 
     try {
-      const response = await axios.post('http://localhost:3000/api/auth/reset-password', {
+      const response = await axios.post(`${url}/api/auth/reset-password`, {
         email,
         otp,
         newPassword: password

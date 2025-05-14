@@ -3,6 +3,9 @@ import { Box, Button, FormControl, FormLabel, MenuItem, Select, Typography } fro
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { inputStyle, labelStyle, formControlStyle, selectStyle } from '../Student/formStyles';
+import config from '@/assets/config';
+
+const { url } = config;
 
 const CreateParentForm = ({ onSubmit = () => {} }) => {
   const navigate = useNavigate();
@@ -59,7 +62,7 @@ const CreateParentForm = ({ onSubmit = () => {} }) => {
         date_of_birth: new Date(formData.date_of_birth).toISOString()
       };
 
-      const response = await axios.post('http://localhost:3000/api/parents', formattedData, {
+      const response = await axios.post(`${url}/api/parents`, formattedData, {
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json'

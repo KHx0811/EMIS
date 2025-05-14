@@ -8,6 +8,9 @@ import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { inputStyle, labelStyle, formControlStyle, selectStyle } from '../Admin/Student/formStyles';
+import config from '@/assets/config';
+
+const { url } = config;
 
 const EventsManagement = () => {
   const navigate = useNavigate();
@@ -55,7 +58,7 @@ const EventsManagement = () => {
         return;
       }
 
-      const response = await axios.get('http://localhost:3000/api/schools/events', {
+      const response = await axios.get(`${url}/api/schools/events`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -115,7 +118,7 @@ const EventsManagement = () => {
       };
 
       if (editMode && currentEventId) {
-        await axios.put(`http://localhost:3000/api/schools/event/${currentEventId}`, payload, {
+        await axios.put(`${url}/api/schools/event/${currentEventId}`, payload, {
           headers: { 
             Authorization: `Bearer ${token}`, 
             'Content-Type': 'application/json' 
@@ -123,7 +126,7 @@ const EventsManagement = () => {
         });
         setSuccess('Event updated successfully');
       } else {
-        await axios.post('http://localhost:3000/api/schools/create-event', payload, {
+        await axios.post(`${url}/api/schools/create-event`, payload, {
           headers: { 
             Authorization: `Bearer ${token}`, 
             'Content-Type': 'application/json' 
@@ -174,7 +177,7 @@ const EventsManagement = () => {
         return;
       }
 
-      await axios.delete(`http://localhost:3000/api/schools/event/${eventToDelete._id}`, {
+      await axios.delete(`${url}/api/schools/event/${eventToDelete._id}`, {
         headers: {
           Authorization: `Bearer ${token}`
         }

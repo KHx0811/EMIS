@@ -4,6 +4,9 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './AdminLogin.css';
 import '@fortawesome/fontawesome-free/css/all.min.css';
+import config from '@/assets/config';
+
+const { url } = config;
 
 const styles = {
   loginContainer: {
@@ -99,7 +102,7 @@ const SendResetOtp = () => {
     }
 
     try {
-      const response = await axios.post('http://localhost:3000/api/auth/send-reset-otp', { email });
+      const response = await axios.post(`${url}/api/auth/send-reset-otp`, { email });
       console.log('OTP sent successfully:', response.data);
       alert("OTP sent successfully to registered email");
       navigate('/resetpassword');

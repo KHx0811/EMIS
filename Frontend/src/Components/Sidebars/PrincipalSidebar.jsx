@@ -5,6 +5,9 @@ import { Box, Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { ResizableBox } from 'react-resizable';
+import config from '@/assets/config';
+
+const { url } = config;
 
 const PrincipalSidebar = ({ onMenuItemClick, currentMenuItem }) => {
   const navigate = useNavigate();
@@ -44,7 +47,7 @@ const PrincipalSidebar = ({ onMenuItemClick, currentMenuItem }) => {
       const token = localStorage.getItem('principalToken');
       if (!token) return;
 
-      const response = await axios.get('http://localhost:3000/api/schools/details', {
+      const response = await axios.get(`${url}/api/schools/details`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 

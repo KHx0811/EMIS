@@ -3,6 +3,9 @@ import { Box, Button, Typography, TextField, Checkbox, FormControlLabel, Circula
 import DeleteIcon from '@mui/icons-material/Delete';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import config from '@/assets/config';
+
+const { url } = config;
 
 const Classes = () => {
   const navigate = useNavigate();
@@ -43,7 +46,7 @@ const Classes = () => {
         return;
       }
 
-      const response = await axios.get('http://localhost:3000/api/teachers/details', {
+      const response = await axios.get(`${url}/api/teachers/details`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -66,7 +69,7 @@ const Classes = () => {
         return;
       }
 
-      const response = await axios.get('http://localhost:3000/api/teachers/classes', {
+      const response = await axios.get(`${url}/api/teachers/classes`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -91,7 +94,7 @@ const Classes = () => {
         return;
       }
 
-      const response = await axios.get('http://localhost:3000/api/teachers/all-students', {
+      const response = await axios.get(`${url}/api/teachers/all-students`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -130,7 +133,7 @@ const Classes = () => {
         students: selectedStudents
       };
 
-      const response = await axios.post('http://localhost:3000/api/teachers/create-class', payload, {
+      const response = await axios.post(`${url}/api/teachers/create-class`, payload, {
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -177,7 +180,7 @@ const Classes = () => {
         return;
       }
 
-      await axios.delete(`http://localhost:3000/api/teachers/delete-class/${classToDelete._id}`, {
+      await axios.delete(`${url}/api/teachers/delete-class/${classToDelete._id}`, {
         headers: {
           Authorization: `Bearer ${token}`
         }

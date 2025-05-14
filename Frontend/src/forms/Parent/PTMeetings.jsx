@@ -3,6 +3,9 @@ import { Box, Button, Typography, FormControl, Select, MenuItem } from '@mui/mat
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { inputStyle, labelStyle, formControlStyle } from '../Admin/Student/formStyles.js';
+import config from '@/assets/config';
+
+const { url } = config;
 
 const PTMeetings = () => {
   const navigate = useNavigate();
@@ -45,7 +48,7 @@ const PTMeetings = () => {
         return;
       }
 
-      const response = await axios.get('http://localhost:3000/api/parents/child-details', {
+      const response = await axios.get(`${url}/api/parents/child-details`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       
@@ -75,7 +78,7 @@ const PTMeetings = () => {
         return;
       }
 
-      const response = await axios.get('http://localhost:3000/api/parents/interactions', {
+      const response = await axios.get(`${url}/api/parents/interactions`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       

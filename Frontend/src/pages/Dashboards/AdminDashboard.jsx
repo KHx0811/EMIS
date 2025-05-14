@@ -31,6 +31,9 @@ import CreateDistrict from '@/forms/Admin/District/CreateDistrict';
 import UpdateDistrict from '@/forms/Admin/District/UpdateDistrict';
 import DistrictDetails from '@/forms/Admin/District/DistrictDetails';
 import DeleteDistrict from '@/forms/Admin/District/DeleteDistrict';
+import config from '@/assets/config';
+
+const { url } = config;
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
@@ -166,7 +169,7 @@ const AdminDashboard = () => {
       const token = getToken();
       if (!token) return;
       
-      const response = await axios.get('http://localhost:3000/api/stats/counts', {
+      const response = await axios.get(`${url}/api/stats/counts`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -193,7 +196,7 @@ const AdminDashboard = () => {
     
     const verifyToken = async () => {
       try {
-        await axios.get('http://localhost:3000/api/auth/verify', {
+        await axios.get(`${url}/api/auth/verify`, {
           headers: {
             Authorization: `Bearer ${token}`
           }
