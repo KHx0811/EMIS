@@ -10,7 +10,12 @@ const { port } = config;
 const app = express();
 
 app.use(express.json());
-app.use(cors());
+app.use(cors(
+  {
+    origin: ['https://emis-sigma.vercel.app/'],
+    credentials: true,
+  }
+));
 
 
 app.use("/api", views);
