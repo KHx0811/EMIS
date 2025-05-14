@@ -27,8 +27,6 @@ const PrincipalSidebar = ({ onMenuItemClick, currentMenuItem }) => {
         setOpenSubmenu('Meetings');
       } else if (currentMenuItem.includes('Leave Approvals')) {
         setOpenSubmenu('Leave Approvals');
-      } else if (currentMenuItem.includes('Student Progress')) {
-        setOpenSubmenu('Student Progress');
       } else if (currentMenuItem.includes('Contact Admin')) {
         setOpenSubmenu('Contact Admin');
       }
@@ -238,13 +236,6 @@ const PrincipalSidebar = ({ onMenuItemClick, currentMenuItem }) => {
               icon={<FileText size={18} />}
             >
               Leave Approvals
-            </MenuItem>
-            <MenuItem
-              onClick={() => onMenuItemClick('studentProgress')}
-              active={currentMenuItem === 'studentProgress'}
-              icon={<Activity size={18} />}
-            >
-              Student Progress
             </MenuItem>
             <MenuItem
               onClick={() => onMenuItemClick('contactAdmin')}

@@ -21,8 +21,6 @@ const DistrictSidebar = ({ onMenuItemClick, currentMenuItem }) => {
         setOpenSubmenu('Budgets');
       } else if (currentMenuItem.includes('meetings')) {
         setOpenSubmenu('Meetings');
-      } else if (currentMenuItem.includes('schoolProgress')) {
-        setOpenSubmenu('School Progress');
       } else if (currentMenuItem.includes('exams')) {
         setOpenSubmenu('Exams');
       } else if (currentMenuItem.includes('contactAdmin')) {
@@ -227,13 +225,7 @@ const DistrictSidebar = ({ onMenuItemClick, currentMenuItem }) => {
             >
               Meetings
             </MenuItem>
-            <MenuItem
-              onClick={() => onMenuItemClick('schoolProgress')}
-              active={currentMenuItem === 'schoolProgress'}
-              icon={<Activity size={18} />}
-            >
-              School Progress
-            </MenuItem>
+            
             <MenuItem
               onClick={() => onMenuItemClick('exams')}
               active={currentMenuItem === 'exams'}

@@ -1,13 +1,16 @@
-import React, { useState } from 'react';
-import { Box, Button, Typography, Alert } from '@mui/material';
+import React, { useState, useEffect } from 'react';
+import { Box, Button, Typography, Alert, CircularProgress } from '@mui/material';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { inputStyle, labelStyle } from '../Student/formStyles';
 
-const CreateSchool = ({ onSubmit = () => {} }) => {
+const CreateSchool = ({ onSubmit = () => { } }) => {
   const navigate = useNavigate();
   const [error, setError] = useState('');
-  const [generatedSchoolId, setGeneratedSchoolId] = useState(''); // State to store the generated school ID
+  const [generatedSchoolId, setGeneratedSchoolId] = useState('');
+  const [districts, setDistricts] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [selectedDistrict, setSelectedDistrict] = useState(null);
 
   const [formData, setFormData] = useState({
     school_name: '',
@@ -16,7 +19,41 @@ const CreateSchool = ({ onSubmit = () => {} }) => {
     date_of_establishment: '',
     email: '',
     password: '',
+    education_level: 'all',
   });
+
+  useEffect(() => {
+    fetchDistricts();
+  }, []);
+
+  const fetchDistricts = async () => {
+    try {
+      setLoading(true);
+      const token = localStorage.getItem('adminToken');
+      if (!token) {
+        alert('You are not logged in. Please login to continue.');
+        navigate('/login/admin');
+        return;
+      }
+
+      const response = await axios.get('http://localhost:3000/api/districts', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      setDistricts(response.data.data || []);
+      setLoading(false);
+    } catch (error) {
+      console.error('Error fetching districts:', error);
+      setLoading(false);
+      if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+        alert('Your session has expired. Please login again.');
+        localStorage.removeItem('adminToken');
+        navigate('/login/admin');
+      }
+    }
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -24,8 +61,11 @@ const CreateSchool = ({ onSubmit = () => {} }) => {
       ...formData,
       [name]: value,
     });
+
     if (name === 'district_id') {
       setError('');
+      const district = districts.find(d => d.district_id === value);
+      setSelectedDistrict(district || null);
     }
   };
 
@@ -37,9 +77,11 @@ const CreateSchool = ({ onSubmit = () => {} }) => {
       date_of_establishment: '',
       email: '',
       password: '',
+      education_level: 'all',
     });
     setError('');
-    setGeneratedSchoolId(''); // Clear the generated school ID message
+    setGeneratedSchoolId('');
+    setSelectedDistrict(null);
   };
 
   const handleSubmit = async (e) => {
@@ -65,8 +107,7 @@ const CreateSchool = ({ onSubmit = () => {} }) => {
       });
 
       const createdSchool = response.data.data;
-      console.log('School created successfully:', createdSchool);
-      setGeneratedSchoolId(createdSchool.school_id); // Store the generated school ID
+      setGeneratedSchoolId(createdSchool.school_id);
       alert('School created successfully');
       onSubmit(createdSchool);
     } catch (error) {
@@ -147,15 +188,44 @@ const CreateSchool = ({ onSubmit = () => {} }) => {
       </Box>
 
       <Box sx={{ marginBottom: '16px' }}>
-        <label style={labelStyle} htmlFor="district_id">District ID *</label>
-        <input
-          id="district_id"
-          name="district_id"
-          value={formData.district_id}
-          onChange={handleChange}
-          required
-          style={inputStyle}
-        />
+        <label style={labelStyle} htmlFor="district_id">District *</label>
+        {loading ? (
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <CircularProgress size={20} sx={{ color: '#f1f5f9' }} />
+            <Typography sx={{ color: '#f1f5f9', fontSize: '0.875rem' }}>
+              Loading districts...
+            </Typography>
+          </Box>
+        ) : (
+          <>
+            <select
+              id="district_id"
+              name="district_id"
+              value={formData.district_id}
+              onChange={handleChange}
+              required
+              style={inputStyle}
+            >
+              <option value="">-- Select a District --</option>
+              {districts.map((district) => (
+                <option key={district.district_id} value={district.district_id}>
+                  {district.district_name} ({district.state}) - ID: {district.district_id}
+                </option>
+              ))}
+            </select>
+            {selectedDistrict && (
+              <Typography
+                sx={{
+                  color: '#94a3b8',
+                  fontSize: '0.875rem',
+                  marginTop: '4px',
+                }}
+              >
+                Selected District: {selectedDistrict.district_name}
+              </Typography>
+            )}
+          </>
+        )}
       </Box>
 
       <Box sx={{ marginBottom: '16px' }}>
@@ -181,6 +251,23 @@ const CreateSchool = ({ onSubmit = () => {} }) => {
           required
           style={inputStyle}
         />
+      </Box>
+
+      <Box sx={{ marginBottom: '16px' }}>
+        <label style={labelStyle} htmlFor="education_level">Education Level *</label>
+        <select
+          id="education_level"
+          name="education_level"
+          value={formData.education_level}
+          onChange={handleChange}
+          required
+          style={inputStyle}
+        >
+          <option value="secondary">Secondary</option>
+          <option value="graduation">Graduation</option>
+          <option value="post_graduation">Post Graduation</option>
+          <option value="all">All</option>
+        </select>
       </Box>
 
       <Box sx={{ marginBottom: '16px' }}>

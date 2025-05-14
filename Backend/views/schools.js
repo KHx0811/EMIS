@@ -18,6 +18,7 @@ import {
     deleteFee, 
     deleteMeeting, 
     getAllFees, 
+    getAllMessages, 
     getBudgetStats, 
     getBudgetUsageHistory, 
     getFeeById, 
@@ -45,6 +46,7 @@ router.get("/search-student/:student_id", verifyToken, isSchool, searchStudent);
 router.get("/search-teacher/:teacher_id", verifyToken, isSchool, searchTeacher);
 router.get("/profile", verifyToken, isSchool, getPrincipalProfile);
 router.post("/contact-admin", verifyToken, isSchool, contactAdmin);
+router.get("/contact-admin/messages", verifyToken, isSchool, getAllMessages);
 
 // Fees routes
 router.post("/fees/create-fees", verifyToken, isSchool, createFees);

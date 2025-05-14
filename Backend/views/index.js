@@ -6,6 +6,7 @@ import schools from "./schools.js";
 import parents from "./parents.js";
 import auth from "./auth.js";
 import stats from "./stats.js";
+import admin from "./admin.js";
 import express from "express";
 
 const router = express.Router();
@@ -15,6 +16,7 @@ router.use("/teachers", teachers);
 router.use("/districts", districts);
 router.use("/schools", schools);
 router.use("/parents", parents);
+router.use("/admin", admin);
 router.use("/auth", auth);
 router.use("/stats", stats);
 router.get("/", rootController);

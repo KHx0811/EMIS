@@ -2,7 +2,7 @@ import Teacher from '../../models/teacher.js';
 import Student from '../../models/students.js';
 import LeaveApplicationModel from '../../models/DataModels/TeacherModels/leaveModel.js';
 import ClassModel from '../../models/DataModels/TeacherModels/classModel.js';
-import ContactAdminModel from '../../models/DataModels/TeacherModels/contactAdminModel.js';
+import ContactAdminModel from '../../models/DataModels/AdminModel/contactAdminModel.js';
 import AssignmentModel from '../../models/DataModels/TeacherModels/assignmentModel.js';
 import ParentInteractionModel from '../../models/DataModels/TeacherModels/parentInteractionModel.js'
 import EventRegistration from '../../models/DataModels/TeacherModels/eventRegistrationModel.js';
@@ -204,17 +204,16 @@ export const recordParentInteraction = async (req, res) => {
       return res.status(404).json({ message: 'Teacher not found' });
     }
     const teacherId = objectId.teacher_id;
-    console.log(teacherId);
 
     const interaction = new ParentInteractionModel({
       teacherId,
+      teacherName: objectId.name,
       studentId,
       interactionType,
       content,
       date: new Date()
     });
 
-    console.log('Parent Interaction:', interaction);
     const studentCheck = await Student.findOne({ student_id: studentId });
     if (!studentCheck) {
       return res.status(404).json({ message: 'Student not found' });
@@ -264,7 +263,7 @@ export const searchStudent = async (req, res) => {
 
 export const contactAdmin = async (req, res) => {
   try {
-    const { userType, subject,message } = req.body;
+    const { userType, subject, message } = req.body;
 
     const objectId = await Teacher.findById(req.user.id);
     if (!objectId) {
@@ -295,6 +294,25 @@ export const contactAdmin = async (req, res) => {
     res.status(200).json({ message: 'Message sent to admin successfully' });
   } catch (error) {
     console.error('Error in contactAdmin:', error);
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};
+
+export const getAllMessages = async (req, res) => {
+  try {
+    const objectId = await Teacher.findById(req.user.id);
+    if (!objectId) {
+      return res.status(404).json({ message: 'Teacher not found' });
+    }
+    const teacherId = objectId.teacher_id;
+
+    const messages = await ContactAdminModel.find({ userId: teacherId });
+    console.log("Teacher meaages:" , messages);
+
+    res.status(200).json({ message: 'Messages retrieved successfully', data: messages });
+  }
+  catch (error) {
+    console.error('Error in getAllMessages:', error);
     res.status(500).json({ message: 'Server error', error: error.message });
   }
 };

@@ -1,5 +1,6 @@
 import Student from "../models/students.js";
 import School from "../models/schools.js";
+import District from "../models/districts.js";
 
 export const getAllStudents = async (req, res) => {
   try {
@@ -58,7 +59,6 @@ export const createStudent = async (req, res) => {
         }
       }
 
-      // Generate parent_id
       const randomParentNumber = Math.floor(100 + Math.random() * 900);
       parentId = `${studName}0P${randomParentNumber}`;
 
@@ -218,6 +218,48 @@ export const getStudentById = async (req, res) => {
     return res.status(500).json({
       status: "error",
       message: "internal server error",
+      data: error.message,
+    });
+  }
+};
+
+export const getAllSchools = async (req, res) => {
+  try {
+    if (req.user.role !== "admin" && req.user.role !== "school" && req.user.role !== "teacher" && req.user.role !== "parent" && req.user.role !== "districthead") {
+      return res.status(401).json({
+        status: "error",
+        message: "Unauthorized",
+        data: null,
+      });
+    }
+    
+    const schools = await School.find({});
+    
+    const schoolsWithDistricts = await Promise.all(
+      schools.map(async (school) => {
+        const district = await District.findOne({ district_id: school.district_id });
+        return {
+          _id: school._id,
+          school_name: school.school_name,
+          school_id: school.school_id,
+          district_id: school.district_id,
+          district_name: district ? district.district_name : "Unknown District",
+          education_level: school.education_level || "all",
+          principal_name: school.principal_name,
+          date_of_establishment: school.date_of_establishment
+        };
+      })
+    );
+
+    return res.status(200).json({
+      status: "success",
+      message: "All schools retrieved",
+      data: schoolsWithDistricts,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      status: "error",
+      message: "Could not retrieve schools",
       data: error.message,
     });
   }

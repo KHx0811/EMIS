@@ -11,8 +11,11 @@ import { isAdmin, isTeacher, verifyToken } from "../middleware/authenticator.js"
 import { 
   assignAssignment,
   getAllStudentsForTeacher, 
+  getAttendance, 
+  getStudentAttendance, 
   getStudentsByClass, 
   searchStudentById, 
+  updateStudentAttendance, 
   uploadAttendance, 
   uploadMarks 
 } from "../controllers/DataController/student_data.js";
@@ -23,6 +26,7 @@ import {
   contactAdmin, 
   createClass,
   deleteClass,
+  getAllMessages,
   getClassesForTeacher,
   getLeaveApplications,
   getSchoolEventsForTeacher,
@@ -42,19 +46,26 @@ router.get("/details", verifyToken, isTeacher, getTeacherName);
 
 // Student management
 router.get("/all-students", verifyToken, isTeacher, getAllStudentsForTeacher);
-// router.post("/search-student/:studentId", verifyToken, isTeacher, searchStudentById);
 router.post("/upload-marks", verifyToken, isTeacher, uploadMarks);
-router.post("/upload-attendance", verifyToken, isTeacher, uploadAttendance);
 router.get("/class-students/:classId", verifyToken, isTeacher, getStudentsByClass);
 router.post("/assign-assignment", verifyToken, isTeacher, assignAssignment);
 router.get("/search-student/:studentId", verifyToken, isTeacher, searchStudent)
+
+router.post("/upload-attendance", verifyToken, isTeacher, uploadAttendance);
+router.get('/get-attendance/:classId/:date', verifyToken, isTeacher, getAttendance);
+router.get('/student-attendance/:studentId', verifyToken, isTeacher, getStudentAttendance);
+router.post('/update-attendance', verifyToken, isTeacher, uploadAttendance); 
+router.post('/update-student-attendance', verifyToken,isTeacher, updateStudentAttendance);
 
 // Class management
 router.get("/classes", verifyToken, isTeacher, classCheck);
 router.post("/create-class", verifyToken, isTeacher, createClass);
 router.delete("/delete-class/:classId", verifyToken, isTeacher, deleteClass);
 router.get("/teacher-classes", verifyToken, isTeacher, getClassesForTeacher);
+
+// Message and communication
 router.post("/contact-admin", verifyToken, isTeacher, contactAdmin);
+router.get("/contact-admin/messages", verifyToken, isTeacher, getAllMessages);
 
 // Leave applications and parent interactions
 router.post("/apply-leave", verifyToken, isTeacher, applyLeave);

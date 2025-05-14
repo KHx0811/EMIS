@@ -7,6 +7,7 @@ import {
   deleteDistrictMeeting,
   getAllBudgets,
   getAllExams,
+  getAllMessages,
   getAllSchools,
   getBudgetById,
   getBudgetStats,
@@ -44,6 +45,7 @@ router.get("/search-school/:school_id", verifyToken, isDistrictHead, searchSchoo
 router.get("/search-teacher/:teacher_id", verifyToken, isDistrictHead, searchTeacher);
 router.get("/search-student/:student_id", verifyToken, isDistrictHead, searchStudent);
 router.post("/contact-admin", verifyToken, isDistrictHead, contactAdmin);
+router.get("/contact-admin/messages", verifyToken, isDistrictHead, getAllMessages);
 router.get("/get-all-schools", verifyToken, isDistrictHead, getAllSchools);
 
 // Budget routes for district head

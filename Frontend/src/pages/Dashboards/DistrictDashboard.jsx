@@ -9,7 +9,6 @@ import SchoolSearch from '@/forms/District/SchoolSearch';
 import Budgets from '@/forms/District/Budgets';
 import Invitations from '@/forms/District/ContactAdmin';
 import Meetings from '@/forms/District/Meetings';
-import SchoolProgress from '@/forms/District/SchoolProgress';
 import Exams from '@/forms/District/Exams';
 import SessionTimer from '@/Components/SessionTimer';
 import TeacherSearch from '@/forms/District/TeacherSearch';
@@ -177,8 +176,6 @@ const DistrictDashboard = () => {
         return <Box sx={globalStyles}><Budgets /></Box>
       case 'meetings':
         return <Box sx={globalStyles}><Meetings /></Box>
-      case 'schoolProgress':
-        return <Box sx={globalStyles}><SchoolProgress /></Box>
       case 'exams':
         return <Box sx={globalStyles}><Exams /></Box>
       case 'contactAdmin':

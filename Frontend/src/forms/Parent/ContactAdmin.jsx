@@ -34,9 +34,9 @@ const ContactAdmin = () => {
     }
 
     try {
-      const token = localStorage.getItem('principalToken');
+      const token = localStorage.getItem('parentToken');
       const response = await axios.get(
-        'http://localhost:3000/api/schools/contact-admin/messages',
+        'http://localhost:3000/api/parents/contact-admin/messages',
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -65,8 +65,8 @@ const ContactAdmin = () => {
     setLoading(true);
 
     try {
-      const token = localStorage.getItem('principalToken');
-      const userType = localStorage.getItem('userType') || 'principal';
+      const token = localStorage.getItem('parentToken');
+      const userType = localStorage.getItem('userType') || 'parent';
 
       const payload = {
         userType,
@@ -75,7 +75,7 @@ const ContactAdmin = () => {
       };
 
       const response = await axios.post(
-        'http://localhost:3000/api/schools/contact-admin',
+        'http://localhost:3000/api/parents/contact-admin',
         payload,
         {
           headers: {

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Box, Button, FormControl, FormLabel, MenuItem, Radio, RadioGroup, FormControlLabel, Select, Typography } from '@mui/material';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
@@ -7,7 +7,12 @@ import { inputStyle, labelStyle, formControlStyle, selectStyle } from './formSty
 const CreateStudentForm = ({ onSubmit = () => {} }) => {
   const navigate = useNavigate();
   const [generatedStudentId, setGeneratedStudentId] = useState('');
-  const [ generatedParentId, setGeneratedParentId ] = useState('');
+  const [generatedParentId, setGeneratedParentId] = useState('');
+  const [errors, setErrors] = useState({});
+  const [loading, setLoading] = useState(false);
+  const [schools, setSchools] = useState([]); // For storing fetched schools
+  const [filteredSchools, setFilteredSchools] = useState([]); // For filtered schools based on education level
+  
   const initialFormData = {
     name: '',
     gender: '',
@@ -25,27 +30,234 @@ const CreateStudentForm = ({ onSubmit = () => {} }) => {
     nationality: '',
     address: '',
     school_id: '',
+    selectedSchoolId: '',
   };
   const [formData, setFormData] = useState(initialFormData);
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
+  useEffect(() => {
+    fetchSchools();
+  }, []);
+
+  const fetchSchools = async () => {
+    try {
+      setLoading(true);
+      const token = localStorage.getItem('adminToken');
+      if (!token) {
+        console.error('No admin token found');
+        return;
+      }
+
+      const response = await axios.get('http://localhost:3000/api/schools', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      console.log("Schools API response:", response.data);
+      
+      if (response.data.status === 'success' && Array.isArray(response.data.data)) {
+        setSchools(response.data.data);
+      } else {
+        console.error('Invalid school data format:', response.data);
+      }
+    } catch (error) {
+      console.error('Error fetching schools:', error);
+      if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+        alert('Your session has expired. Please login again.');
+        localStorage.removeItem('adminToken');
+        navigate('/login/admin');
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
+  useEffect(() => {
+    if (formData.education_level && schools.length > 0) {
+      let filtered;
+      
+      if (formData.education_level === 'secondary') {
+        filtered = schools.filter(school => 
+          school.education_level === 'secondary' || 
+          school.education_level === 'all'
+        );
+      } else if (formData.education_level === 'graduation') {
+        filtered = schools.filter(school => 
+          school.education_level === 'graduation' || 
+          school.education_level === 'all'
+        );
+      } else if (formData.education_level === 'post_graduation') {
+        filtered = schools.filter(school => 
+          school.education_level === 'post_graduation' || 
+          school.education_level === 'all'
+        );
+      } else {
+        filtered = [];
+      }
+      
+      console.log("Filtered schools:", filtered);
+      setFilteredSchools(filtered);
+    } else {
+      setFilteredSchools([]);
+    }
+  }, [formData.education_level, schools]);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    
+    if (name === 'education_level') {
+      setFormData({
+        ...formData,
+        education_level: value,
+        class: '',
+        year: '',
+        degree: '',
+        specialization: '',
+        school: '',
+        school_id: '',
+        selectedSchoolId: ''
+      });
+    } else if (name === 'selectedSchoolId') {
+      const selectedSchool = schools.find(school => school.school_id === value);
+      console.log("Selected school:", selectedSchool);
+      
+      if (selectedSchool) {
+        setFormData({
+          ...formData,
+          selectedSchoolId: value,
+          school: selectedSchool.school_name,
+          school_id: selectedSchool.school_id
+        });
+      }
+    } else {
+      setFormData({
+        ...formData,
+        [name]: value,
+      });
+    }
+
+    if (errors[name]) {
+      setErrors({
+        ...errors,
+        [name]: null
+      });
+    }
+  };
+
+  useEffect(() => {
+    validateDates();
+  }, [formData.date_of_birth, formData.date_of_admission, formData.education_level, formData.status]);
+
+  const validateDates = () => {
+    const newErrors = {};
+    const today = new Date();
+    
+    if (formData.date_of_birth) {
+      const birthDate = new Date(formData.date_of_birth);
+      const ageInYears = calculateAge(birthDate);
+      
+      if (formData.status === 'active') {
+        let minAgeRequired = 0;
+        if (formData.education_level === 'secondary') minAgeRequired = 6;
+        else if (formData.education_level === 'graduation') minAgeRequired = 18;
+        else if (formData.education_level === 'post_graduation') minAgeRequired = 21;
+        
+        if (formData.education_level && ageInYears < minAgeRequired) {
+          newErrors.date_of_birth = `Age must be at least ${minAgeRequired} years for ${formatEducationLevel(formData.education_level)}`;
+        }
+      }
+    }
+    
+    if (formData.date_of_admission && formData.date_of_birth) {
+      const admissionDate = new Date(formData.date_of_admission);
+      const birthDate = new Date(formData.date_of_birth);
+      
+      if (admissionDate > today) {
+        newErrors.date_of_admission = "Admission date cannot be in the future";
+      } else {
+        if (formData.status === 'dropout') {
+          const ageAtAdmission = calculateYearsDifference(birthDate, admissionDate);
+          if (ageAtAdmission < 18) {
+            newErrors.date_of_admission = "For dropout students, admission date must be at least 18 years after date of birth";
+          }
+        } 
+        else if (formData.status === 'active') {
+          const yearsDiff = calculateYearsDifference(admissionDate, today);
+          
+          let maxYearsBack = 0;
+          if (formData.education_level === 'secondary') maxYearsBack = 10;
+          else if (formData.education_level === 'graduation') maxYearsBack = 4;
+          else if (formData.education_level === 'post_graduation') maxYearsBack = 2;
+          
+          if (formData.education_level && yearsDiff > maxYearsBack) {
+            newErrors.date_of_admission = `Admission date cannot be more than ${maxYearsBack} years ago for ${formatEducationLevel(formData.education_level)}`;
+          }
+        }
+      }
+    }
+    
+    if (formData.date_of_birth && formData.date_of_admission) {
+      const birthDate = new Date(formData.date_of_birth);
+      const admissionDate = new Date(formData.date_of_admission);
+      
+      if (admissionDate < birthDate) {
+        newErrors.date_of_admission = "Admission date cannot be before date of birth";
+      }
+    }
+    
+    setErrors(newErrors);
+  };
+
+  const calculateAge = (birthDate) => {
+    const today = new Date();
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const monthDiff = today.getMonth() - birthDate.getMonth();
+    
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+      age--;
+    }
+    
+    return age;
+  };
+
+  const calculateYearsDifference = (earlier, later) => {
+    let yearsDiff = later.getFullYear() - earlier.getFullYear();
+    const monthDiff = later.getMonth() - earlier.getMonth();
+    
+    if (monthDiff < 0 || (monthDiff === 0 && later.getDate() < earlier.getDate())) {
+      yearsDiff--;
+    }
+    
+    return yearsDiff;
+  };
+
+  const formatEducationLevel = (level) => {
+    switch (level) {
+      case 'secondary': return 'Secondary Education';
+      case 'graduation': return 'Graduation';
+      case 'post_graduation': return 'Post Graduation';
+      default: return level;
+    }
+  };
 
   const handleClear = () => {
     setFormData(initialFormData);
     setGeneratedStudentId('');
     setGeneratedParentId('');
+    setErrors({});
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    validateDates();
+    
+    if (Object.keys(errors).filter(key => errors[key]).length > 0) {
+      return;
+    }
+    
     try {
+      setLoading(true);
       const token = localStorage.getItem('adminToken');
       if (!token) {
         alert('You are not logged in. Please login to continue.');
@@ -53,8 +265,10 @@ const CreateStudentForm = ({ onSubmit = () => {} }) => {
         return;
       }
 
+      const { selectedSchoolId, ...submissionData } = formData;
+      
       const formattedData = {
-        ...formData,
+        ...submissionData,
         date_of_birth: new Date(formData.date_of_birth).toISOString(),
         date_of_admission: new Date(formData.date_of_admission).toISOString(),
       };
@@ -84,6 +298,17 @@ const CreateStudentForm = ({ onSubmit = () => {} }) => {
       } else {
         alert('Error creating student. Please check your network connection.');
       }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const getInstitutionLabel = () => {
+    switch (formData.education_level) {
+      case 'secondary': return 'School';
+      case 'graduation': return 'College';
+      case 'post_graduation': return 'University/College';
+      default: return 'Institution';
     }
   };
 
@@ -113,7 +338,13 @@ const CreateStudentForm = ({ onSubmit = () => {} }) => {
         Create Student Form
       </Typography>
 
-      {generatedStudentId &&(
+      {loading && (
+        <Typography sx={{ color: '#38bdf8', marginBottom: '16px' }}>
+          Loading...
+        </Typography>
+      )}
+
+      {generatedStudentId && (
         <Typography
           variant="h6"
           sx={{
@@ -178,6 +409,39 @@ const CreateStudentForm = ({ onSubmit = () => {} }) => {
         </RadioGroup>
       </FormControl>
 
+      {formData.education_level && (
+        <Box sx={{ marginBottom: '16px' }}>
+          <label style={labelStyle} htmlFor="selectedSchoolId">{getInstitutionLabel()} *</label>
+          <Select
+            id="selectedSchoolId"
+            name="selectedSchoolId"
+            value={formData.selectedSchoolId}
+            onChange={handleChange}
+            required
+            sx={selectStyle}
+            displayEmpty
+          >
+            <MenuItem value="" disabled>Select {getInstitutionLabel()}</MenuItem>
+            {filteredSchools.length > 0 ? (
+              filteredSchools.map((school) => (
+                <MenuItem key={school.school_id} value={school.school_id}>
+                  {school.school_name} ({school.school_id}) - District: {school.district_name || school.district_id}
+                </MenuItem>
+              ))
+            ) : (
+              <MenuItem value="" disabled>
+                {loading ? "Loading schools..." : "No schools available"}
+              </MenuItem>
+            )}
+          </Select>
+          {filteredSchools.length === 0 && !loading && formData.education_level && (
+            <Typography variant="caption" sx={{ color: '#f87171', marginTop: '4px', display: 'block' }}>
+              No {getInstitutionLabel().toLowerCase()}s found for {formatEducationLevel(formData.education_level)}
+            </Typography>
+          )}
+        </Box>
+      )}
+
       {formData.education_level === 'graduation' && (
         <>
           <Box sx={{ marginBottom: '16px' }}>
@@ -207,17 +471,19 @@ const CreateStudentForm = ({ onSubmit = () => {} }) => {
       )}
 
       <Box sx={{ marginBottom: '16px' }}>
-        <label style={labelStyle} htmlFor="school">
-          {formData.education_level === 'secondary' ? 'School *' : 'College *'}
-        </label>
+        <label style={labelStyle} htmlFor="school_id">School ID *</label>
         <input
-          id="school"
-          name="school"
-          value={formData.school}
+          id="school_id"
+          name="school_id"
+          value={formData.school_id}
           onChange={handleChange}
           required
-          style={inputStyle}
+          readOnly
+          style={{...inputStyle, backgroundColor: '#1e293b'}}
         />
+        <Typography variant="caption" sx={{ color: '#64748b', marginTop: '4px', display: 'block' }}>
+          Auto-filled based on selected institution
+        </Typography>
       </Box>
 
       <FormControl component="fieldset" sx={formControlStyle}>
@@ -239,6 +505,11 @@ const CreateStudentForm = ({ onSubmit = () => {} }) => {
           required
           style={inputStyle}
         />
+        {errors.date_of_birth && (
+          <Typography variant="caption" sx={{ color: '#ef4444', marginTop: '4px', display: 'block' }}>
+            {errors.date_of_birth}
+          </Typography>
+        )}
       </Box>
 
       <Box sx={{ marginBottom: '16px' }}>
@@ -252,6 +523,11 @@ const CreateStudentForm = ({ onSubmit = () => {} }) => {
           required
           style={inputStyle}
         />
+        {errors.date_of_admission && (
+          <Typography variant="caption" sx={{ color: '#ef4444', marginTop: '4px', display: 'block' }}>
+            {errors.date_of_admission}
+          </Typography>
+        )}
       </Box>
 
       {formData.education_level === 'secondary' && (
@@ -327,46 +603,42 @@ const CreateStudentForm = ({ onSubmit = () => {} }) => {
         />
       </Box>
 
-
-      <Box sx={{ marginBottom: '16px' }}>
-        <label style={labelStyle} htmlFor="school_id">School ID *</label>
-        <input
-          id="school_id"
-          name="school_id"
-          value={formData.school_id}
-          onChange={handleChange}
-          required
-          style={inputStyle}
-        />
-      </Box>
-
       <Box sx={{ display: 'flex', justifyContent: 'space-between', marginTop: '16px' }}>
         <Button 
           type="submit" 
           variant="contained" 
+          disabled={loading}
           sx={{ 
-            backgroundColor: '#3b82f6', // Button background color
-            color: '#f1f5f9', // Button text color
+            backgroundColor: '#3b82f6',
+            color: '#f1f5f9',
             padding: '8px 16px',
             '&:hover': {
-              backgroundColor: '#2563eb', // Button hover background color
+              backgroundColor: '#2563eb',
+            },
+            '&:disabled': {
+              backgroundColor: '#94a3b8',
             }
           }}
         >
-          Create Student Profile
+          {loading ? 'Creating...' : 'Create Student Profile'}
         </Button>
 
         <Button 
           type="button" 
           variant="outlined" 
           onClick={handleClear}
+          disabled={loading}
           sx={{ 
-            borderColor: '#f87171', // Button border color
-            color: '#f87171', // Button text color
+            borderColor: '#f87171',
+            color: '#f87171',
             padding: '8px 16px',
             '&:hover': {
-              borderColor: '#ef4444', // Button hover border color
-              color: '#ef4444', // Button hover text color
+              borderColor: '#ef4444',
+              color: '#ef4444',
+            },
+            '&:disabled': {
+              borderColor: '#94a3b8',
+              color: '#94a3b8',
             }
           }}
         >

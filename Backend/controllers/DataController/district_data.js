@@ -4,7 +4,8 @@ import Teacher from '../../models/teacher.js'
 import Student from '../../models/students.js'
 import Budget from '../../models/DataModels/DistrictModel/budgets.js'
 import DistrictMeeting from '../../models/DataModels/DistrictModel/meetingModel.js'
-import ContactAdminModel from '../../models/DataModels/TeacherModels/contactAdminModel.js'
+import ContactAdminModel from "../../models/DataModels/AdminModel/contactAdminModel.js";
+
 import Exam from '../../models/DataModels/DistrictModel/examModel.js'
 import { v4 as uuidv4 } from 'uuid';
 
@@ -690,40 +691,57 @@ export const getDistrictMeetingsWithPrincipals = async (req, res) => {
 };
 
 export const contactAdmin = async (req, res) => {
-  try {
-    const { userType, subject,message } = req.body;
+    try {
+        const { userType, subject, message } = req.body;
 
-    const objectId = await District.findById(req.user.id);
-    if (!objectId) {
-      return res.status(404).json({ message: 'District not found' });
+        const district = await District.findById(req.user.id);
+        if (!district) {
+            return res.status(404).json({ message: 'District not found' });
+        }
+        const districtId = district.district_id;
+
+        const existingRequest = await ContactAdminModel.findOne({
+            userType,
+            userId: districtId,
+            subject,
+            message,
+        });
+
+        if (existingRequest) {
+            return res.status(400).json({ message: 'Duplicate request: This message has already been sent to the admin.' });
+        }
+
+        const request = new ContactAdminModel({
+            userType,
+            userId: districtId,
+            subject,
+            message,
+        });
+
+        await request.save();
+
+        res.status(200).json({ message: 'Message sent to admin successfully' });
+    } catch (error) {
+        console.error('Error in contactAdmin:', error);
+        res.status(500).json({ message: 'Server error', error: error.message });
     }
-    const districtId = objectId.district_id;
+};
 
-    const existingRequest = await ContactAdminModel.findOne({
-      userType: userType,
-      userId: districtId,
-      subject,
-      message,
-    });
+export const getAllMessages = async (req, res) => {
+    try {
+        const district = await District.findById(req.user.id);
+        if (!district) {
+            return res.status(404).json({ message: 'District not found' });
+        }
+        const districtId = district.district_id;
 
-    if (existingRequest) {
-      return res.status(400).json({ message: 'Duplicate request: This message has already been sent to the admin.' });
+        const messages = await ContactAdminModel.find({ userId: districtId });
+
+        res.status(200).json({ message: 'Messages retrieved successfully', data: messages });
+    } catch (error) {
+        console.error('Error in getAllMessages:', error);
+        res.status(500).json({ message: 'Server error', error: error.message });
     }
-
-    const request = new ContactAdminModel({
-      userType: userType,
-      userId: districtId,
-      subject,
-      message,
-    });
-
-    await request.save();
-
-    res.status(200).json({ message: 'Message sent to admin successfully' });
-  } catch (error) {
-    console.error('Error in contactAdmin:', error);
-    res.status(500).json({ message: 'Server error', error: error.message });
-  }
 };
 
 export const getAllSchools = async (req, res) => {
@@ -784,13 +802,13 @@ export const createExam = async (req, res) => {
         }
 
         const districtId = district.district_id;
-        
+
         if (req.body.centers && req.body.centers.length > 0) {
-            const centerSchools = await schools.find({ 
+            const centerSchools = await schools.find({
                 school_id: { $in: req.body.centers },
                 district_id: districtId
             });
-            
+
             if (centerSchools.length !== req.body.centers.length) {
                 return res.status(400).json({
                     success: false,
@@ -800,7 +818,7 @@ export const createExam = async (req, res) => {
         }
 
         const examId = `EXAM-${uuidv4().substring(0, 8)}`;
-        
+
         const newExam = new Exam({
             exam_id: examId,
             exam_name: req.body.exam_name,
@@ -841,15 +859,15 @@ export const createExam = async (req, res) => {
 export const getExamById = async (req, res) => {
     try {
         const { examId } = req.params;
-        
+
         const district = await District.findById(req.user.id);
         if (!district) {
             return res.status(404).json({ message: 'District head not found' });
         }
 
         const districtId = district.district_id;
-        
-        const exam = await Exam.findOne({ 
+
+        const exam = await Exam.findOne({
             exam_id: examId,
             district_id: districtId
         });
@@ -879,20 +897,20 @@ export const getExamById = async (req, res) => {
 export const updateExam = async (req, res) => {
     try {
         const { examId } = req.params;
-        
+
         const district = await District.findById(req.user.id);
         if (!district) {
             return res.status(404).json({ message: 'District head not found' });
         }
 
         const districtId = district.district_id;
-        
+
         if (req.body.centers && req.body.centers.length > 0) {
-            const centerSchools = await schools.find({ 
+            const centerSchools = await schools.find({
                 school_id: { $in: req.body.centers },
                 district_id: districtId
             });
-            
+
             if (centerSchools.length !== req.body.centers.length) {
                 return res.status(400).json({
                     success: false,
@@ -900,13 +918,13 @@ export const updateExam = async (req, res) => {
                 });
             }
         }
-        
+
         const updateData = { ...req.body };
-        
+
         if (updateData.start_date) updateData.start_date = new Date(updateData.start_date);
         if (updateData.end_date) updateData.end_date = new Date(updateData.end_date);
         if (updateData.registration_deadline) updateData.registration_deadline = new Date(updateData.registration_deadline);
-        
+
         const exam = await Exam.findOneAndUpdate(
             { exam_id: examId, district_id: districtId },
             updateData,
@@ -938,15 +956,15 @@ export const updateExam = async (req, res) => {
 export const deleteExam = async (req, res) => {
     try {
         const { examId } = req.params;
-        
+
         const district = await District.findById(req.user.id);
         if (!district) {
             return res.status(404).json({ message: 'District head not found' });
         }
 
         const districtId = district.district_id;
-        
-        const exam = await Exam.findOneAndDelete({ 
+
+        const exam = await Exam.findOneAndDelete({
             exam_id: examId,
             district_id: districtId
         });
@@ -980,9 +998,9 @@ export const getExamStats = async (req, res) => {
         }
 
         const districtId = district.district_id;
-        
+
         const exams = await Exam.find({ district_id: districtId });
-        
+
         const statusCounts = {
             scheduled: exams.filter(exam => exam.status === 'scheduled').length,
             ongoing: exams.filter(exam => exam.status === 'ongoing').length,
@@ -990,7 +1008,7 @@ export const getExamStats = async (req, res) => {
             cancelled: exams.filter(exam => exam.status === 'cancelled').length,
             postponed: exams.filter(exam => exam.status === 'postponed').length,
         };
-        
+
         const typeCounts = {
             Monthly: exams.filter(exam => exam.exam_type === 'Monthly').length,
             Quarterly: exams.filter(exam => exam.exam_type === 'Quarterly').length,
@@ -999,17 +1017,17 @@ export const getExamStats = async (req, res) => {
             'Unit Test': exams.filter(exam => exam.exam_type === 'Unit Test').length,
             Project: exams.filter(exam => exam.exam_type === 'Project').length,
         };
-        
+
         const today = new Date();
         const thirtyDaysFromNow = new Date();
         thirtyDaysFromNow.setDate(today.getDate() + 30);
-        
+
         const upcomingExams = exams.filter(exam => {
             const examStartDate = new Date(exam.start_date);
-            return examStartDate >= today && examStartDate <= thirtyDaysFromNow && 
-                  exam.status !== 'cancelled' && exam.status !== 'completed';
+            return examStartDate >= today && examStartDate <= thirtyDaysFromNow &&
+                exam.status !== 'cancelled' && exam.status !== 'completed';
         });
-        
+
         res.status(200).json({
             success: true,
             message: 'Exam statistics retrieved successfully',
@@ -1018,7 +1036,7 @@ export const getExamStats = async (req, res) => {
                 statusCounts,
                 typeCounts,
                 upcomingExamsCount: upcomingExams.length,
-                nextExam: upcomingExams.length > 0 ? 
+                nextExam: upcomingExams.length > 0 ?
                     upcomingExams.sort((a, b) => new Date(a.start_date) - new Date(b.start_date))[0] : null
             }
         });

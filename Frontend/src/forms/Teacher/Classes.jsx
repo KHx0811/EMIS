@@ -26,7 +26,6 @@ const Classes = () => {
   }, []);
 
   useEffect(() => {
-    // Generate preview class ID whenever className or section changes
     if (teacherDetails && teacherDetails.teacher_id && className && section) {
       const preview = `${teacherDetails.teacher_id.substring(0, 2)}${className.substring(0, 1)}${section}`;
       setPreviewClassId(preview);
@@ -131,7 +130,6 @@ const Classes = () => {
         students: selectedStudents
       };
 
-      // Single API call to create class with students
       const response = await axios.post('http://localhost:3000/api/teachers/create-class', payload, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -163,14 +161,12 @@ const Classes = () => {
     );
   };
 
-  // Handle opening delete confirmation dialog
   const handleDeleteClick = (e, cls) => {
-    e.stopPropagation(); // Prevent navigation to class details
+    e.stopPropagation();
     setClassToDelete(cls);
     setDeleteConfirmOpen(true);
   };
 
-  // Handle deleting a class
   const handleDeleteClass = async () => {
     try {
       setLoading(true);
@@ -190,7 +186,7 @@ const Classes = () => {
       setSuccess('Class deleted successfully!');
       setDeleteConfirmOpen(false);
       setClassToDelete(null);
-      fetchClasses(); // Refresh the class list
+      fetchClasses();
       setLoading(false);
     } catch (error) {
       console.error('Error deleting class:', error);
@@ -243,7 +239,6 @@ const Classes = () => {
         </Box>
       ) : (
         <>
-          {/* Display existing classes or a message if none exist */}
           {classes.length > 0 ? (
             <Box sx={{ marginBottom: '24px' }}>
               <Typography sx={{ color: '#f1f5f9', marginBottom: '16px', fontSize: '1.25rem' }}>Your Classes:</Typography>
@@ -285,7 +280,6 @@ const Classes = () => {
                       {cls.className}
                     </Typography>
                     <Typography sx={{ color: '#94a3b8' }}>Section: {cls.section}</Typography>
-                    <Typography sx={{ color: '#94a3b8' }}>Class ID: {cls.class_code}</Typography>
                     {cls.students && (
                       <Typography sx={{ color: '#94a3b8', marginTop: '8px' }}>
                         Students: {cls.students.length || 0}
@@ -323,7 +317,6 @@ const Classes = () => {
             </Box>
           )}
 
-          {/* Button to show create class form (only show if classes exist and form is not shown) */}
           {classes.length > 0 && !showCreateClassForm && (
             <Button
               variant="contained"
@@ -500,7 +493,6 @@ const Classes = () => {
             </Box>
           )}
 
-          {/* Delete Confirmation Dialog */}
           <Dialog
             open={deleteConfirmOpen}
             onClose={() => setDeleteConfirmOpen(false)}

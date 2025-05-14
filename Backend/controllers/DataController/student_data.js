@@ -4,6 +4,8 @@ import MarksModel from '../../models/DataModels/StudentsModels/marksModel.js';
 import AttendanceModel from '../../models/DataModels/StudentsModels/attendanceModel.js';
 import AssignmentModel from '../../models/DataModels/TeacherModels/assignmentModel.js';
 import Teacher from '../../models/teacher.js';
+import ContactAdminModel from "../../models/DataModels/AdminModel/contactAdminModel.js";
+
 
 
 export const getAllStudentsForTeacher = async (req, res) => {
@@ -90,12 +92,11 @@ export const uploadMarks = async (req, res) => {
 
 export const uploadAttendance = async (req, res) => {
   try {
-    const { classId, date, attendance } = req.body;
+    const { classId, date, attendance, isUpdate } = req.body;
 
     if (!classId || !date || !attendance || !Array.isArray(attendance) || attendance.length === 0) {
       return res.status(400).json({ message: 'Invalid or missing data' });
     }
-
 
     const classData = await ClassModel.findById(classId);
     if (!classData) {
@@ -105,6 +106,20 @@ export const uploadAttendance = async (req, res) => {
     const studentIds = classData.students || [];
     if (studentIds.length === 0) {
       return res.status(400).json({ message: 'No students found in this class' });
+    }
+
+    if (isUpdate) {
+      const attendanceDate = new Date(date);
+      attendanceDate.setHours(0, 0, 0, 0);
+      const nextDay = new Date(attendanceDate);
+      nextDay.setDate(nextDay.getDate() + 1);
+
+      for (const studentId of studentIds) {
+        await AttendanceModel.deleteMany({
+          student_id: studentId,
+          date: { $gte: attendanceDate, $lt: nextDay }
+        });
+      }
     }
 
     const results = [];
@@ -140,11 +155,126 @@ export const uploadAttendance = async (req, res) => {
     }
 
     res.status(200).json({
-      message: 'Attendance uploaded successfully',
+      message: isUpdate ? 'Attendance updated successfully' : 'Attendance uploaded successfully',
       data: { results, errors },
     });
   } catch (error) {
     console.error('Error in uploadAttendance:', error);
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};
+
+export const getAttendance = async (req, res) => {
+  try {
+    const { classId, date } = req.params;
+    
+    if (!classId || !date) {
+      return res.status(400).json({ message: 'Class ID and date are required' });
+    }
+
+    const classData = await ClassModel.findById(classId);
+    if (!classData) {
+      return res.status(404).json({ message: 'Class not found' });
+    }
+
+    const studentIds = classData.students || [];
+    if (studentIds.length === 0) {
+      return res.status(400).json({ message: 'No students found in this class' });
+    }
+
+    const attendanceDate = new Date(date);
+    attendanceDate.setHours(0, 0, 0, 0);
+    const nextDay = new Date(attendanceDate);
+    nextDay.setDate(nextDay.getDate() + 1);
+
+    const attendanceRecords = await AttendanceModel.find({
+      student_id: { $in: studentIds },
+      date: { $gte: attendanceDate, $lt: nextDay }
+    });
+
+    if (!attendanceRecords || attendanceRecords.length === 0) {
+      return res.status(200).json({
+        message: 'No attendance records found for this date',
+        data: []
+      });
+    }
+
+    const formattedAttendance = attendanceRecords.map(record => ({
+      studentId: record.student_id,
+      status: record.status,
+      _id: record._id
+    }));
+
+    res.status(200).json({
+      message: 'Attendance records retrieved successfully',
+      data: formattedAttendance
+    });
+  } catch (error) {
+    console.error('Error in getAttendance:', error);
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};
+
+export const getStudentAttendance = async (req, res) => {
+  try {
+    const { studentId } = req.params;
+    
+    if (!studentId) {
+      return res.status(400).json({ message: 'Student ID is required' });
+    }
+
+    const student = await Student.findOne({ student_id: studentId });
+    if (!student) {
+      return res.status(404).json({ message: 'Student not found' });
+    }
+
+    const attendanceRecords = await AttendanceModel.find({ student_id: studentId })
+      .sort({ date: -1 });
+
+    if (!attendanceRecords || attendanceRecords.length === 0) {
+      return res.status(200).json({
+        message: 'No attendance records found for this student',
+        data: []
+      });
+    }
+
+    res.status(200).json({
+      message: 'Student attendance records retrieved successfully',
+      data: attendanceRecords
+    });
+  } catch (error) {
+    console.error('Error in getStudentAttendance:', error);
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};
+
+export const updateStudentAttendance = async (req, res) => {
+  try {
+    const { attendanceId, status } = req.body;
+    
+    if (!attendanceId || !status) {
+      return res.status(400).json({ message: 'Attendance ID and status are required' });
+    }
+
+    const validStatus = ['Present', 'Absent'];
+    if (!validStatus.includes(status)) {
+      return res.status(400).json({ message: 'Invalid status value' });
+    }
+
+    const attendanceRecord = await AttendanceModel.findById(attendanceId);
+    if (!attendanceRecord) {
+      return res.status(404).json({ message: 'Attendance record not found' });
+    }
+
+    attendanceRecord.status = status;
+    await attendanceRecord.save();
+
+    res.status(200).json({
+      message: 'Attendance record updated successfully',
+      data: attendanceRecord
+    });
+  } catch (error) {
+    console.error('Error in updateStudentAttendance:', error);
     res.status(500).json({ message: 'Server error', error: error.message });
   }
 };

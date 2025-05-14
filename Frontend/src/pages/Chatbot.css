@@ -214,3 +214,116 @@
     bottom: 10vh;
   }
 }
+
+/* Add these styles to your Chatbot.css file */
+
+.message-link-container {
+  margin-top: 8px;
+  display: flex;
+  justify-content: flex-start;
+}
+
+.message-link-button {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background-color: #4f46e5;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 6px 12px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.message-link-button:hover {
+  background-color: #4338ca;
+}
+
+.user-role-badge {
+  background-color: rgba(255, 255, 255, 0.2);
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  margin-left: 8px;
+  text-transform: capitalize;
+}
+
+/* Make sure bot messages have enough space for link buttons */
+.message.bot {
+  padding-bottom: 8px;
+}
+
+/* Add this to your Chatbot.css file */
+
+.chat-link {
+  display: inline-block;
+  color: #0078d7;
+  font-weight: 500;
+  text-decoration: underline;
+  cursor: pointer;
+  margin-top: 8px;
+  transition: color 0.2s;
+}
+
+.chat-link:hover {
+  color: #005a9e;
+  text-decoration: underline;
+}
+
+.message-link-container {
+  margin-top: 5px;
+}
+
+/* Optional: Add styles for different user types */
+.parent .chat-link {
+  color: #4caf50;
+}
+
+.teacher .chat-link {
+  color: #2196f3;
+}
+
+.principal .chat-link {
+  color: #9c27b0;
+}
+
+.districthead .chat-link {
+  color: #ff5722;
+}
+
+.admin .chat-link {
+  color: #f44336;
+}
+
+/* Style adjustments for the message container */
+.message {
+  padding: 10px 15px;
+  border-radius: 8px;
+  margin: 8px 0;
+  max-width: 80%;
+  word-wrap: break-word;
+}
+
+.message.bot {
+  background-color: #f0f2f5;
+  color: #333;
+  margin-right: auto;
+}
+
+.message.user {
+  background-color: #1b74e4;
+  color: white;
+  margin-left: auto;
+}
+
+/* Ensure links are clearly visible in both message types */
+.message.bot .chat-link {
+  color: #0078d7;
+}
+
+.message.user .chat-link {
+  color: #ffffff;
+  text-decoration: underline;
+}

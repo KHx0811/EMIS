@@ -9,7 +9,7 @@ import BudgetUsage from "../../models/DataModels/PrincipalModels/budgetUsageMode
 import Meeting from '../../models/DataModels/PrincipalModels/meetingModel.js';
 import DistrictMeeting from "../../models/DataModels/DistrictModel/meetingModel.js";
 import District from "../../models/districts.js";
-import ContactAdminModel from "../../models/DataModels/TeacherModels/contactAdminModel.js";
+import ContactAdminModel from "../../models/DataModels/AdminModel/contactAdminModel.js";
 
 export const searchStudent = async (req, res) => {
     try {
@@ -1090,41 +1090,57 @@ export const getPrincipalMeetingsWithDistrict = async (req, res) => {
     }
 };
 
+
 export const contactAdmin = async (req, res) => {
     try {
-
-        const { userType, subject, message } = req.body;
-
-
-        const objectId = await schools.findById(req.user.id);
-        if (!objectId) {
-            return res.status(404).json({ message: 'Principal not found' });
-        }
-        const schoolId = objectId.school_id;
-
-        const existingRequest = await ContactAdminModel.findOne({
-            userType: userType,
-            userId: schoolId,
-            subject,
-            message,
-        });
-
-        if (existingRequest) {
-            return res.status(400).json({ message: 'Duplicate request: This message has already been sent to the admin.' });
-        }
-
-        const request = new ContactAdminModel({
-            userType: userType,
-            userId: schoolId,
-            subject,
-            message,
-        });
-
-        await request.save();
-
-        res.status(200).json({ message: 'Message sent to admin successfully' });
+      const { userType, subject, message } = req.body;
+  
+      const principal = await schools.findById(req.user.id);
+      if (!principal) {
+        return res.status(404).json({ message: 'Principal not found' });
+      }
+      const schoolId = principal.school_id;
+  
+      const existingRequest = await ContactAdminModel.findOne({
+        userType,
+        userId: schoolId,
+        subject,
+        message,
+      });
+  
+      if (existingRequest) {
+        return res.status(400).json({ message: 'Duplicate request: This message has already been sent to the admin.' });
+      }
+  
+      const request = new ContactAdminModel({
+        userType,
+        userId: schoolId,
+        subject,
+        message,
+      });
+  
+      await request.save();
+  
+      res.status(200).json({ message: 'Message sent to admin successfully' });
     } catch (error) {
-        console.error('Error in contactAdmin:', error);
-        res.status(500).json({ message: 'Server error', error: error.message });
+      console.error('Error in contactAdmin:', error);
+      res.status(500).json({ message: 'Server error', error: error.message });
     }
-};
+  };
+  
+  export const getAllMessages = async (req, res) => {
+    try {
+      const principal = await schools.findById(req.user.id);
+      if (!principal) {
+        return res.status(404).json({ message: 'Principal not found' });
+      }
+      const schoolId = principal.school_id;
+  
+      const messages = await ContactAdminModel.find({ userId: schoolId });
+  
+      res.status(200).json({ message: 'Messages retrieved successfully', data: messages });
+    } catch (error) {
+      console.error('Error in getAllMessages:', error);
+      res.status(500).json({ message: 'Server error', error: error.message });
+    }
+  };

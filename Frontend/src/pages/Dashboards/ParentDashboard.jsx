@@ -11,9 +11,9 @@ import Teachers from '@/forms/Parent/Teachers';
 import Feedues from '@/forms/Parent/Feedues';
 import SchoolEvents from '@/forms/Parent/SchoolEvents';
 import PTMeetings from '@/forms/Parent/PTMeetings';
-import Activities from '@/forms/Parent/Activities';
 import SessionTimer from '@/Components/SessionTimer';
 import ParentProfile from '@/forms/Parent/Profile';
+import ContactAdmin from '@/forms/Parent/ContactAdmin';
 
 const ParentDashboard = () => {
   const navigate = useNavigate();
@@ -178,17 +178,15 @@ const ParentDashboard = () => {
         return <Box sx={globalStyles}><Attendance /></Box>;
       case 'Marks':
         return <Box sx={globalStyles}><Marks /></Box>;
-      case 'teachers':
+      case 'Teachers':
         return <Box sx={globalStyles}><Teachers /></Box>;
-      case 'feedues':
+      case 'Fees':
         return <Box sx={globalStyles}><Feedues /></Box>;
-      case 'events':
+      case 'Events':
         return <Box sx={globalStyles}><SchoolEvents /></Box>;
-      case 'PT meetings':
+      case 'PT Meetings':
         return <Box sx={globalStyles}><PTMeetings /></Box>;
-      case 'activities':
-        return <Box sx={globalStyles}><Activities /></Box>;
-      case 'contactAdmin':
+      case 'ContactAdmin':
         return <Box sx={globalStyles}><ContactAdmin /></Box>
       default:
         return (

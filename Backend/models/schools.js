@@ -30,6 +30,11 @@ const schoolSchema = new Schema({
     type: String,
     required: true,
   },
+  education_level: {
+    type: String,
+    enum: ['secondary', 'graduation', 'post_graduation', 'all'],
+    default: 'all'
+  }
 });
 
 export default model("schools", schoolSchema);

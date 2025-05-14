@@ -29,7 +29,7 @@ export const getAllSchools = async (req, res) => {
 export const createSchool = async (req, res) => {
   try {
     if (req.user.role == "admin") {
-      const { school_name, district_id, principal_name, date_of_establishment, email, password } = req.body;
+      const { school_name, district_id, principal_name, date_of_establishment, email, password, education_level } = req.body;
 
       const districtExists = await District.findOne({ district_id });
       if (!districtExists) {
@@ -65,6 +65,7 @@ export const createSchool = async (req, res) => {
         date_of_establishment,
         email,
         password: hashedPassword,
+        education_level: education_level || 'all',
       });
 
       await school.save();

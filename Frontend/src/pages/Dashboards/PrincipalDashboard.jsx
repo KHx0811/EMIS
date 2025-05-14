@@ -13,7 +13,6 @@ import BudgetUsage from '@/forms/Principal/BudgetAllocation';
 import Events from '@/forms/Principal/Events';
 import Meetings from '@/forms/Principal/Meetings';
 import LeaveApprovals from '@/forms/Principal/LeaveApprovals';
-import StudentProgress from '@/forms/Principal/StudentProgress';
 import ContactAdmin from '@/forms/Principal/ContactAdmin';
 
 const PrincipalDashboard = () => {
@@ -170,8 +169,6 @@ const PrincipalDashboard = () => {
         return <Box sx={globalStyles}><Meetings /></Box>;
       case 'leaveApprovals':
         return <Box sx={globalStyles}><LeaveApprovals /></Box>;
-      case 'studentProgress':
-        return <Box sx={globalStyles}><StudentProgress /></Box>;
       case 'contactAdmin':
         return <Box sx={globalStyles}><ContactAdmin /></Box>
       default:

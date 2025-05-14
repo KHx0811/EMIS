@@ -19,6 +19,7 @@ const UpdateSchool = () => {
     date_of_establishment: '',
     email: '',
     password: '',
+    education_level: 'all',
   });
 
   const fetchSchoolById = async (id) => {
@@ -300,6 +301,22 @@ const UpdateSchool = () => {
               required
               style={inputStyle}
             />
+          </Box>
+          <Box sx={{ marginBottom: '16px' }}>
+            <label style={labelStyle} htmlFor="education_level">Education Level *</label>
+            <select
+              id="education_level"
+              name="education_level"
+              value={formData.education_level || ''}
+              onChange={handleChange}
+              required
+              style={inputStyle}
+            >
+              <option value="secondary">Secondary</option>
+              <option value="graduation">Graduation</option>
+              <option value="post_graduation">Post Graduation</option>
+              <option value="all">All</option>
+            </select>
           </Box>
 
           <Box sx={{ marginBottom: '16px' }}>

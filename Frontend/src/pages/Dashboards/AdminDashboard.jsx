@@ -5,6 +5,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 
 import AdminSidebar from '../../Components/Sidebars/AdminSidebar';
 import SessionTimer from '../../Components/SessionTimer';
+import Notifications from '../../Components/Notifications';
 
 import CreateStudentForm from '@/forms/Admin/Student/CreateStudentForm';
 import UpdateStudent from '@/forms/Admin/Student/UpdateStudent';
@@ -271,7 +272,7 @@ const AdminDashboard = () => {
               }}
             >
               <h3 style={{ 
-                color: '#4cceac', // Always use greenAccent
+                color: '#4cceac',
                 margin: '0 0 10px 0' 
               }}>
                 Total Students
@@ -279,7 +280,7 @@ const AdminDashboard = () => {
               <p style={{ 
                 fontSize: '2rem', 
                 fontWeight: 'bold', 
-                color: '#e0e0e0', // Always light text
+                color: '#e0e0e0',
                 margin: 0
               }}>
                 {counts.studentCount}
@@ -288,7 +289,7 @@ const AdminDashboard = () => {
 
             <Box
               sx={{
-                backgroundColor: "#1F2A40", // Always dark
+                backgroundColor: "#1F2A40",
                 borderRadius: '8px',
                 p: 3,
                 boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.2)',
@@ -371,7 +372,10 @@ const AdminDashboard = () => {
             Admin Dashboard
           </h1>
           
-          <SessionTimer tokenKey="adminToken"/>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+            <Notifications />
+            <SessionTimer tokenKey="adminToken"/>
+          </Box>
         </Box>
 
         {renderContent()}

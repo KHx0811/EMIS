@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Box, Button, Typography, Alert, MenuItem, Select, FormControl, FormLabel, RadioGroup, FormControlLabel, Radio } from '@mui/material';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
@@ -7,7 +7,9 @@ import { inputStyle, labelStyle, selectStyle, formControlStyle } from '../Studen
 const CreateTeacher = ({ onSubmit = () => {} }) => {
   const navigate = useNavigate();
   const [error, setError] = useState('');
-  const [generatedTeacherId, setGeneratedTeacherId] = useState(''); // State to store the generated teacher ID
+  const [generatedTeacherId, setGeneratedTeacherId] = useState('');
+  const [schools, setSchools] = useState([]); // For storing fetched schools
+  const [loading, setLoading] = useState(false);
 
   const [formData, setFormData] = useState({
     name: '',
@@ -23,6 +25,42 @@ const CreateTeacher = ({ onSubmit = () => {} }) => {
     password: '',
   });
 
+  useEffect(() => {
+    fetchSchools();
+  }, []);
+
+  const fetchSchools = async () => {
+    try {
+      setLoading(true);
+      const token = localStorage.getItem('adminToken');
+      if (!token) {
+        console.error('No admin token found');
+        return;
+      }
+
+      const response = await axios.get('http://localhost:3000/api/schools', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.data.status === 'success' && Array.isArray(response.data.data)) {
+        setSchools(response.data.data);
+      } else {
+        console.error('Invalid school data format:', response.data);
+      }
+    } catch (error) {
+      console.error('Error fetching schools:', error);
+      if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+        alert('Your session has expired. Please login again.');
+        localStorage.removeItem('adminToken');
+        navigate('/login/admin');
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({
@@ -31,18 +69,6 @@ const CreateTeacher = ({ onSubmit = () => {} }) => {
     });
     if (name === 'school_id') {
       setError('');
-    }
-  };
-
-  const handleAgeChange = (e) => {
-    const value = e.target.value;
-    if (value >= 18 && value <= 65) {
-      setFormData({
-        ...formData,
-        age: value,
-      });
-    } else {
-      alert('Age must be between 18 and 65.');
     }
   };
 
@@ -61,7 +87,7 @@ const CreateTeacher = ({ onSubmit = () => {} }) => {
       password: '',
     });
     setError('');
-    setGeneratedTeacherId(''); // Clear the generated teacher ID message
+    setGeneratedTeacherId('');
   };
 
   const handleSubmit = async (e) => {
@@ -87,8 +113,7 @@ const CreateTeacher = ({ onSubmit = () => {} }) => {
       });
 
       const createdTeacher = response.data.data;
-      console.log('Teacher created successfully:', createdTeacher);
-      setGeneratedTeacherId(createdTeacher.teacher_id); // Store the generated teacher ID
+      setGeneratedTeacherId(createdTeacher.teacher_id);
       alert('Teacher created successfully');
       onSubmit(createdTeacher);
     } catch (error) {
@@ -209,15 +234,23 @@ const CreateTeacher = ({ onSubmit = () => {} }) => {
       </Box>
 
       <Box sx={{ marginBottom: '16px' }}>
-        <label style={labelStyle} htmlFor="school_id">School ID *</label>
-        <input
+        <label style={labelStyle} htmlFor="school_id">School *</label>
+        <Select
           id="school_id"
           name="school_id"
           value={formData.school_id}
           onChange={handleChange}
           required
-          style={inputStyle}
-        />
+          sx={selectStyle}
+          displayEmpty
+        >
+          <MenuItem value="" disabled>Select School</MenuItem>
+          {schools.map((school) => (
+            <MenuItem key={school.school_id} value={school.school_id}>
+              {school.school_name} ({school.school_id})
+            </MenuItem>
+          ))}
+        </Select>
       </Box>
 
       <RadioGroup

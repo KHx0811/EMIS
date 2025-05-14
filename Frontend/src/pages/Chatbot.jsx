@@ -100,6 +100,11 @@ const Chatbot = () => {
     return 'user_' + Math.random().toString(36).substring(2, 15);
   };
 
+  const handleLinkClick = (link) => {
+    // Navigate to the link
+    window.location.href = link;
+  };
+
   const sendMessage = async () => {
     if (!input.trim() || isLoading) return;
 
@@ -127,10 +132,18 @@ const Chatbot = () => {
         setConversationId(data.conversationId);
       }
       
-      setMessages(prevMessages => [
-        ...prevMessages,
-        { text: data.response, sender: "bot" }
-      ]);
+      // Create a message object with text and optional link data
+      const botMessage = {
+        text: data.response,
+        sender: "bot",
+        link: data.link || null,
+        loginRequired: data.loginRequired || false,
+        actionText: data.actionText || "access this feature",
+        featureName: data.featureName || "this feature",
+        linkText: data.linkText || "Click here"
+      };
+      
+      setMessages(prevMessages => [...prevMessages, botMessage]);
     } catch (error) {
       console.error("Error sending message:", error);
       setMessages(prevMessages => [
@@ -148,10 +161,13 @@ const Chatbot = () => {
     }
   };
 
-  const formatMessage = (message) => {
+  const formatMessage = (message, msgObj) => {
+    // First process the message content
+    let processedMessage;
+    
     if (message.includes("```")) {
       const parts = message.split("```");
-      return (
+      processedMessage = (
         <>
           {parts.map((part, i) => {
             if (i % 2 === 0) {
@@ -166,16 +182,37 @@ const Chatbot = () => {
           })}
         </>
       );
+    } else {
+      processedMessage = message.split('\n').map((line, i) => (
+        <React.Fragment key={i}>
+          {line}
+          {i < message.split('\n').length - 1 && <br />}
+        </React.Fragment>
+      ));
     }
     
-    let formattedText = message;
+    // Add link if present
+    if (msgObj?.link) {
+      return (
+        <>
+          {processedMessage}
+          <div className="message-link-container">
+            <a 
+              href={msgObj.link}
+              className="chat-link"
+              onClick={(e) => {
+                e.preventDefault();
+                handleLinkClick(msgObj.link);
+              }}
+            >
+              {msgObj.linkText}
+            </a>
+          </div>
+        </>
+      );
+    }
     
-    return formattedText.split('\n').map((line, i) => (
-      <React.Fragment key={i}>
-        {line}
-        {i < formattedText.split('\n').length - 1 && <br />}
-      </React.Fragment>
-    ));
+    return processedMessage;
   };
 
   return (
@@ -212,7 +249,7 @@ const Chatbot = () => {
                 key={index}
                 className={`message ${msg.sender}`}
               >
-                {typeof msg.text === 'string' ? formatMessage(msg.text) : msg.text}
+                {typeof msg.text === 'string' ? formatMessage(msg.text, msg) : msg.text}
               </div>
             ))}
             {isLoading && (

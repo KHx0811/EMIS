@@ -5,6 +5,8 @@ import { loadCaptchaEnginge, LoadCanvasTemplateNoReload, validateCaptcha } from 
 import axios from 'axios';
 import './AdminLogin.css';
 import '@fortawesome/fontawesome-free/css/all.min.css';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const PrincipalLogin = () => {
   const navigate = useNavigate();
@@ -36,21 +38,53 @@ const PrincipalLogin = () => {
     if (validateCaptcha(captchaValue)) {
       try {
         const response = await axios.post('http://localhost:3000/api/auth/login', formData);
-        if(response.data.status === 'success') {
+        if (response.data.status === 'success') {
           localStorage.setItem('principalToken', response.data.data);
           localStorage.setItem('userType', 'principal');
-          alert('Principal Login Successful');
-          navigate('/dashboard/principal');
-        }else {
-          console.error('Login failed:', response.data.message);
-          alert('Login failed. Please try again.');
+          toast.success('Principal Login Successful', {
+            position: "bottom-right",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            className: "toast-success"
+          });
+          setTimeout(() => {
+            navigate('/dashboard/principal');
+          }, 1500);
+        } else {
+          toast.error('Login failed. Please try again.', {
+            position: "bottom-right",
+            autoClose: 4000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            className: "toast-error"
+          });
         }
       } catch (error) {
-        console.error('Error during login:', error);
-        alert('Login failed. Please try again.');
+        toast.error(`Login failed: ${error.response?.data?.message || 'Please try again.'}`, {
+          position: "bottom-right",
+          autoClose: 4000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          className: "toast-error"
+        });
       }
     } else {
-      alert('Invalid Captcha, please try again.');
+      toast.error('Invalid Captcha, please try again.', {
+        position: "bottom-right",
+        autoClose: 4000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        className: "toast-error"
+      });
       loadCaptchaEnginge(5);
     }
   };
@@ -71,6 +105,7 @@ const PrincipalLogin = () => {
   return (
     <div className="login-container">
       <NavbarHome />
+      <ToastContainer />
       <div className="form-background">
         <div className="login-form-container">
           <h1 className="login-title">Principal Login</h1>

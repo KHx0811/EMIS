@@ -19,12 +19,10 @@ const ParentSidebar = ({ onMenuItemClick, currentMenuItem }) => {
           setOpenSubmenu('Attendance');
         } else if (currentMenuItem.includes('Marks')) {
           setOpenSubmenu('Marks');
-        } else if (currentMenuItem.includes('Teacher')) {
+        } else if (currentMenuItem.includes('Teachers')) {
           setOpenSubmenu('Teachers');
         } else if (currentMenuItem.includes('Fees')) {
           setOpenSubmenu('Feedues');
-        } else if (currentMenuItem.includes('Activities')) {
-          setOpenSubmenu('Activities');
         } else if (currentMenuItem.includes('Events')) {
           setOpenSubmenu('School Events');
         } else if (currentMenuItem.includes('PT Meetings')) {
@@ -218,7 +216,7 @@ const ParentSidebar = ({ onMenuItemClick, currentMenuItem }) => {
               Marks
             </MenuItem>
             <MenuItem 
-              onClick={() => onMenuItemClick('Teacher')}
+              onClick={() => onMenuItemClick('Teachers')}
               active={currentMenuItem === 'Teachers'}
               icon={<Users size={18} />}
             >
@@ -230,13 +228,6 @@ const ParentSidebar = ({ onMenuItemClick, currentMenuItem }) => {
               icon={<CreditCard size={18} />}
             >
               Feedues
-            </MenuItem>
-            <MenuItem 
-              onClick={() => onMenuItemClick('Activities')}
-              active={currentMenuItem === 'Activities'}
-              icon={<MessageSquare size={18} />}
-            >
-              Activities
             </MenuItem>
             <MenuItem 
               onClick={() => onMenuItemClick('Events')}
@@ -253,8 +244,8 @@ const ParentSidebar = ({ onMenuItemClick, currentMenuItem }) => {
               PT Meetings
             </MenuItem>
             <MenuItem 
-              onClick={() => onMenuItemClick('contactAdmin')}
-              active={currentMenuItem === 'contactAdmin'}
+              onClick={() => onMenuItemClick('Contact Admin')}
+              active={currentMenuItem === 'Contact Admin'}
               icon={<Phone size={18} />}
             >
               Contact Admin

@@ -5,6 +5,8 @@ import { loadCaptchaEnginge, LoadCanvasTemplateNoReload, validateCaptcha } from 
 import axios from 'axios';
 import './AdminLogin.css';
 import '@fortawesome/fontawesome-free/css/all.min.css';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const ParentLogin = () => {
   const navigate = useNavigate();
@@ -42,20 +44,50 @@ const ParentLogin = () => {
         if(response.data.status === 'success') {
           localStorage.setItem('parentToken', response.data.data);
           localStorage.setItem('userType', 'parent');
-          console.log('Login successful:', response.data);
-          alert('Parent Login Successful');
-          navigate('/dashboard/parent');
+          toast.success('Parent Login Successful', {
+            position: "bottom-right",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            className: "toast-success"
+          });
+          setTimeout(() => {
+            navigate('/dashboard/parent');
+          }, 1500);
         } else {
-          console.error('Login failed:', response.data.message);
-          alert('Login failed. Please try again.');
-          
+          toast.error('Login failed. Please try again.', {
+            position: "bottom-right",
+            autoClose: 4000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            className: "toast-error"
+          });
         }
       } catch (error) {
-        console.error('Error during login:', error);
-        alert('Login failed. Please try again.');
+        toast.error(`Login failed: ${error.response?.data?.message || 'Please try again.'}`, {
+          position: "bottom-right",
+          autoClose: 4000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          className: "toast-error"
+        });
       }
     } else {
-      alert('Invalid Captcha, please try again.');
+      toast.error('Invalid Captcha, please try again.', {
+        position: "bottom-right",
+        autoClose: 4000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        className: "toast-error"
+      });
       loadCaptchaEnginge(5);
     }
   };
@@ -76,6 +108,7 @@ const ParentLogin = () => {
   return (
     <div className="login-container">
       <NavbarHome />
+      <ToastContainer />
       <div className="form-background">
         <div className="login-form-container">
           <h1 className="login-title">Parent Login</h1>
