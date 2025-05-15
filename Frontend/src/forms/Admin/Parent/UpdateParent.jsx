@@ -5,7 +5,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { inputStyle, labelStyle, formControlStyle, selectStyle } from '../Student/formStyles';
 
-const url = import.meta.env.URL;
+const url = import.meta.env.VITE_API_URL;
 
 const UpdateParent = () => {
   const navigate = useNavigate();

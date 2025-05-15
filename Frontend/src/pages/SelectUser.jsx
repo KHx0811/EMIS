@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import NavbarHome from '../Components/NavbarHome';
 import './SelectUser.css';
 
-const url = import.meta.env.URL;
+const url = import.meta.env.VITE_API_URL;
 
 
 const SelectUser = () => {

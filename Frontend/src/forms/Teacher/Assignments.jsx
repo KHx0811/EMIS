@@ -3,7 +3,7 @@ import { Box, Button, Typography, Select, MenuItem, TextField } from '@mui/mater
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
-const url = import.meta.env.URL;
+const url = import.meta.env.VITE_API_URL;
 
 
 const AssignAssignment = () => {

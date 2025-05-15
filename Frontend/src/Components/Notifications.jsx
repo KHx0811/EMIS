@@ -15,7 +15,7 @@ import {
 import { Bell } from 'lucide-react';
 import axios from 'axios';
 
-const url = import.meta.env.URL;
+const url = import.meta.env.VITE_API_URL;
 
 const Notifications = () => {
   const [open, setOpen] = useState(false);

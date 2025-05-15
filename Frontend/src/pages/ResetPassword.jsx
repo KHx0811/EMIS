@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './ResetPassword.css';
 
-const url = import.meta.env.URL;
+const url = import.meta.env.VITE_API_URL;
 
 
 const ResetPassword = () => {

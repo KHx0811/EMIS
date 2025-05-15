@@ -3,6 +3,8 @@ from flask_cors import CORS
 from google import genai
 from google.genai import types
 from google.api_core import retry
+import os
+from dotenv import load_dotenv
 
 app = Flask(__name__)
 CORS(app)
@@ -14,9 +16,7 @@ genai.models.Models.generate_content = retry.Retry(predicate=is_retriable)(
 )
 
 # Initialize the GenAI client
-GOOGLE_API_KEY = (
-    "AIzaSyAi13LAvTN2SQBpHwg-uqDUyOGpUDslDNA"  # Replace with your actual API key
-)
+GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
 client = genai.Client(api_key=GOOGLE_API_KEY)
 
 # Dictionary to store conversation history by conversation ID

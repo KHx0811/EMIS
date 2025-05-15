@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { ResizableBox } from 'react-resizable';
 
-const url = import.meta.env.URL;
+const url = import.meta.env.VITE_API_URL;
 const PrincipalSidebar = ({ onMenuItemClick, currentMenuItem }) => {
   const navigate = useNavigate();
   const [openSubmenu, setOpenSubmenu] = useState(null);

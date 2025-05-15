@@ -4,7 +4,7 @@ import { School, CalendarMonth, Person, Email, Badge, LocationCity, Public } fro
 import axios from 'axios';
 import { format } from 'date-fns';
 
-const url = import.meta.env.URL;
+const url = import.meta.env.VITE_API_URL;
 
 const DistrictProfile = () => {
   const [profileData, setProfileData] = useState(null);

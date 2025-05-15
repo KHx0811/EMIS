@@ -32,7 +32,7 @@ import UpdateDistrict from '@/forms/Admin/District/UpdateDistrict';
 import DistrictDetails from '@/forms/Admin/District/DistrictDetails';
 import DeleteDistrict from '@/forms/Admin/District/DeleteDistrict';
 
-const url = import.meta.env.URL;
+const url = import.meta.env.VITE_API_URL;
 
 
 const AdminDashboard = () => {

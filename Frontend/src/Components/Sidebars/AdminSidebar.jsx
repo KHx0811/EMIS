@@ -8,7 +8,7 @@ import { ResizableBox } from 'react-resizable';
 import 'react-resizable/css/styles.css';
 import './AdminSidebar.css';
 
-const url = import.meta.env.URL;
+const url = import.meta.env.VITE_API_URL;
 
 const AdminSidebar = ({ onMenuItemClick, currentMenuItem }) => {
   const navigate = useNavigate();

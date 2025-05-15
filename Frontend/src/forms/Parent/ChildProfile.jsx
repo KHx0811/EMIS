@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Box, Typography, Snackbar, Alert } from '@mui/material';
 import axios from 'axios';
 
-const url = import.meta.env.URL;
+const url = import.meta.env.VITE_API_URL;
 
 const ChildProfile = () => {
   const [childData, setChildData] = useState(null);

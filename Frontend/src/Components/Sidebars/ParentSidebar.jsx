@@ -6,7 +6,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { ResizableBox } from 'react-resizable';
 
-const url = import.meta.env.URL;
+const url = import.meta.env.VITE_API_URL;
 
 const ParentSidebar = ({ onMenuItemClick, currentMenuItem }) => {
   const navigate = useNavigate();

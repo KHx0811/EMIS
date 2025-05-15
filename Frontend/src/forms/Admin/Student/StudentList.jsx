@@ -5,7 +5,7 @@ import axios from 'axios';
 import jsPDF from 'jspdf';
 import { useNavigate } from 'react-router-dom';
 
-const url = import.meta.env.URL;
+const url = import.meta.env.VITE_API_URL;
 
 const StudentList = () => {
   const navigate = useNavigate();

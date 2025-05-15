@@ -4,7 +4,7 @@ import { Person, CalendarMonth, Email, Badge, Phone } from '@mui/icons-material'
 import axios from 'axios';
 import { format } from 'date-fns';
 
-const url = import.meta.env.URL;
+const url = import.meta.env.VITE_API_URL;
 
 const ParentProfile = () => {
   const [profileData, setProfileData] = useState(null);

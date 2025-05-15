@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { MessageCircleQuestion, Send, X, Sparkles } from 'lucide-react';
 import './Chatbot.css';
 
-const url = import.meta.env.URL;
+const url = import.meta.env.VITE_API_URL;
 
 
 const Chatbot = () => {

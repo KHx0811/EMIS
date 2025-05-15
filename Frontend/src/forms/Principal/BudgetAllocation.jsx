@@ -10,7 +10,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { inputStyle, labelStyle, formControlStyle, selectStyle } from '../Admin/Student/formStyles';
 
-const url = import.meta.env.URL;
+const url = import.meta.env.VITE_API_URL;
 
 const BudgetUsage = () => {
   const navigate = useNavigate();

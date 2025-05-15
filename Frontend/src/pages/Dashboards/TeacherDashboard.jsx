@@ -15,7 +15,7 @@ import ContactAdmin from '@/forms/Teacher/ContactAdmin';
 import SearchStudent from '@/forms/Teacher/searchstudent';
 import Classes from '@/forms/Teacher/Classes';
 
-const url = import.meta.env.URL;
+const url = import.meta.env.VITE_API_URL;
 
 
 const TeacherDashboard = () => {

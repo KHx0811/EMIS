@@ -9,7 +9,7 @@ import 'react-resizable/css/styles.css';
 import './AdminSidebar.css';
 import { Telegram } from '@mui/icons-material';
 
-const url = import.meta.env.URL;
+const url = import.meta.env.VITE_API_URL;
 
 const TeacherSidebar = ({ onMenuItemClick, currentMenuItem }) => {
   const navigate = useNavigate();

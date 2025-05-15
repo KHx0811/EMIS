@@ -16,7 +16,7 @@ import TeacherSearch from '@/forms/District/TeacherSearch';
 import StudentSearch from '@/forms/District/StudentSearch';
 import ContactAdmin from '@/forms/District/ContactAdmin';
 
-const url = import.meta.env.URL;
+const url = import.meta.env.VITE_API_URL;
 
 const DistrictDashboard = () => {
   const navigate = useNavigate();

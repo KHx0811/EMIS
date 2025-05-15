@@ -5,7 +5,7 @@ import axios from 'axios';
 import './AdminLogin.css';
 import '@fortawesome/fontawesome-free/css/all.min.css';
 
-const url = import.meta.env.URL;
+const url = import.meta.env.VITE_API_URL;
 
 
 const styles = {

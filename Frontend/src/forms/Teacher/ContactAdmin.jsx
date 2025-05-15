@@ -5,7 +5,7 @@ import { inputStyle, labelStyle } from '../../forms/Admin/Student/formStyles';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { format } from 'date-fns';
 
-const url = import.meta.env.URL;
+const url = import.meta.env.VITE_API_URL;
 
 
 const ContactAdmin = () => {

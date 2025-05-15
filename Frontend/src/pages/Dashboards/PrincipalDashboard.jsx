@@ -15,7 +15,7 @@ import Meetings from '@/forms/Principal/Meetings';
 import LeaveApprovals from '@/forms/Principal/LeaveApprovals';
 import ContactAdmin from '@/forms/Principal/ContactAdmin';
 
-const url = import.meta.env.URL;
+const url = import.meta.env.VITE_API_URL;
 
 
 const PrincipalDashboard = () => {

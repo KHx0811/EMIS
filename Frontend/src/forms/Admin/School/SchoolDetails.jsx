@@ -6,7 +6,7 @@ import jsPDF from 'jspdf';
 import { useNavigate } from 'react-router-dom';
 import { inputStyle, labelStyle } from '../Student/formStyles';
 
-const url = import.meta.env.URL;
+const url = import.meta.env.VITE_API_URL;
 
 const SchoolDetails = () => {
   const navigate = useNavigate();

@@ -5,7 +5,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { CalendarToday, LocationOn, AccessTime as AccessTimeIcon } from '@mui/icons-material';
 
-const url = import.meta.env.URL;
+const url = import.meta.env.VITE_API_URL;
 
 const SchoolEvents = () => {
   const navigate = useNavigate();

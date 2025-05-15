@@ -5,7 +5,7 @@ import { LoadCanvasTemplateNoReload, loadCaptchaEnginge, validateCaptcha } from 
 import axios from 'axios';
 import './AdminSignup.css';
 
-const url = import.meta.env.URL;
+const url = import.meta.env.VITE_API_URL;
 
 
 const AdminSignup = () => {

@@ -15,7 +15,7 @@ import SessionTimer from '@/Components/SessionTimer';
 import ParentProfile from '@/forms/Parent/Profile';
 import ContactAdmin from '@/forms/Parent/ContactAdmin';
 
-const url = import.meta.env.URL;
+const url = import.meta.env.VITE_API_URL;
 
 
 const ParentDashboard = () => {
