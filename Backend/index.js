@@ -12,7 +12,7 @@ const app = express();
 app.use(express.json());
 app.use(cors(
   {
-    origin: ['https://emis-vasb.vercel.app/'],
+    origin: ['https://emis-sigma.vercel.app/'],
     credentials: true,
   }
 ));
