@@ -14,9 +14,9 @@ import PTMeetings from '@/forms/Parent/PTMeetings';
 import SessionTimer from '@/Components/SessionTimer';
 import ParentProfile from '@/forms/Parent/Profile';
 import ContactAdmin from '@/forms/Parent/ContactAdmin';
-import config from '@/assets/config';
 
-const { url } = config;
+const url = import.meta.env.URL;
+
 
 const ParentDashboard = () => {
   const navigate = useNavigate();

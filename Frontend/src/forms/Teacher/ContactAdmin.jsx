@@ -4,9 +4,9 @@ import axios from 'axios';
 import { inputStyle, labelStyle } from '../../forms/Admin/Student/formStyles';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { format } from 'date-fns';
-import config from '@/assets/config';
 
-const { url } = config;
+const url = import.meta.env.URL;
+
 
 const ContactAdmin = () => {
   const [subject, setSubject] = useState('');

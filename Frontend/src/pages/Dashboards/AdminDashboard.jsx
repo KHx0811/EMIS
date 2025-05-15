@@ -31,9 +31,9 @@ import CreateDistrict from '@/forms/Admin/District/CreateDistrict';
 import UpdateDistrict from '@/forms/Admin/District/UpdateDistrict';
 import DistrictDetails from '@/forms/Admin/District/DistrictDetails';
 import DeleteDistrict from '@/forms/Admin/District/DeleteDistrict';
-import config from '@/assets/config';
 
-const { url } = config;
+const url = import.meta.env.URL;
+
 
 const AdminDashboard = () => {
   const navigate = useNavigate();

@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { MessageCircleQuestion, Send, X, Sparkles } from 'lucide-react';
 import './Chatbot.css';
-import config from '@/assets/config';
 
-const { url } = config;
+const url = import.meta.env.URL;
+
 
 const Chatbot = () => {
   const [messages, setMessages] = useState([

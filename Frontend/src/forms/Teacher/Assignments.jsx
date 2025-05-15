@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { Box, Button, Typography, Select, MenuItem, TextField } from '@mui/material';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import config from '@/assets/config';
 
-const { url } = config;
+const url = import.meta.env.URL;
+
 
 const AssignAssignment = () => {
   const navigate = useNavigate();

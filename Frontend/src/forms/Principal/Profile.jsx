@@ -3,9 +3,9 @@ import { Box, Typography, Grid, Paper, Avatar, Divider, Skeleton } from '@mui/ma
 import { School, CalendarMonth, Person, Email, Badge } from '@mui/icons-material';
 import axios from 'axios';
 import { format } from 'date-fns';
-import config from '@/assets/config';
 
-const { url } = config;
+const url = import.meta.env.URL;
+
 
 const PrincipalProfile = () => {
   const [profileData, setProfileData] = useState(null);

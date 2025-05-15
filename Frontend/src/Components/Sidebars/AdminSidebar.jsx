@@ -7,9 +7,8 @@ import { useNavigate } from 'react-router-dom';
 import { ResizableBox } from 'react-resizable';
 import 'react-resizable/css/styles.css';
 import './AdminSidebar.css';
-import config from '@/assets/config';
 
-const { url } = config;
+const url = import.meta.env.URL;
 
 const AdminSidebar = ({ onMenuItemClick, currentMenuItem }) => {
   const navigate = useNavigate();

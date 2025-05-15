@@ -14,9 +14,9 @@ import Marks from '@/forms/Teacher/Marks';
 import ContactAdmin from '@/forms/Teacher/ContactAdmin';
 import SearchStudent from '@/forms/Teacher/searchstudent';
 import Classes from '@/forms/Teacher/Classes';
-import config from '@/assets/config';
 
-const { url } = config;
+const url = import.meta.env.URL;
+
 
 const TeacherDashboard = () => {
   const navigate = useNavigate();

@@ -2,9 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { Box, CssBaseline, Typography } from '@mui/material';
 import { useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
-import config from '@/assets/config';
-
-const { url } = config;
 
 import DistrictSidebar from '../../Components/Sidebars/DistrictSidebar';
 
@@ -18,6 +15,8 @@ import SessionTimer from '@/Components/SessionTimer';
 import TeacherSearch from '@/forms/District/TeacherSearch';
 import StudentSearch from '@/forms/District/StudentSearch';
 import ContactAdmin from '@/forms/District/ContactAdmin';
+
+const url = import.meta.env.URL;
 
 const DistrictDashboard = () => {
   const navigate = useNavigate();

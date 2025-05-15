@@ -3,9 +3,9 @@ import { Box, Button, Typography, FormControl, Select, MenuItem } from '@mui/mat
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { inputStyle, labelStyle, formControlStyle } from '../Admin/Student/formStyles.js';
-import config from '@/assets/config';
 
-const { url } = config;
+const url = import.meta.env.URL;
+
 
 const PTMeetings = () => {
   const navigate = useNavigate();

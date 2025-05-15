@@ -5,9 +5,8 @@ import { Box, Typography } from '@mui/material';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { ResizableBox } from 'react-resizable';
-import config from '@/assets/config';
 
-const { url } = config;
+const url = import.meta.env.URL;
 
 const ParentSidebar = ({ onMenuItemClick, currentMenuItem }) => {
   const navigate = useNavigate();

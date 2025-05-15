@@ -2,9 +2,9 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import NavbarHome from '../Components/NavbarHome';
 import './SelectUser.css';
-import config from '@/assets/config';
 
-const { url } = config;
+const url = import.meta.env.URL;
+
 
 const SelectUser = () => {
   const navigate = useNavigate();

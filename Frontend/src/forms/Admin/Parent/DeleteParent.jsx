@@ -3,9 +3,8 @@ import { Box, TextField, IconButton, Button, Typography } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import config from '@/assets/config';
 
-const { url } = config;
+const url = import.meta.env.URL;
 
 const DeleteParent = () => {
   const navigate = useNavigate();

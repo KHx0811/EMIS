@@ -3,9 +3,9 @@ import NavbarHome from '../Components/NavbarHome';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './ResetPassword.css';
-import config from '@/assets/config';
 
-const { url } = config;
+const url = import.meta.env.URL;
+
 
 const ResetPassword = () => {
   const navigate = useNavigate();

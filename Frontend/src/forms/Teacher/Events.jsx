@@ -4,9 +4,9 @@ import { Box, Typography, Grid, Card, CardContent, Button, Dialog, DialogTitle,
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { CalendarToday, LocationOn, Category, Delete as DeleteIcon, Edit as EditIcon, AccessTime as AccessTimeIcon } from '@mui/icons-material';
-import config from '@/assets/config';
 
-const { url } = config;
+const url = import.meta.env.URL;
+
 
 const TeacherEvents = () => {
   const navigate = useNavigate();

@@ -8,9 +8,9 @@ import {
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { inputStyle, labelStyle } from '../Admin/Student/formStyles';
-import config from '@/assets/config';
 
-const { url } = config;
+const url = import.meta.env.URL;
+
 
 const statusColors = {
   Scheduled: '#22c55e',

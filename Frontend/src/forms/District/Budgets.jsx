@@ -9,9 +9,8 @@ import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { inputStyle, labelStyle, formControlStyle, selectStyle } from '../Admin/Student/formStyles';
-import config from '@/assets/config';
 
-const { url } = config;
+const url = import.meta.env.URL;
 
 const Budgets = () => {
   const navigate = useNavigate();

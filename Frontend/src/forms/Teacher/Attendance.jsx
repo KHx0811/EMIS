@@ -3,9 +3,9 @@ import { Box, Button, Typography, Select, MenuItem, TextField, CircularProgress 
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { inputStyle, labelStyle, formControlStyle, selectStyle } from '../Admin/Student/formStyles.js';
-import config from '@/assets/config';
 
-const { url } = config;
+const url = import.meta.env.URL;
+
 
 const Attendance = () => {
   const navigate = useNavigate();

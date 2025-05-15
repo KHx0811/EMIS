@@ -14,9 +14,8 @@ import {
 } from '@mui/material';
 import { Bell } from 'lucide-react';
 import axios from 'axios';
-import config from '@/assets/config';
 
-const { url } = config;
+const url = import.meta.env.URL;
 
 const Notifications = () => {
   const [open, setOpen] = useState(false);

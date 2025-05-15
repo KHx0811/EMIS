@@ -14,9 +14,9 @@ import Events from '@/forms/Principal/Events';
 import Meetings from '@/forms/Principal/Meetings';
 import LeaveApprovals from '@/forms/Principal/LeaveApprovals';
 import ContactAdmin from '@/forms/Principal/ContactAdmin';
-import config from '@/assets/config';
 
-const { url } = config;
+const url = import.meta.env.URL;
+
 
 const PrincipalDashboard = () => {
   const navigate = useNavigate();

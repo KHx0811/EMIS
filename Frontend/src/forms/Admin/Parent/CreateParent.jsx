@@ -3,9 +3,8 @@ import { Box, Button, FormControl, FormLabel, MenuItem, Select, Typography } fro
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { inputStyle, labelStyle, formControlStyle, selectStyle } from '../Student/formStyles';
-import config from '@/assets/config';
 
-const { url } = config;
+const url = import.meta.env.URL;
 
 const CreateParentForm = ({ onSubmit = () => {} }) => {
   const navigate = useNavigate();

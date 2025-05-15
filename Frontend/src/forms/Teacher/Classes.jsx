@@ -3,9 +3,8 @@ import { Box, Button, Typography, TextField, Checkbox, FormControlLabel, Circula
 import DeleteIcon from '@mui/icons-material/Delete';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import config from '@/assets/config';
 
-const { url } = config;
+const url = import.meta.env.URL;
 
 const Classes = () => {
   const navigate = useNavigate();

@@ -4,9 +4,9 @@ import NavbarHome from '@/Components/NavbarHome';
 import { LoadCanvasTemplateNoReload, loadCaptchaEnginge, validateCaptcha } from 'react-simple-captcha';
 import axios from 'axios';
 import './AdminSignup.css';
-import config from '@/assets/config';
 
-const { url } = config;
+const url = import.meta.env.URL;
+
 
 const AdminSignup = () => {
   const navigate = useNavigate();

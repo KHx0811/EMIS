@@ -3,9 +3,8 @@ import { Box, Button, Typography } from '@mui/material';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { inputStyle, labelStyle } from '../Student/formStyles';
-import config from '@/assets/config';
 
-const { url } = config;
+const url = import.meta.env.URL;
 
 const CreateDistrict = ({ onSubmit = () => {} }) => {
   const navigate = useNavigate();

@@ -8,9 +8,8 @@ import { ResizableBox } from 'react-resizable';
 import 'react-resizable/css/styles.css';
 import './AdminSidebar.css';
 import { Telegram } from '@mui/icons-material';
-import config from '@/assets/config';
 
-const { url } = config;
+const url = import.meta.env.URL;
 
 const TeacherSidebar = ({ onMenuItemClick, currentMenuItem }) => {
   const navigate = useNavigate();

@@ -4,9 +4,8 @@ import SearchIcon from '@mui/icons-material/Search';
 import axios from 'axios';
 import jsPDF from 'jspdf';
 import { useNavigate } from 'react-router-dom';
-import config from '@/assets/config';
 
-const { url } = config;
+const url = import.meta.env.URL;
 
 const TeacherDetails = () => {
   const navigate = useNavigate();

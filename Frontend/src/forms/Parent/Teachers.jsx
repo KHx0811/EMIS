@@ -3,9 +3,8 @@ import { Box, Typography, Accordion, AccordionSummary, AccordionDetails } from '
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import config from '@/assets/config';
 
-const { url } = config;
+const url = import.meta.env.URL;
 
 const Teachers = () => {
   const navigate = useNavigate();

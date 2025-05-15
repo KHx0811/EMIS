@@ -5,10 +5,8 @@ import { Box, Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { ResizableBox } from 'react-resizable';
-import config from '@/assets/config';
 
-const { url } = config;
-
+const url = import.meta.env.URL;
 const PrincipalSidebar = ({ onMenuItemClick, currentMenuItem }) => {
   const navigate = useNavigate();
   const [openSubmenu, setOpenSubmenu] = useState(null);

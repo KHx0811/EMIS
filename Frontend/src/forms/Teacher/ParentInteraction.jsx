@@ -2,9 +2,9 @@ import React, { useState } from 'react';
 import { Box, Button, Typography, Select, MenuItem, FormControl, InputLabel } from '@mui/material';
 import axios from 'axios';
 import { inputStyle, labelStyle, formControlStyle, selectStyle } from '../Admin/Student/formStyles';
-import config from '@/assets/config';
 
-const { url } = config;
+const url = import.meta.env.URL;
+
 
 const ParentInteraction = () => {
   const [formData, setFormData] = useState({

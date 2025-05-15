@@ -31,9 +31,8 @@ import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { inputStyle, labelStyle, formControlStyle, selectStyle } from '../Admin/Student/formStyles';
-import config from '@/assets/config';
 
-const { url } = config;
+const url = import.meta.env.URL;
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;

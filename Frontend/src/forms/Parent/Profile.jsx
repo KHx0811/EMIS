@@ -3,9 +3,8 @@ import { Box, Typography, Grid, Paper, Avatar, Divider, Skeleton } from '@mui/ma
 import { Person, CalendarMonth, Email, Badge, Phone } from '@mui/icons-material';
 import axios from 'axios';
 import { format } from 'date-fns';
-import config from '@/assets/config';
 
-const { url } = config;
+const url = import.meta.env.URL;
 
 const ParentProfile = () => {
   const [profileData, setProfileData] = useState(null);

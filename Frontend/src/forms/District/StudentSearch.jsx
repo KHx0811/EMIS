@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
 import { Box, TextField, Button, Typography, Snackbar, Alert } from '@mui/material';
 import axios from 'axios';
-import config from '@/assets/config';
 
-const { url } = config;
+const url = import.meta.env.URL;
 
 const StudentSearch = () => {
   const [searchParams, setSearchParams] = useState({ studentId: '' });
