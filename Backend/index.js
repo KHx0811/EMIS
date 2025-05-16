@@ -9,6 +9,12 @@ import cors from "cors";
 const { port } = config;
 const app = express();
 
+app.options('*', cors({
+  origin: ['https://emis-sigma.vercel.app'],
+  credentials: true,
+}));
+
+
 app.use(express.json());
 app.use(cors(
   {
