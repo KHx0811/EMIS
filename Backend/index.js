@@ -19,6 +19,13 @@ app.use(cors(
 
 
 app.use("/api", views);
+app.use("*", (req, res) => {
+  res.header("Access-Control-Allow-Origin", "https://emis-sigma.vercel.app");
+  res.header("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+  res.header("Access-Control-Allow-Headers", "Content-Type");
+  res.status(404).json({ message: "Route not found" });
+});
+
 connectToDB();
 
 app.listen(port, () => {
