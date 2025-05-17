@@ -7,17 +7,13 @@ import cors from "cors";
 const { port } = config;
 const app = express();
 
-// Update CORS configuration to include your new frontend URL
-const allowedOrigins = ["https://emis-ebon.vercel.app"];
-
+// CORS setup
+const allowedOrigins = [process.env.FRONTEND_URL]; // and define it in your Render env vars
 app.use(
   cors({
     origin: function (origin, callback) {
-      // Allow requests with no origin (like mobile apps or curl requests)
       if (!origin) return callback(null, true);
-      if (allowedOrigins.indexOf(origin) !== -1) {
-        return callback(null, true);
-      }
+      if (allowedOrigins.indexOf(origin) !== -1) return callback(null, true);
       return callback(null, false);
     },
     credentials: true,
@@ -25,7 +21,6 @@ app.use(
 );
 
 app.use(express.json());
-
 app.use("/api", views);
 
 app.use("*", (req, res) => {
@@ -35,15 +30,10 @@ app.use("*", (req, res) => {
   res.status(404).json({ message: "Route not found" });
 });
 
-// For Vercel serverless functions, we don't need to actively listen on a port
-if (process.env.NODE_ENV !== "production") {
-  connectToDB();
-  app.listen(port, () => {
-    console.log(`server started on ${port}`);
-  });
-} else {
-  connectToDB();
-}
+// Always connect and listen (works for both Render and local)
+connectToDB();
+app.listen(port, () => {
+  console.log(`✅ Server started on port ${port}`);
+});
 
-// Export for Vercel serverless function
 export default app;
