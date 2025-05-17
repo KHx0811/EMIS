@@ -7,7 +7,7 @@ import os
 from dotenv import load_dotenv
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, origins=["https://emis-ebon.vercel.app"])
 
 # Retry logic for handling API rate limits or temporary unavailability
 is_retriable = lambda e: (isinstance(e, genai.errors.APIError) and e.code in {429, 503})
@@ -639,4 +639,4 @@ def chat():
 
 
 if __name__ == "__main__":
-    app.run(host="127.0.0.1", port=5000)
+    app.run(host="https://emis-avxn.onrender.com", port=5000)
