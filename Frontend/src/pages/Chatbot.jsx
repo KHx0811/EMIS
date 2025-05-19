@@ -2,8 +2,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import { MessageCircleQuestion, Send, X, Sparkles } from 'lucide-react';
 import './Chatbot.css';
 
-const url = import.meta.env.VITE_API_URL;
-
 
 const Chatbot = () => {
   const [messages, setMessages] = useState([
@@ -119,7 +117,7 @@ const Chatbot = () => {
     try {
       const currentUserType = userType;
       
-      const res = await fetch(`${url}/chat`, {
+      const res = await fetch("https://chatbot-ik3y.onrender.com/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
